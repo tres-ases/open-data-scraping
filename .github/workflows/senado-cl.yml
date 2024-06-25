@@ -42,15 +42,15 @@ jobs:
         run: |
           npm install
         working-directory: './layers/scraper/nodejs'
-      - name: Build Code
+      - name: Build CDK Code
+        run: |
+          npm install
+        working-directory: './senado.cl'
+      - name: Build SRC Code
         run: |
           npm install
           npm run build
         working-directory: './senado.cl/src'
-      - name: Build Code
-        run: |
-          npm install
-        working-directory: './senado.cl'
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2
         with:
