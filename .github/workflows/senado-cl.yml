@@ -39,13 +39,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Build Layer
-        run: npm install
+        run: |
+          npm install
         working-directory: './layers/scraper/nodejs'
       - name: Build Code
-        run: npm run build
+        run: |
+          npm install
+          npm run build
         working-directory: './senado.cl/src'
       - name: Build Code
-        run: npm install
+        run: |
+          npm install
         working-directory: './senado.cl'
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2
