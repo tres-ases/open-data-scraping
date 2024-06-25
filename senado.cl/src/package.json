@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "tsc && npm-run-all build-*",
+    "build": "npm-run-all build-*",
     "build-example": "cd Example && npm run build",
     "package": "npm-run-all pk-*",
     "pk-example": "cd Example && npm run package"

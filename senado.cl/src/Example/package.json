@@ -5,7 +5,7 @@
   "main": "simple.js",
   "scripts": {
     "prebuild": "npm install",
-    "build": "tsc",
+    "build": "npm install && tsc",
     "package": "npm prune --production && cp -R node_modules lib/node_modules/"
   },
   "keywords": [],
