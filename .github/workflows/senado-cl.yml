@@ -5,6 +5,7 @@ on:
     paths:
       - 'layers/**'
       - 'senado.cl/**'
+      - '.github/workflows/senado-cl.yml'
       - '!**/README.md'
 
   workflow_dispatch:
@@ -26,11 +27,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 20
-      - name: Get cache directory
+      - name: Get Cache Directory
         id: npm-cache
         run: |
           echo "::set-output name=dir::$(npm config get cache)"
-      - name: npm cache
+      - name: Npm Cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.npm-cache.outputs.dir }}
@@ -39,10 +40,10 @@ jobs:
             ${{ runner.os }}-node-
       - name: Build Layer
         run: npm install
-        working-directory: ./layers/scraper/nodejs
+        working-directory: './layers/scraper/nodejs'
       - name: Build Code
         run: npm run build
-        working-directory: ./senado.cl/src
+        working-directory: './senado.cl/src'
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2
         with:
