@@ -1,0 +1,19 @@
+{
+  "name": "@senado-cl/example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "simple.js",
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "Julio Villane",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.140",
+    "@types/node": "^20.11.15",
+    "puppeteer": "^22.11.2",
+    "typescript": "^5.3.3"
+  }
+}

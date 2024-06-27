@@ -23,33 +23,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
-      - name: Get Cache Directory
-        id: npm-cache
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-      - name: Npm Cache
-        uses: actions/cache@v2
+          version: 9
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
       - name: Build Layer
         run: |
-          npm install
+          pnpm install
         working-directory: './layers/scraper/nodejs'
       - name: Build CDK Code
         run: |
-          npm install
+          pnpm install
         working-directory: './senado.cl'
       - name: Build SRC Code
         run: |
-          npm install
-          npm run build
+          pnpm install
+          pnpm build
         working-directory: './senado.cl/src'
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2

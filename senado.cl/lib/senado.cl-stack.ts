@@ -10,12 +10,16 @@ export class SenadoClStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const simpleFn = new nodejs.NodejsFunction(this, 'simple-function', {
-        code: Code.fromAsset('./src/Example/lib'),
-        handler: 'simple.handler',
-        runtime: Runtime.NODEJS_20_X,
-      }
-    );
+    const commonsLy = new LayerVersion(this, 'commons-layer', {
+      layerVersionName: 'commons-layer',
+      compatibleRuntimes: [
+        Runtime.NODEJS_20_X
+      ],
+      code: Code.fromAsset('./src/packages/Commons/layer'),
+      compatibleArchitectures: [
+        Architecture.X86_64
+      ]
+    });
 
     const scraperLy = new LayerVersion(this, 'scraper-layer', {
       layerVersionName: 'scraper-layer',
@@ -26,6 +30,14 @@ export class SenadoClStack extends Stack {
       compatibleArchitectures: [
         Architecture.X86_64
       ]
-    })
+    });
+
+    const simpleFn = new nodejs.NodejsFunction(this, 'simple-function', {
+        code: Code.fromAsset('./src/Example/dist'),
+        handler: 'simple.handler',
+        runtime: Runtime.NODEJS_20_X,
+        layers: [commonsLy, scraperLy]
+      }
+    );
   }
 }

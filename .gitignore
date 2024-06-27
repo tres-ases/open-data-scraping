@@ -25,9 +25,6 @@ node_modules/
 # Output of 'npm pack'
 *.tgz
 
-# Yarn Integrity file
-.yarn-integrity
-
 # dotenv environment variable files
 .env
 .env.development.local
@@ -35,17 +32,13 @@ node_modules/
 .env.production.local
 .env.local
 
-# DynamoDB Local files
-.dynamodb/
-
-# yarn v2
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
-
 out/
 
 **/deploy.*.sh
 !**/deploy.template.sh
+
+# Transpilated SRC code
+*/src/**/dist
+*/src/**/layer
+
+.turbo

@@ -1,0 +1,23 @@
+{
+  "name": "@senado-cl/commons",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "exports": {
+    "./dieta": "./src/dieta/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "build": "rm -rf dist && rm -rf layer && tsc",
+    "postbuild": "cp package.json dist/package.json && mkdir -p layer/nodejs/node_modules/@senado-cl && cp -r dist layer/nodejs/node_modules/@senado-cl/commons"
+  },
+  "keywords": [],
+  "author": "Julio Villane",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.140",
+    "@types/node": "^20.11.15",
+    "puppeteer": "^22.11.2",
+    "typescript": "^5.3.3"
+  }
+}
