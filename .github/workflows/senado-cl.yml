@@ -44,12 +44,12 @@ jobs:
         run: |
           pnpm layers:build
 
-      - name: Build SRC Code
+      - name: Build SRC
         run: |
           pnpm @senado.cl/packages:build
           pnpm @senado.cl/packages:postbuild
 
-      - name: Build CDK Code
+      - name: Build CDK
         run: |
           pnpm @senado.cl/iac:build
 

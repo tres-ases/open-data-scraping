@@ -44,3 +44,9 @@ senado.cl/code/**/layer
 .turbo
 
 **/cdk.out
+
+.idea
+
+**/**.d.ts
+**/packages/**/*.js
+**/iac/**/*.js
