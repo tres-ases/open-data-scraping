@@ -56,7 +56,7 @@ jobs:
         uses: youyo/aws-cdk-github-actions@v2
         with:
           cdk_subcommand: 'deploy'
-          working_dir: './senado.cl'
+          working_dir: './senado.cl/iac'
           cdk_stack: 'odata-scraping-senado-cl'
           cdk_args: '--require-approval never'
           actions_comment: false
