@@ -9,7 +9,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "rm -rf dist && rm -rf layer && tsc",
-    "postbuild": "cp package.json dist/package.json && mkdir -p layer/nodejs/node_modules/@senado-cl && cp -r dist layer/nodejs/node_modules/@senado-cl/commons"
+    "package": "cp package.json dist/package.json && mkdir -p layer/nodejs/node_modules/@senado-cl && cp -r dist layer/nodejs/node_modules/@senado-cl/commons"
   },
   "keywords": [],
   "author": "Julio Villane",
