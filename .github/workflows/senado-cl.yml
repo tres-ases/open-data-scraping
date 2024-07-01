@@ -38,6 +38,10 @@ jobs:
 
       - name: Build Layers
         run: |
+          pnpm install
+
+      - name: Build Layers
+        run: |
           pnpm layers:build
 
       - name: Build SRC Code
