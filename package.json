@@ -4,7 +4,8 @@
   "scripts": {
     "layers:build": "turbo build --filter=@odata/scraper-layer",
     "@senado.cl/iac:build": "turbo build --filter=@senado.cl/iac",
-    "@senado.cl/packages:build": "turbo build --filter=\"./senado.cl/code/packages/*\""
+    "@senado.cl/packages:build": "turbo build --filter=\"./senado.cl/code/packages/*\"",
+    "@senado.cl/packages:postbuild": "turbo postbuild --filter=@senado.cl/iac"
   },
   "devDependencies": {
     "turbo": "^2.0.5",
