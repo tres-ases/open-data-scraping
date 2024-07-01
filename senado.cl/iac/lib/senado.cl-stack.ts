@@ -15,7 +15,7 @@ export class SenadoClStack extends Stack {
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
-      code: Code.fromAsset('./code/packages/Commons/layer'),
+      code: Code.fromAsset('../code/packages/Commons/layer'),
       compatibleArchitectures: [
         Architecture.X86_64
       ]
@@ -26,7 +26,7 @@ export class SenadoClStack extends Stack {
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
-      code: Code.fromAsset('../layers/scraper'),
+      code: Code.fromAsset('../../layers/scraper'),
       compatibleArchitectures: [
         Architecture.X86_64
       ]
