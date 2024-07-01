@@ -4,13 +4,14 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", "tsconfig.tsbuildinfo"]
+      "outputs": ["dist/**"]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
     },
     "package": {
-      "dependsOn": ["build"]
+      "dependsOn": ["^package"],
+      "outputs": ["dist/**", "layer/**"]
     }
   }
 }
