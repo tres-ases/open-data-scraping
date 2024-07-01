@@ -1,0 +1,4 @@
+packages:
+  - "layers/scraper/nodejs"
+  - "senado/code/packages/*"
+  - "senado/iac"

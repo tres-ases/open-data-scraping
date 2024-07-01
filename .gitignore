@@ -8,7 +8,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 # Dependency directories
-node_modules/
+**/node_modules/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -38,7 +38,9 @@ out/
 !**/deploy.template.sh
 
 # Transpilated SRC code
-*/src/**/dist
-*/src/**/layer
+senado.cl/code/**/dist
+senado.cl/code/**/layer
 
 .turbo
+
+**/cdk.out

@@ -30,38 +30,30 @@ jobs:
           version: 9
           run_install: false
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Cache for turbo
+        uses: rharkor/caching-for-turbo@v1.5
 
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+      - name: Build Layers
+        run: |
+          pnpm layers:build
 
-      - name: Build Layer
-        run: |
-          pnpm install
-        working-directory: './layers/scraper/nodejs'
-      - name: Build CDK Code
-        run: |
-          pnpm install
-        working-directory: './senado.cl'
       - name: Build SRC Code
         run: |
-          pnpm install
-          pnpm build
-        working-directory: './senado.cl/src'
+          pnpm @senado.cl/packages:build
+
+      - name: Build CDK Code
+        run: |
+          pnpm @senado.cl/iac:build
+
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2
         with:
