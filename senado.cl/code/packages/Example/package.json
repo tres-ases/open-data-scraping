@@ -5,7 +5,7 @@
   "main": "simple.js",
   "scripts": {
     "check-types": "tsc --noEmit",
-    "build": "tsc && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\""
+    "build": "tsc"
   },
   "keywords": [],
   "author": "Julio Villane",

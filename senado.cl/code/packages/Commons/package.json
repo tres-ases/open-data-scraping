@@ -9,7 +9,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "rm -rf dist && rm -rf layer && tsc",
-    "package": "cp package.json ./dist/package.json && mkdir -p ./layer/nodejs/node_modules/@senado-cl && cp -r dist ./layer/nodejs/node_modules/@senado-cl/commons"
+    "package": "cp package.json ./dist/package.json && mkdir -p ./layer/nodejs/node_modules/@senado-cl && cp -r dist ./layer/nodejs/node_modules/@senado-cl/commons && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\""
   },
   "keywords": [],
   "author": "Julio Villane",
