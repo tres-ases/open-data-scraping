@@ -33,7 +33,7 @@ export class SenadoClStack extends Stack {
     });
 
     const simpleFn = new nodejs.NodejsFunction(this, 'simple-function', {
-        code: Code.fromAsset('./code/Example/dist'),
+        code: Code.fromAsset('../code/Example/dist'),
         handler: 'simple.handler',
         runtime: Runtime.NODEJS_20_X,
         layers: [commonsLy, scraperLy]
