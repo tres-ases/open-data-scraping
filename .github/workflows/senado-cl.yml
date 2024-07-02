@@ -51,14 +51,16 @@ jobs:
 
       - name: Check code/Example files
         run: |
-          find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
+          pwd
           cd ./senado.cl/code/Example
+          pwd
           find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
 
       - name: Check code/Commons files
         run: |
-          find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
+          pwd
           cd ./senado.cl/code/Commons
+          pwd
           find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
 
       - name: CDK Deploy
