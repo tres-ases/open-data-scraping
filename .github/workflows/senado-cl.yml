@@ -52,14 +52,14 @@ jobs:
       - name: Check code/Example files
         run: |
           pwd
-          cd ./senado.cl/code/Example
+          cd ./senado.cl/code/packages/Example
           pwd
           find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
 
       - name: Check code/Commons files
         run: |
           pwd
-          cd ./senado.cl/code/Commons
+          cd ./senado.cl/code/packages/Commons
           pwd
           find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
 
