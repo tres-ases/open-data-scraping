@@ -11,7 +11,8 @@
     },
     "package": {
       "dependsOn": ["^package"],
-      "outputs": ["dist/**", "layer/**"]
+      "outputs": ["dist/**", "layer/**"],
+      "cache": false
     }
   }
 }
