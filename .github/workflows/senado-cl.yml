@@ -49,9 +49,15 @@ jobs:
           pnpm @senado.cl/packages:build
           pnpm @senado.cl/packages:package
 
-      - name: Build CDK
+      - name: Check code/Example files
         run: |
-          pnpm @senado.cl/iac:build
+          cd senado.cl/code/Example
+          find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
+
+      - name: Check code/Commons files
+        run: |
+          cd senado.cl/code/Commons
+          find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
 
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2
