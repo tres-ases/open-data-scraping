@@ -1,4 +1,3 @@
 packages:
-  - "layers/scraper/nodejs"
   - "senado.cl/code/packages/*"
   - "senado.cl/iac"
