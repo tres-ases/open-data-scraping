@@ -13,7 +13,7 @@ export class SenadoClStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const commonsLy = new LayerVersion(this, 'commons-layer', {
+    const commonsLy = new LayerVersion(this, 'commons-ly', {
       layerVersionName: 'commons-layer',
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
@@ -24,7 +24,7 @@ export class SenadoClStack extends Stack {
       ]
     });
 
-    const scraperLy = new LayerVersion(this, 'scraper-layer', {
+    const scraperLy = new LayerVersion(this, 'scraper-ly', {
       layerVersionName: 'scraper-layer',
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
@@ -35,7 +35,7 @@ export class SenadoClStack extends Stack {
       ]
     });
 
-    const simpleFn = new nodejs.NodejsFunction(this, 'simple-function', {
+    const simpleFn = new nodejs.NodejsFunction(this, 'simple-fn', {
         code: Code.fromAsset('../code/packages/Example/dist'),
         handler: 'simple.handler',
         runtime: Runtime.NODEJS_20_X,
@@ -43,7 +43,7 @@ export class SenadoClStack extends Stack {
       }
     );
 
-    const dietaAnoMesFn = new nodejs.NodejsFunction(this, 'simple-function', {
+    const dietaAnoMesFn = new nodejs.NodejsFunction(this, 'dieta-anomes-fn', {
         code: Code.fromAsset('../code/packages/Dieta-AnoMes/dist'),
         handler: 'dieta-anomes.handler',
         runtime: Runtime.NODEJS_20_X,
@@ -53,20 +53,20 @@ export class SenadoClStack extends Stack {
 
     const dietaAnoMesJob = new LambdaInvoke(
       this,
-      "dieta-ano-mes-job", {
+      "dieta-anomes-job", {
         lambdaFunction: dietaAnoMesFn,
       }
     );
 
     const stateMachineDefinition = dietaAnoMesJob
-      .next(new Succeed(this, "dieta-ano-mes-succeed"));
+      .next(new Succeed(this, "dieta-anomes-succeed"));
 
-    const stateMachine = new StateMachine(this, "state-machine", {
+    const stateMachine = new StateMachine(this, "dieta-anomes-sm", {
       definitionBody: DefinitionBody.fromChainable(
         stateMachineDefinition
       ),
       timeout: Duration.minutes(5),
-      stateMachineName: "ProcessAndReportJob",
+      stateMachineName: "Dieta-AnoMes-Job",
     });
   }
 }
