@@ -13,10 +13,10 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.140",
     "@types/node": "^20.11.15",
-    "puppeteer": "^22.11.2",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@senado-cl/commons": "workspace:*"
+    "@senado-cl/commons": "workspace:*",
+    "puppeteer-core": "^22.12.1"
   }
 }

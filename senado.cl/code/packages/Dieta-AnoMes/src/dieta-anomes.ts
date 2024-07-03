@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 import { Handler } from 'aws-lambda';
 import {Dieta} from '@senado-cl/commons/dieta';
 import {getAnos, getMeses} from "./dieta-anomes.service";
