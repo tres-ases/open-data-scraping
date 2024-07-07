@@ -18,7 +18,7 @@ export class SenadoClStack extends Stack {
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
-      code: Code.fromAsset('../packages/packages/Commons/layer'),
+      code: Code.fromAsset('../packages/Commons/layer'),
       compatibleArchitectures: [
         Architecture.X86_64
       ]
@@ -36,7 +36,7 @@ export class SenadoClStack extends Stack {
     });
 
     const simpleFn = new nodejs.NodejsFunction(this, 'simple-fn', {
-        code: Code.fromAsset('../packages/packages/Example/dist'),
+        code: Code.fromAsset('../packages/Example/dist'),
         handler: 'simple.handler',
         runtime: Runtime.NODEJS_20_X,
         layers: [commonsLy, scraperLy]
@@ -44,7 +44,7 @@ export class SenadoClStack extends Stack {
     );
 
     const dietaAnoMesFn = new nodejs.NodejsFunction(this, 'dieta-anomes-fn', {
-        code: Code.fromAsset('../packages/packages/Dieta-AnoMes/dist'),
+        code: Code.fromAsset('../packages/Dieta-AnoMes/dist'),
         handler: 'dieta-anomes.handler',
         runtime: Runtime.NODEJS_20_X,
         layers: [commonsLy, scraperLy]
