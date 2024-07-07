@@ -4,7 +4,7 @@
   "scripts": {
     "layers:build": "cd ./layers/scraper/nodejs && npm install --production",
     "@senado.cl/iac:build": "turbo build --filter=@senado.cl/iac",
-    "@senado.cl/packages:build": "turbo build --filter=\"./senado.cl/code/packages/*\"",
+    "@senado.cl/packages:build": "turbo build --filter=\\\"senado.cl/packages/packages/*\\\"",
     "@senado.cl/packages:package": "turbo package --filter=@senado-cl/commons"
   },
   "devDependencies": {

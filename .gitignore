@@ -37,9 +37,9 @@ out/
 **/deploy.*.sh
 !**/deploy.template.sh
 
-# Transpilated SRC code
-senado.cl/code/**/dist
-senado.cl/code/**/layer
+# Transpilated SRC packages
+senado.cl/packages/**/dist
+senado.cl/packages/**/layer
 
 .turbo
 
@@ -49,4 +49,5 @@ senado.cl/code/**/layer
 
 **/**.d.ts
 **/packages/**/*.js
+!**/packages/**/jest.config.js
 **/iac/**/*.js
