@@ -6,7 +6,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "tsc",
-    "check-dist": "pwd && ls -R | grep \":$\" | sed -e 's/:$//' -e 's/[^-][^\\/]*\\//--/g' -e 's/^/   /' -e 's/-/|/' && cd dist && pwd && ls -R | grep \":$\" | sed -e 's/:$//' -e 's/[^-][^\\/]*\\//--/g' -e 's/^/   /' -e 's/-/|/'",
+    "check-dist": "pwd && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\" && cd dist && pwd && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\"",
     "test": "jest --watch"
   },
   "keywords": [],

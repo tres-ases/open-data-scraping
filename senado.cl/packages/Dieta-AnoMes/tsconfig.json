@@ -1,5 +1,4 @@
 {
-  "include": ["src/**/*"],
   "compilerOptions": {
     "outDir": "./dist",
     "target": "es6",
@@ -11,7 +10,6 @@
     "incremental": true,
     "declaration": true,
     "allowJs": true,
-    "noEmit": true,
 
     /* Strict Type-Checking Options */
     "noImplicitAny": true,
@@ -26,5 +24,9 @@
     /* Experimental Options */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": false
-  }
+  },
+  "include": ["src"],
+  "exclude": [
+    "**/*.spec.ts",
+  ]
 }
