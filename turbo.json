@@ -9,6 +9,9 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "check-dist": {
+      "dependsOn": ["^check-dist"]
+    },
     "package": {
       "dependsOn": ["^package"],
       "outputs": ["dist/**", "layer/**"]

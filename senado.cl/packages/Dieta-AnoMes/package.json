@@ -6,6 +6,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "tsc",
+    "check-dist": "cd dist && ls -R | grep \":$\" | sed -e 's/:$//' -e 's/[^-][^\\/]*\\//--/g' -e 's/^/   /' -e 's/-/|/'",
     "test": "jest --watch"
   },
   "keywords": [],
