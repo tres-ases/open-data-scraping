@@ -9,7 +9,7 @@
 
     /* Basic Options */
     "incremental": true,
-    "declaration": true,
+    "declaration": false,
     "allowJs": true,
 
     /* Strict Type-Checking Options */

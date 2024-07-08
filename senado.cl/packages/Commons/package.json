@@ -2,9 +2,9 @@
   "name": "@senado-cl/commons",
   "version": "0.0.0",
   "private": true,
-  "main": "src/index.ts",
+  "main": "index.js",
   "exports": {
-    "./dieta": "./src/dieta/index.ts"
+    "./dieta": "./dieta/index.js"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
