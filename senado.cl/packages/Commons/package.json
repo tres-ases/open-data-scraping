@@ -2,14 +2,15 @@
   "name": "@senado-cl/commons",
   "version": "0.0.0",
   "private": true,
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
-    "./dieta": "./dieta/index.js"
+    "./dieta": "./dist/dieta/index.js"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "rm -rf dist && rm -rf layer && tsc",
-    "package": "cp package.json ./dist/package.json && mkdir -p ./layer/nodejs/node_modules/@senado-cl && cp -r dist ./layer/nodejs/node_modules/@senado-cl/commons && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\"",
+    "package": "mkdir -p ./layer/nodejs/node_modules/@senado-cl/commons && cp -r dist ./layer/nodejs/node_modules/@senado-cl/commons && cp package.json ./layer/nodejs/node_modules/@senado-cl/commons",
     "check-dist": "pwd && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\" && cd dist && pwd && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\""
   },
   "keywords": [],
