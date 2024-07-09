@@ -89,12 +89,12 @@ export class SenadoClStack extends Stack {
         ))
       );
 
-    const stateMachine = new StateMachine(this, "dieta-anoMes-sm", {
+    const stateMachine = new StateMachine(this, "dieta-anoMes", {
       definitionBody: DefinitionBody.fromChainable(
         stateMachineDefinition
       ),
       timeout: Duration.minutes(5),
-      stateMachineName: "Dieta-AnoMes-Job",
+      stateMachineName: "Dieta-AnoMes",
     });
   }
 }
