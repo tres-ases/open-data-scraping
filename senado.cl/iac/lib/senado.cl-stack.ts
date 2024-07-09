@@ -44,7 +44,7 @@ export class SenadoClStack extends Stack {
         code: Code.fromAsset('../packages/Dieta-AnoMes/dist'),
         handler: 'dieta-anomes.saveAnosJsonStructured',
         runtime: Runtime.NODEJS_20_X,
-        layers: [commonsLy],
+        layers: [commonsLy, scraperLy],
         timeout: Duration.seconds(30)
       }
     );
@@ -54,7 +54,7 @@ export class SenadoClStack extends Stack {
         code: Code.fromAsset('../packages/Dieta-AnoMes/dist'),
         handler: 'dieta-anomes.saveAnosJsonLines',
         runtime: Runtime.NODEJS_20_X,
-        layers: [commonsLy],
+        layers: [commonsLy, scraperLy],
         timeout: Duration.seconds(30)
       }
     );
@@ -79,11 +79,11 @@ export class SenadoClStack extends Stack {
     const stateMachineDefinition = dietaAnoMesJob
       .next(new Parallel(this, 'dieta-anoMes-save')
         .branch(new LambdaInvoke(
-            this,
-            "dieta-anoMes-saveJsonLines-job", {
-                lambdaFunction: dietaAnoMesSaveJsonLinesFn,
-                payload: TaskInput.fromJsonPathAt('$.Payload')
-            }
+          this,
+          "dieta-anoMes-saveJsonLines-job", {
+            lambdaFunction: dietaAnoMesSaveJsonLinesFn,
+            payload: TaskInput.fromJsonPathAt('$.Payload')
+          }
         ))
         .branch(new LambdaInvoke(
           this,
