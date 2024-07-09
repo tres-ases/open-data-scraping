@@ -81,14 +81,14 @@ export class SenadoClStack extends Stack {
         .branch(new LambdaInvoke(
             this,
             "dieta-anoMes-saveJsonLines-job", {
-                lambdaFunction: dietaAnoMesGetFn,
+                lambdaFunction: dietaAnoMesSaveJsonLinesFn,
                 payload: TaskInput.fromJsonPathAt('$.Payload')
             }
         ))
         .branch(new LambdaInvoke(
           this,
           "dieta-anoMes-saveJsonStructured-job", {
-            lambdaFunction: dietaAnoMesGetFn,
+            lambdaFunction: dietaAnoMesSaveJsonStructuredFn,
             payload: TaskInput.fromJsonPathAt('$.Payload')
           }
         ))
