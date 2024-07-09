@@ -5,7 +5,7 @@ import {
   aws_lambda_nodejs as nodejs,
 } from 'aws-cdk-lib';
 import {Architecture, Code, LayerVersion, Runtime} from 'aws-cdk-lib/aws-lambda';
-import {DefinitionBody, Parallel, StateMachine, Succeed} from 'aws-cdk-lib/aws-stepfunctions';
+import {DefinitionBody, Parallel, StateMachine, TaskInput} from 'aws-cdk-lib/aws-stepfunctions';
 import {LambdaInvoke} from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
@@ -44,7 +44,8 @@ export class SenadoClStack extends Stack {
         code: Code.fromAsset('../packages/Dieta-AnoMes/dist'),
         handler: 'dieta-anomes.saveAnosJsonStructured',
         runtime: Runtime.NODEJS_20_X,
-        layers: [commonsLy, scraperLy]
+        layers: [commonsLy],
+        timeout: Duration.seconds(30)
       }
     );
     openDataBucket.grantWrite(dietaAnoMesSaveJsonStructuredFn);
@@ -53,7 +54,8 @@ export class SenadoClStack extends Stack {
         code: Code.fromAsset('../packages/Dieta-AnoMes/dist'),
         handler: 'dieta-anomes.saveAnosJsonLines',
         runtime: Runtime.NODEJS_20_X,
-        layers: [commonsLy, scraperLy]
+        layers: [commonsLy],
+        timeout: Duration.seconds(30)
       }
     );
     openDataBucket.grantWrite(dietaAnoMesSaveJsonLinesFn);
@@ -62,7 +64,8 @@ export class SenadoClStack extends Stack {
         code: Code.fromAsset('../packages/Dieta-AnoMes/dist'),
         handler: 'dieta-anomes.getAnosHandler',
         runtime: Runtime.NODEJS_20_X,
-        layers: [commonsLy, scraperLy]
+        layers: [commonsLy, scraperLy],
+        timeout: Duration.seconds(90)
       }
     );
 
@@ -76,15 +79,17 @@ export class SenadoClStack extends Stack {
     const stateMachineDefinition = dietaAnoMesJob
       .next(new Parallel(this, 'dieta-anoMes-save')
         .branch(new LambdaInvoke(
-          this,
-          "dieta-anoMes-saveJsonLines-job", {
-            lambdaFunction: dietaAnoMesGetFn,
-          }
+            this,
+            "dieta-anoMes-saveJsonLines-job", {
+                lambdaFunction: dietaAnoMesGetFn,
+                payload: TaskInput.fromJsonPathAt('$.Payload')
+            }
         ))
         .branch(new LambdaInvoke(
           this,
           "dieta-anoMes-saveJsonStructured-job", {
             lambdaFunction: dietaAnoMesGetFn,
+            payload: TaskInput.fromJsonPathAt('$.Payload')
           }
         ))
       );
