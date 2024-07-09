@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    "./dieta": "./dist/dieta/index.js"
+    ".": "./dist/main/index.js",
+    "./dieta": "./dist/dieta/index.js",
+    "./dieta/model": "./dist/dieta/model.js"
   },
   "scripts": {
     "check-types": "tsc --noEmit",

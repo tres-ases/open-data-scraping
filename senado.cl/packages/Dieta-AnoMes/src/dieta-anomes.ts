@@ -1,11 +1,32 @@
 import {Handler} from 'aws-lambda';
-import {getAnos, getMeses} from "./dieta-anomes.service";
+import {getAnos, saveJsonLines, saveJsonStructured} from "./dieta-anomes.service";
+import {Ano} from "@senado-cl/commons/dieta/model";
 
-export const handler: Handler<undefined> = async (event, context) => {
+export const getAnosHandler: Handler<undefined> = async (event, context) => {
   try {
     const anos = await getAnos();
     console.log('anos', anos);
     return anos;
+  } catch (err) {
+    console.log(err);
+    return "ERROR"
+  }
+};
+
+export const saveAnosJsonStructured: Handler<Ano[]> = async (event, context) => {
+  try {
+    await saveJsonStructured(event);
+    return;
+  } catch (err) {
+    console.log(err);
+    return "ERROR"
+  }
+};
+
+export const saveAnosJsonLines: Handler<Ano[]> = async (event, context) => {
+  try {
+    await saveJsonLines(event);
+    return;
   } catch (err) {
     console.log(err);
     return "ERROR"

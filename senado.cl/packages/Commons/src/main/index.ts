@@ -3,5 +3,5 @@ import functions from "./functions";
 
 export default {
   Constants: constants,
-  Fn: functions,
+  Fn: functions
 }
