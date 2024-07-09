@@ -1,4 +1,4 @@
-const DIETA_S3_BASE_BUCKET_KEY = '/Dieta';
+const DIETA_S3_BASE_BUCKET_KEY = 'Dieta';
 
 export default {
   S3_BUCKET_KEY_ANO_MES: `${DIETA_S3_BASE_BUCKET_KEY}/AnoMes`,
