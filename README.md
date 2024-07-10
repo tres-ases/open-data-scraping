@@ -10,20 +10,23 @@ Corresponde a la información obtenida desde el sitio ```https://www.senado.cl/`
 #### Dieta
 La dieta es la remuneración mensual que percibe el Senador durante el periodo para el cual ha sido elegido y, de acuerdo al artículo 62 de la Constitución Política de la República, equivale a la de un Ministro de Estado.
 
+Se extrae desde la página ```https://tramitacion.senado.cl/appsenado/index.php?mo=transparencia&ac=informeTransparencia&tipo=7```
+
 La extracción se realiza en 2 etapas:
 1. Descarga de la combinación de años y meses disponibles con la información de las dietas parlamentarias
 2. Descarga del detalle de los montos de las dietas para cada uno de los parlamentarios
 
 La información de la Dieta se almacenará en las siguientes carpetas:
-* ```/dieta```
-  * ```/ano-mes```
-    * ```/json_structured```
-    * ```/json_lines```
+* ```Dieta```
+  * ```/AnoMes```
+    * ```/JsonStructured/data.json```
+    * ```/JsonLines/data.jsonl```
   * ```/detalle```
-    * ```/json_structured```
-    * ```/json_lines```
+    * ```/JsonStructured/ano=#/mes=#/data.json```
+    * ```/JsonLines/ano=#/mes=#/data.jsonl```
 
 ##### Año - Mes
-La información es extraída desde la página ```https://tramitacion.senado.cl/appsenado/index.php?mo=transparencia&ac=informeTransparencia&tipo=7``` recorriendo el listado de años disponibles y obteniendo todos los meses que se encuentran disponibles.
+Se recorre el listado de años disponibles y obtiene todos los meses que se encuentran disponibles para dicho año.
 
-
+##### Detalle
+Se recorre el listado de 

@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 
 function flattenObject(obj: any) {
   let toReturn:{[k: string]: any} = {};
@@ -19,6 +20,10 @@ function flattenObject(obj: any) {
   return toReturn;
 }
 
+export function cleanNumber(text: string): number {
+  return +_.trim(text.replace(/[$,.]/g, ""));
+}
+
 export default {
-  flattenObject
+  flattenObject, cleanNumber
 }

@@ -69,6 +69,16 @@ export class SenadoClStack extends Stack {
       }
     );
 
+    const dietaDietaGetSaveFn = new nodejs.NodejsFunction(this, 'dieta-detalle-getSaveDietas-fn', {
+        code: Code.fromAsset('../packages/Dieta-Detalle/dist'),
+        handler: 'dieta-detalle.getSaveDietasHandler',
+        runtime: Runtime.NODEJS_20_X,
+        layers: [commonsLy, scraperLy],
+        timeout: Duration.seconds(30)
+      }
+    );
+    openDataBucket.grantWrite(dietaDietaGetSaveFn);
+
     const dietaAnoMesJob = new LambdaInvoke(
       this,
       "dieta-anomes-get-job", {

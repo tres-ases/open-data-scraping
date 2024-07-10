@@ -18,7 +18,7 @@ export const saveJsonStructured = async (anos: Ano[]) => {
 export const saveJsonLines = async (anos: Ano[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: Commons.Constants.S3_BUCKET_SENADO,
-    Key: `${Dieta.Constants.S3_BUCKET_KEY_ANO_MES}/JsonStructured/data.jsonl`,
+    Key: `${Dieta.Constants.S3_BUCKET_KEY_ANO_MES}/JsonLines/data.jsonl`,
     Body: anos.map(
       a => Dieta.Fn.flattenAno(a)
     ).join('\n')

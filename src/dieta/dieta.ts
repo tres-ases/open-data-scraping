@@ -1,4 +1,3 @@
-import puppeteer from 'puppeteer';
 import {existsFile, readJson, saveJson} from "../utils.service";
 import {DIETA_ANO_MES_PATH, DIETA_LIST_PATH, DIETA_URL} from "../config";
 import {Resultados} from "../commons/commons.model";
@@ -8,12 +7,6 @@ import {getDietas} from "./dieta.service";
 (async () => {
   const anos = await readJson<Ano[]>(DIETA_ANO_MES_PATH);
 
-  // Lanzar un navegador Chromium sin interfaz gráfica
-  //const browser = await puppeteer.launch({headless: 'new'});
-  const browser = await puppeteer.launch({headless: 'new'});
-
-  // Abrir la página web del Senado
-  const page = await browser.newPage();
   await page.goto(DIETA_URL);
 
   const resultados: Resultados = {
