@@ -147,7 +147,7 @@ export class SenadoClStack extends Stack {
       ),
       stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.minutes(5),
-      stateMachineName: "Dieta-Detalle",
+      stateMachineName: "Dieta-Detalle-2",
     });
   }
 }
