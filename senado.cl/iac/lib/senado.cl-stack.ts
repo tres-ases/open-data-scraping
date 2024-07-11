@@ -136,6 +136,7 @@ export class SenadoClStack extends Stack {
       definitionBody: DefinitionBody.fromChainable(
         stateMachineDefinition
       ),
+      stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.minutes(5),
       stateMachineName: "Dieta-AnoMes",
     });
@@ -144,7 +145,7 @@ export class SenadoClStack extends Stack {
       definitionBody: DefinitionBody.fromChainable(
         stateMachineDefinition2
       ),
-      stateMachineType: StateMachineType.EXPRESS,
+      stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.minutes(5),
       stateMachineName: "Dieta-Detalle",
     });
