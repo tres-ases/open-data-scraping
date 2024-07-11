@@ -132,16 +132,16 @@ export class SenadoClStack extends Stack {
         ))
       );
 
-    const stateMachine = new StateMachine(this, "dieta-anoMes", {
+    const stateMachine = new StateMachine(this, "dieta-anoMes-2", {
       definitionBody: DefinitionBody.fromChainable(
         stateMachineDefinition
       ),
       stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.minutes(5),
-      stateMachineName: "Dieta-AnoMes",
+      stateMachineName: "Dieta-AnoMes-2",
     });
 
-    const stateMachine2 = new StateMachine(this, "dieta-detalle", {
+    const stateMachine2 = new StateMachine(this, "dieta-detalle-2", {
       definitionBody: DefinitionBody.fromChainable(
         stateMachineDefinition2
       ),
