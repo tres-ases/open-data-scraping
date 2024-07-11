@@ -1,6 +1,6 @@
 import {aws_lambda_nodejs as nodejs, Duration, Stack, StackProps,} from 'aws-cdk-lib';
 import {Architecture, Code, LayerVersion, Runtime} from 'aws-cdk-lib/aws-lambda';
-import {DefinitionBody, Map, Parallel, StateMachine, StateMachineType, TaskInput} from 'aws-cdk-lib/aws-stepfunctions';
+import {DefinitionBody, JsonPath, Map, Parallel, StateMachine, StateMachineType, TaskInput} from 'aws-cdk-lib/aws-stepfunctions';
 import {LambdaInvoke} from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
@@ -94,13 +94,13 @@ export class SenadoClStack extends Stack {
     const stateMachineDefinition2 = dietaDetalleMesAnoArrayJob
       .next(
         new Map(this, 'dieta-detalle-getSave-map', {
-          maxConcurrency: 12
+          maxConcurrency: 12,
+          itemsPath: JsonPath.stringAt('$.Payload')
         })
           .itemProcessor(new LambdaInvoke(
               this,
               "dieta-detalle-getSave-job", {
-                lambdaFunction: dietaDetalleGetSaveFn,
-                payload: TaskInput.fromJsonPathAt('$.Payload')
+                lambdaFunction: dietaDetalleGetSaveFn
               }
             )
           )
