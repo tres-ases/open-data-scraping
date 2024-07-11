@@ -5,7 +5,7 @@ import {
   aws_lambda_nodejs as nodejs,
 } from 'aws-cdk-lib';
 import {Architecture, Code, LayerVersion, Runtime} from 'aws-cdk-lib/aws-lambda';
-import {DefinitionBody, Parallel, StateMachine, TaskInput} from 'aws-cdk-lib/aws-stepfunctions';
+import {DefinitionBody, Parallel, Map, StateMachine, TaskInput} from 'aws-cdk-lib/aws-stepfunctions';
 import {LambdaInvoke} from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
@@ -69,7 +69,7 @@ export class SenadoClStack extends Stack {
       }
     );
 
-    const dietaDietaGetSaveFn = new nodejs.NodejsFunction(this, 'dieta-detalle-getSaveDietas-fn', {
+    const dietaDetalleGetSaveFn = new nodejs.NodejsFunction(this, 'dieta-detalle-getSaveDietas-fn', {
         code: Code.fromAsset('../packages/Dieta-Detalle/dist'),
         handler: 'dieta-detalle.getSaveDietasHandler',
         runtime: Runtime.NODEJS_20_X,
@@ -77,16 +77,46 @@ export class SenadoClStack extends Stack {
         timeout: Duration.seconds(30)
       }
     );
-    openDataBucket.grantWrite(dietaDietaGetSaveFn);
+    openDataBucket.grantWrite(dietaDetalleGetSaveFn);
 
-    const dietaAnoMesJob = new LambdaInvoke(
+    const dietaDetalleMesAnoArrayFn = new nodejs.NodejsFunction(this, 'dieta-detalle-getSaveDietas-fn', {
+        code: Code.fromAsset('../packages/Dieta-Detalle/dist'),
+        handler: 'dieta-detalle.mapMesAnoArrayDietaHandler',
+        runtime: Runtime.NODEJS_20_X,
+        layers: [commonsLy, scraperLy],
+        timeout: Duration.seconds(30)
+      }
+    );
+    openDataBucket.grantRead(dietaDetalleMesAnoArrayFn);
+
+    const dietaDetalleMesAnoArrayJob = new LambdaInvoke(
+      this,
+      "dieta-detalle-anomes-array-job", {
+        lambdaFunction: dietaDetalleMesAnoArrayFn,
+      }
+    );
+
+    const stateMachineDefinition2 = dietaDetalleMesAnoArrayJob
+      .next(new Map(this, 'dieta-detalle-getSave-map', {})
+        .itemProcessor(new LambdaInvoke(
+            this,
+            "dieta-detalle-getSave-job", {
+              lambdaFunction: dietaDetalleGetSaveFn,
+              payload: TaskInput.fromJsonPathAt('$.Payload')
+            }
+          )
+        )
+      )
+    ;
+
+    const dietaAnoMesGetJob = new LambdaInvoke(
       this,
       "dieta-anomes-get-job", {
         lambdaFunction: dietaAnoMesGetFn,
       }
     );
 
-    const stateMachineDefinition = dietaAnoMesJob
+    const stateMachineDefinition = dietaAnoMesGetJob
       .next(new Parallel(this, 'dieta-anoMes-save')
         .branch(new LambdaInvoke(
           this,
