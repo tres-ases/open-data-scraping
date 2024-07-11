@@ -1,11 +1,6 @@
-import {
-  Duration,
-  Stack,
-  StackProps,
-  aws_lambda_nodejs as nodejs,
-} from 'aws-cdk-lib';
+import {aws_lambda_nodejs as nodejs, Duration, Stack, StackProps,} from 'aws-cdk-lib';
 import {Architecture, Code, LayerVersion, Runtime} from 'aws-cdk-lib/aws-lambda';
-import {DefinitionBody, Parallel, Map, StateMachine, TaskInput} from 'aws-cdk-lib/aws-stepfunctions';
+import {DefinitionBody, Map, Parallel, StateMachine, StateMachineType, TaskInput} from 'aws-cdk-lib/aws-stepfunctions';
 import {LambdaInvoke} from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
@@ -97,15 +92,18 @@ export class SenadoClStack extends Stack {
     );
 
     const stateMachineDefinition2 = dietaDetalleMesAnoArrayJob
-      .next(new Map(this, 'dieta-detalle-getSave-map', {})
-        .itemProcessor(new LambdaInvoke(
-            this,
-            "dieta-detalle-getSave-job", {
-              lambdaFunction: dietaDetalleGetSaveFn,
-              payload: TaskInput.fromJsonPathAt('$.Payload')
-            }
+      .next(
+        new Map(this, 'dieta-detalle-getSave-map', {
+          maxConcurrency: 12
+        })
+          .itemProcessor(new LambdaInvoke(
+              this,
+              "dieta-detalle-getSave-job", {
+                lambdaFunction: dietaDetalleGetSaveFn,
+                payload: TaskInput.fromJsonPathAt('$.Payload')
+              }
+            )
           )
-        )
       )
     ;
 
@@ -140,6 +138,15 @@ export class SenadoClStack extends Stack {
       ),
       timeout: Duration.minutes(5),
       stateMachineName: "Dieta-AnoMes",
+    });
+
+    const stateMachine2 = new StateMachine(this, "dieta-detalle", {
+      definitionBody: DefinitionBody.fromChainable(
+        stateMachineDefinition2
+      ),
+      stateMachineType: StateMachineType.EXPRESS,
+      timeout: Duration.minutes(5),
+      stateMachineName: "Dieta-Detalle",
     });
   }
 }
