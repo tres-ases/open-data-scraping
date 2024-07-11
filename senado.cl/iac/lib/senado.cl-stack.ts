@@ -74,7 +74,7 @@ export class SenadoClStack extends Stack {
     );
     openDataBucket.grantWrite(dietaDetalleGetSaveFn);
 
-    const dietaDetalleMesAnoArrayFn = new nodejs.NodejsFunction(this, 'dieta-detalle-getSaveDietas-fn', {
+    const dietaDetalleMesAnoArrayFn = new nodejs.NodejsFunction(this, 'dieta-detalle-mapMesAnoArrayDieta-fn', {
         code: Code.fromAsset('../packages/Dieta-Detalle/dist'),
         handler: 'dieta-detalle.mapMesAnoArrayDietaHandler',
         runtime: Runtime.NODEJS_20_X,
