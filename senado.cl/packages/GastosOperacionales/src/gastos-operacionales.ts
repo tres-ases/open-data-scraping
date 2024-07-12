@@ -18,5 +18,5 @@ export const mergeAnoMesParlIdArrayHandler: Handler<AnoMesParl[][]> = async (ano
 };
 
 export const getSaveDataHandler: Handler<AnoMesParl> = async ({ano, mes, parlId}) => {
-  return await getSaveData(ano, mes, parlId);
+  await getSaveData(ano, mes, parlId);
 }

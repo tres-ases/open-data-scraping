@@ -62,7 +62,8 @@ export default class GastosOperacionales extends NestedStack {
           .itemProcessor(new LambdaInvoke(
               this,
               `${prefix}-getAnoMesParlIdArray-job`, {
-                lambdaFunction: getAnoMesParlIdArrayFn
+                lambdaFunction: getAnoMesParlIdArrayFn,
+                outputPath: JsonPath.stringAt('$.Payload')
               }
             )
           )
