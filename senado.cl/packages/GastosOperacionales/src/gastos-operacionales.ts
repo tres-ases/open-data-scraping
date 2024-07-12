@@ -13,4 +13,5 @@ export const getAnoMesParlIdArrayHandler: Handler<AnoMes[]> = async (anoMesArray
 
 export const getSaveDataHandler: Handler<AnoMesParl> = async ({ano, mes, parlId}) => {
   await getSaveData(ano, mes, parlId);
+  return 0;
 }

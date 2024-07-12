@@ -76,7 +76,7 @@ export default class GastosOperacionales extends NestedStack {
         stateMachineDefinition
       ),
       stateMachineType: StateMachineType.STANDARD,
-      timeout: Duration.minutes(5),
+      timeout: Duration.minutes(10),
       stateMachineName: `${prefix}-sm`,
     });
   }
