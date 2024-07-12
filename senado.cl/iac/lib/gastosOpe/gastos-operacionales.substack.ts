@@ -53,13 +53,13 @@ export default class GastosOperacionales extends NestedStack {
           this,
           `${prefix}-getAnoMesParlIdArray-job`, {
             lambdaFunction: getAnoMesParlIdArrayFn,
-            //outputPath: JsonPath.stringAt('$.Payload')
+            inputPath: JsonPath.stringAt('$.Payload')
           }
         )
       )
       .next(
         new Map(this, `${prefix}-getAnoMesParlIdArray-map`, {
-          maxConcurrency: 12,
+          maxConcurrency: 50,
           itemsPath: JsonPath.stringAt('$.Payload')
         })
           .itemProcessor(new LambdaInvoke(
@@ -76,7 +76,7 @@ export default class GastosOperacionales extends NestedStack {
         stateMachineDefinition
       ),
       stateMachineType: StateMachineType.STANDARD,
-      timeout: Duration.minutes(20),
+      timeout: Duration.minutes(5),
       stateMachineName: `${prefix}-sm`,
     });
   }
