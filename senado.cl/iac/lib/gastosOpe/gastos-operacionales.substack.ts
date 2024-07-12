@@ -49,22 +49,24 @@ export default class GastosOperacionales extends NestedStack {
 
     const stateMachineDefinition = getAnoMesParlIdArrayJob
       .next(
+        new LambdaInvoke(
+          this,
+          `${prefix}-getAnoMesParlIdArray-job`, {
+            lambdaFunction: getAnoMesParlIdArrayFn,
+            //outputPath: JsonPath.stringAt('$.Payload')
+          }
+        )
+      )
+      .next(
         new Map(this, `${prefix}-getAnoMesParlIdArray-map`, {
-          maxConcurrency: 20,
+          maxConcurrency: 12,
           itemsPath: JsonPath.stringAt('$.Payload')
         })
           .itemProcessor(new LambdaInvoke(
               this,
-              `${prefix}-getAnoMesParlIdArray-job`, {
-                lambdaFunction: getAnoMesParlIdArrayFn,
-                outputPath: JsonPath.stringAt('$.Payload')
+              `${prefix}-getSaveData-job`, {
+                lambdaFunction: getSaveDataFn
               }
-            ).next(new LambdaInvoke(
-                this,
-                `${prefix}-getSaveData-job`, {
-                  lambdaFunction: getSaveDataFn
-                }
-              )
             )
           )
       );
