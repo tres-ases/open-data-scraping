@@ -1,4 +1,4 @@
-import {getAnoMesParlIdArray, getData} from "./gastos-operacionales.service";
+import {getAnoMesParlIdArray, getSaveData} from "./gastos-operacionales.service";
 import {mockClient} from "aws-sdk-client-mock";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 
@@ -23,7 +23,7 @@ describe('Obtener y almacenar data parlamentario', () => {
   });
 
   test('Debe obtener y almacenar el detalle', async () => {
-    const result = await getData(2024, 4, 5);
+    const result = await getSaveData(2024, 4, 5);
 
     expect(result.length).toBeGreaterThanOrEqual(24);
   });

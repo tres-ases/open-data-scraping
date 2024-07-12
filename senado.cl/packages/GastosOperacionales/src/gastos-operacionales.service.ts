@@ -59,7 +59,7 @@ export const getAnoMesParlIdArray = async (anoMin: number, mesMin: number) => {
   return anoMesParlIdArray;
 };
 
-export const getData = async (ano: number, mes: number, parlId: number) => {
+export const getSaveData = async (ano: number, mes: number, parlId: number) => {
   const gastosOperacionales: GastosOperacionales[] = [];
 
   const page = await axios.get(anoMesParUrl(ano, mes, parlId));
