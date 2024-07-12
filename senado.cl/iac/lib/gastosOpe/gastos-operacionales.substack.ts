@@ -59,20 +59,13 @@ export default class GastosOperacionales extends NestedStack {
                 lambdaFunction: getAnoMesParlIdArrayFn,
                 outputPath: JsonPath.stringAt('$.Payload')
               }
-            )
-          )
-          .next(
-            new Map(this, `${prefix}-getSaveData-map`, {
-              maxConcurrency: 30,
-              itemsPath: JsonPath.stringAt('$.Payload')
-            })
-              .itemProcessor(new LambdaInvoke(
-                  this,
-                  `${prefix}-getSaveData-job`, {
-                    lambdaFunction: getSaveDataFn
-                  }
-                )
+            ).next(new LambdaInvoke(
+                this,
+                `${prefix}-getSaveData-job`, {
+                  lambdaFunction: getSaveDataFn
+                }
               )
+            )
           )
       );
 
