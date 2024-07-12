@@ -4,7 +4,7 @@ import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
 import DietaAnoMesSubstack from "./dieta/dieta-anomes.substack";
 import DietaDetalleSubStack from "./dieta/dieta-detalle.substack";
-import GastosOperacionalesSubstack from "./dieta/gastos-operacionales.substack";
+import GastosOperacionalesSubstack from "./gastosOpe/gastos-operacionales.substack";
 
 export class SenadoClStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

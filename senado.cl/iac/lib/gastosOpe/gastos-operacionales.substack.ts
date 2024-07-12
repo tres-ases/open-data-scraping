@@ -20,9 +20,22 @@ export default class GastosOperacionales extends NestedStack {
     super(scope, id, props);
     const {bucket, commonsLy, scraperLy} = props;
 
-    const getAnoMesParlIdArrayFn = new SenadoNodejsFunction(this, `${prefix}-getSaveList`, {
+    const getAnoMesArrayGroupsFn = new SenadoNodejsFunction(this, `${prefix}-getAnoMesArrayGroups`, {
+      pckName,
+      handler: 'gastos-operacionales.getAnoMesArrayGroupsHandler',
+      layers: [commonsLy, scraperLy]
+    });
+
+    const getAnoMesParlIdArrayFn = new SenadoNodejsFunction(this, `${prefix}-getAnoMesParlIdArray`, {
       pckName,
       handler: 'gastos-operacionales.getAnoMesParlIdArrayHandler',
+      layers: [commonsLy, scraperLy],
+      timeout: 180
+    });
+
+    const mergeAnoMesParlIdArrayFn = new SenadoNodejsFunction(this, `${prefix}-getAnoMesParlIdArray`, {
+      pckName,
+      handler: 'gastos-operacionales.mergeAnoMesParlIdArrayHandler',
       layers: [commonsLy, scraperLy]
     });
 
@@ -36,20 +49,39 @@ export default class GastosOperacionales extends NestedStack {
     const getAnoMesParlIdArrayJob = new LambdaInvoke(
       this,
       `${prefix}-anoMesParlIdArray-job`, {
-        lambdaFunction: getAnoMesParlIdArrayFn,
+        lambdaFunction: getAnoMesArrayGroupsFn,
       }
     );
 
     const stateMachineDefinition = getAnoMesParlIdArrayJob
       .next(
+        new Map(this, `${prefix}-getAnoMesParlIdArray-map`, {
+          maxConcurrency: 5,
+          itemsPath: JsonPath.stringAt('$.Payload')
+        })
+          .itemProcessor(new LambdaInvoke(
+              this,
+              `${prefix}-getAnoMesParlIdArray-job`, {
+                lambdaFunction: getAnoMesParlIdArrayFn
+              }
+            )
+          )
+      ).next(
+        new LambdaInvoke(
+          this,
+          `${prefix}-mergeAnoMesParlIdArray-job`, {
+            lambdaFunction: mergeAnoMesParlIdArrayFn
+          }
+        )
+      ).next(
         new Map(this, `${prefix}-getSave-map`, {
           maxConcurrency: 12,
           itemsPath: JsonPath.stringAt('$.Payload')
         })
           .itemProcessor(new LambdaInvoke(
               this,
-              `${prefix}-getSave-job`, {
-                lambdaFunction: getSaveDataFn
+              `${prefix}-getAnoMesParlIdArray-job`, {
+                lambdaFunction: getAnoMesParlIdArrayFn
               }
             )
           )

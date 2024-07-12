@@ -5,6 +5,7 @@ import Commons from "@senado-cl/commons";
 import {AnoMesParl} from "./gastos-operacionales.model";
 import {GastosOperacionales} from "./gastos-operacionales.model";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {AnoMes} from "@senado-cl/commons/model";
 
 const s3Client = new S3Client({});
 
@@ -49,10 +50,22 @@ const addParlIdToAnoMesArray = async (ano: number, mes: number): Promise<AnoMesP
     .filter(({parlId}) => parlId > 0);
 }
 
-export const getAnoMesParlIdArray = async (anoMin: number, mesMin: number) => {
+function makeGroups(anoMesArray: AnoMes[], size: number): AnoMes[][] {
+  const grupos: AnoMes[][] = [];
+  for (let i = 0; i < anoMesArray.length; i += size) {
+    grupos.push(anoMesArray.slice(i, i + size));
+  }
+  return grupos;
+}
+
+export const getAnoMesArrayGroups = async (anoMin: number, mesMin: number) => {
+  return makeGroups(getAnoMesArray(anoMin, mesMin), 12);
+};
+
+export const getAnoMesParlIdArray = async (anoMesArray: AnoMes[]) => {
   const anoMesParlIdArray: AnoMesParl[] = [];
 
-  for (const {ano, mes} of getAnoMesArray(anoMin, mesMin)) {
+  for (const {ano, mes} of anoMesArray) {
     anoMesParlIdArray.push(...await addParlIdToAnoMesArray(ano, mes));
   }
 
