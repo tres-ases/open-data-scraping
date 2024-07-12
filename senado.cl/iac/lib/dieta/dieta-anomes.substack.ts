@@ -1,4 +1,4 @@
-import {aws_lambda_nodejs as nodejs, Duration, NestedStack, NestedStackProps} from "aws-cdk-lib";
+import {aws_lambda_nodejs as nodejs, CfnElement, Duration, NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Code, LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda";
 import {Construct} from "constructs";
@@ -17,7 +17,7 @@ const pckName = 'Dieta-AnoMes';
 
 export default class DietaAnoMes extends NestedStack {
   constructor(scope: Construct, id: string, props: Props) {
-    super(scope, id, {...props, parameters: {id}});
+    super(scope, id, props);
     const {bucket, commonsLy, scraperLy} = props;
 
     const saveJsonFn = new SenadoNodejsFunction(this, `${prefix}-saveJson`, {
@@ -74,5 +74,12 @@ export default class DietaAnoMes extends NestedStack {
       timeout: Duration.minutes(5),
       stateMachineName: `${prefix}-sm`,
     });
+  }
+
+  getLogicalId(element: CfnElement): string {
+    if (element.node.id.includes('NestedStackResource')) {
+      return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
+    }
+    return super.getLogicalId(element)
   }
 }
