@@ -34,8 +34,8 @@ const saveJsonLines = async (ano: number, mes: number, parlId: number, gastos: G
   }));
 }
 
-const getAnoMesArray = (ano: number, mes: number) => {
-  return Commons.Fn.getAnoMesArray(ano, mes);
+export const getAnoMesArray = (ano?: number) => {
+  return Commons.Fn.getAnoMesArray(ano);
 }
 
 const addParlIdToAnoMesArray = async (ano: number, mes: number): Promise<AnoMesParl[]> => {
@@ -49,18 +49,6 @@ const addParlIdToAnoMesArray = async (ano: number, mes: number): Promise<AnoMesP
     )
     .filter(({parlId}) => parlId > 0);
 }
-
-function makeGroups(anoMesArray: AnoMes[], size: number): AnoMes[][] {
-  const grupos: AnoMes[][] = [];
-  for (let i = 0; i < anoMesArray.length; i += size) {
-    grupos.push(anoMesArray.slice(i, i + size));
-  }
-  return grupos;
-}
-
-export const getAnoMesArrayGroups = async (anoMin: number, mesMin: number) => {
-  return makeGroups(getAnoMesArray(anoMin, mesMin), 12);
-};
 
 export const getAnoMesParlIdArray = async (anoMesArray: AnoMes[]) => {
   const anoMesParlIdArray: AnoMesParl[] = [];

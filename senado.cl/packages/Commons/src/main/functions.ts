@@ -5,19 +5,39 @@ import {AnoMes} from "./model";
 
 const s3Client = new S3Client({});
 
-function getAnoMesArray(minAno: number, minMes: number): AnoMes[] {
+function last6months(): AnoMes[] {
   const anoMesArray: AnoMes[] = [];
 
-  const currentDate = new Date();
-  const currentYear: number = currentDate.getFullYear();
-  const currentMonth: number = currentDate.getMonth() + 1;
+  const fechaActual = new Date();
+  for (let i = 0; i < 6; i++) {
+    const nuevaFecha = new Date(fechaActual);
+    nuevaFecha.setMonth(fechaActual.getMonth() - i);
 
-  for (let ano = minAno; ano <= currentYear; ano++) {
-    const mesInicio = (ano === minAno) ? minMes : 1;
-    const mesFim = (ano === currentYear) ? currentMonth : 12;
-    for (let mes = mesInicio; mes <= mesFim; mes++) {
-      anoMesArray.push({ano, mes});
-    }
+    anoMesArray.push({
+      ano: nuevaFecha.getFullYear(),
+      mes: (nuevaFecha.getMonth() + 1)
+    });
+  }
+
+  return anoMesArray;
+}
+
+function getAnoMesArray(ano?: number): AnoMes[] {
+
+  if(ano === undefined) return last6months();
+
+  const fechaActual = new Date();
+  const anoActual: number = fechaActual.getFullYear();
+
+  if(ano > anoActual || ano < 2012) return [];
+
+  let mesFin = 12;
+  if(anoActual === ano) mesFin = fechaActual.getMonth() + 1;
+
+  const anoMesArray: AnoMes[] = [];
+
+  for (let mes = 1; mes <= mesFin; mes++) {
+    anoMesArray.push({ano, mes});
   }
 
   return anoMesArray;

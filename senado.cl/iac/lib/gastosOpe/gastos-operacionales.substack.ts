@@ -33,12 +33,6 @@ export default class GastosOperacionales extends NestedStack {
       timeout: 180
     });
 
-    const mergeAnoMesParlIdArrayFn = new SenadoNodejsFunction(this, `${prefix}-mergeAnoMesParlIdArray`, {
-      pckName,
-      handler: 'gastos-operacionales.mergeAnoMesParlIdArrayHandler',
-      layers: [commonsLy, scraperLy]
-    });
-
     const getSaveDataFn = new SenadoNodejsFunction(this, `${prefix}-getSaveData`, {
       pckName,
       handler: 'gastos-operacionales.getSaveDataHandler',
@@ -67,24 +61,18 @@ export default class GastosOperacionales extends NestedStack {
               }
             )
           )
-      ).next(
-        new LambdaInvoke(
-          this,
-          `${prefix}-mergeAnoMesParlIdArray-job`, {
-            lambdaFunction: mergeAnoMesParlIdArrayFn
-          }
-        )
-      ).next(
-        new Map(this, `${prefix}-getSaveData-map`, {
-          maxConcurrency: 30,
-          itemsPath: JsonPath.stringAt('$.Payload')
-        })
-          .itemProcessor(new LambdaInvoke(
-              this,
-              `${prefix}-getSaveData-job`, {
-                lambdaFunction: getSaveDataFn
-              }
-            )
+          .next(
+            new Map(this, `${prefix}-getSaveData-map`, {
+              maxConcurrency: 30,
+              itemsPath: JsonPath.stringAt('$.Payload')
+            })
+              .itemProcessor(new LambdaInvoke(
+                  this,
+                  `${prefix}-getSaveData-job`, {
+                    lambdaFunction: getSaveDataFn
+                  }
+                )
+              )
           )
       );
 
