@@ -1,4 +1,4 @@
-import {Stack, StackProps,} from 'aws-cdk-lib';
+import {CfnElement, Stack, StackProps,} from 'aws-cdk-lib';
 import {Architecture, Code, LayerVersion, Runtime} from 'aws-cdk-lib/aws-lambda';
 import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
@@ -36,19 +36,26 @@ export class SenadoClStack extends Stack {
       ]
     });
 
-    const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'sen-dietaAnoMes-subStack', {
-      bucket: openDataBucket,
-      commonsLy, scraperLy
-    });
+    //const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'sen-dietaAnoMes-subStack', {
+    //  bucket: openDataBucket,
+    //  commonsLy, scraperLy
+    //});
+//
+    //const dietaDetalleStack = new DietaDetalleSubStack(this, 'sen-dietaDetalle-subStack', {
+    //  bucket: openDataBucket,
+    //  commonsLy, scraperLy
+    //});
+//
+    //const gastosOpeStack = new GastosOperacionalesSubstack(this, 'sen-gastosOpe-subStack', {
+    //  bucket: openDataBucket,
+    //  commonsLy, scraperLy
+    //});
+  }
 
-    const dietaDetalleStack = new DietaDetalleSubStack(this, 'sen-dietaDetalle-subStack', {
-      bucket: openDataBucket,
-      commonsLy, scraperLy
-    });
-
-    const gastosOpeStack = new GastosOperacionalesSubstack(this, 'sen-gastosOpe-subStack', {
-      bucket: openDataBucket,
-      commonsLy, scraperLy
-    });
+  getLogicalId(element: CfnElement): string {
+    if (element.node.id.includes('NestedStackResource')) {
+      return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
+    }
+    return super.getLogicalId(element)
   }
 }
