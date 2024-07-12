@@ -36,20 +36,20 @@ export class SenadoClStack extends Stack {
       ]
     });
 
-    //const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'dietaAnoMes', {
-    //  bucket: openDataBucket,
-    //  commonsLy, scraperLy
-    //});
-//
-    //const dietaDetalleStack = new DietaDetalleSubStack(this, 'dietaDetalle', {
-    //  bucket: openDataBucket,
-    //  commonsLy, scraperLy
-    //});
-//
-    //const gastosOpeStack = new GastosOperacionalesSubstack(this, 'gastosOpe', {
-    //  bucket: openDataBucket,
-    //  commonsLy, scraperLy
-    //});
+    const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'dietaAnoMes', {
+      bucket: openDataBucket,
+      commonsLy, scraperLy
+    });
+
+    const dietaDetalleStack = new DietaDetalleSubStack(this, 'dietaDetalle', {
+      bucket: openDataBucket,
+      commonsLy, scraperLy
+    });
+
+    const gastosOpeStack = new GastosOperacionalesSubstack(this, 'gastosOpe', {
+      bucket: openDataBucket,
+      commonsLy, scraperLy
+    });
   }
 
   getLogicalId(element: CfnElement): string {
