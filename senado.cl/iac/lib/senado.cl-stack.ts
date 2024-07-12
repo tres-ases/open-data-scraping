@@ -36,17 +36,17 @@ export class SenadoClStack extends Stack {
       ]
     });
 
-    const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'senadoClDietaAnoMesSubStack', {
+    const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'senadoCl-dietaAnoMesSubStack', {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
 
-    const dietaDetalleStack = new DietaDetalleSubStack(this, 'senadoClDietaDetalleSubStack', {
+    const dietaDetalleStack = new DietaDetalleSubStack(this, 'senadoCl-dietaDetalleSubStack', {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
 
-    const gastosOpeStack = new GastosOperacionalesSubstack(this, 'senadoClGastosOpeSubStack', {
+    const gastosOpeStack = new GastosOperacionalesSubstack(this, 'senadoCl-gastosOpeSubStack', {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
@@ -54,7 +54,7 @@ export class SenadoClStack extends Stack {
 
   getLogicalId(element: CfnElement): string {
     if (element.node.id.includes('NestedStackResource')) {
-      return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
+      return /([a-zA-Z0-9\-]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
     }
     return super.getLogicalId(element)
   }
