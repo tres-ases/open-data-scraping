@@ -5,7 +5,6 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "tsc",
-    "check-dist": "pwd && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\" && cd dist && pwd && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\"",
     "test": "jest --watch"
   },
   "keywords": [],

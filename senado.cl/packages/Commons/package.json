@@ -13,8 +13,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "rm -rf dist && rm -rf layer && tsc",
-    "package": "mkdir -p ./layer/nodejs/node_modules/@senado-cl/commons && cp -r dist ./layer/nodejs/node_modules/@senado-cl/commons && cp package.json ./layer/nodejs/node_modules/@senado-cl/commons",
-    "check-dist": "pwd && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\" && cd dist && pwd && find . | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\""
+    "package": "mkdir -p ./layer/nodejs/node_modules/@senado-cl/commons && cp -r dist ./layer/nodejs/node_modules/@senado-cl/commons && cp package.json ./layer/nodejs/node_modules/@senado-cl/commons"
   },
   "keywords": [],
   "author": "Julio Villane",
