@@ -46,10 +46,10 @@ export class SenadoClStack extends Stack {
       commonsLy, scraperLy
     });
 
-    const gastosOpeStack = new GastosOperacionalesSubstack(this, 'gastosOpe', {
-      bucket: openDataBucket,
-      commonsLy, scraperLy
-    });
+    //const gastosOpeStack = new GastosOperacionalesSubstack(this, 'gastosOpe', {
+    //  bucket: openDataBucket,
+    //  commonsLy, scraperLy
+    //});
   }
 
   getLogicalId(element: CfnElement): string {
