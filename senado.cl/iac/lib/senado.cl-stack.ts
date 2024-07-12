@@ -36,17 +36,17 @@ export class SenadoClStack extends Stack {
       ]
     });
 
-    const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'dietaAnoMes-stack', {
+    const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'sen-dietaAnoMes-subStack', {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
 
-    const dietaDetalleStack = new DietaDetalleSubStack(this, 'dietaDetalle-stack', {
+    const dietaDetalleStack = new DietaDetalleSubStack(this, 'sen-dietaDetalle-subStack', {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
 
-    const gastosOpeStack = new GastosOperacionalesSubstack(this, 'gastosOpe-stack', {
+    const gastosOpeStack = new GastosOperacionalesSubstack(this, 'sen-gastosOpe-subStack', {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });

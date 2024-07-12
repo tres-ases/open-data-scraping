@@ -17,7 +17,7 @@ const pckName = 'Dieta-AnoMes';
 
 export default class DietaAnoMes extends NestedStack {
   constructor(scope: Construct, id: string, props: Props) {
-    super(scope, id, props);
+    super(scope, id, {...props, parameters: {id}});
     const {bucket, commonsLy, scraperLy} = props;
 
     const saveJsonFn = new SenadoNodejsFunction(this, `${prefix}-saveJson`, {

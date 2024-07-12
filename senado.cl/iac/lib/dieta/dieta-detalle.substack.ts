@@ -17,7 +17,7 @@ const pckName = 'Dieta-Detalle';
 
 export default class DietaDetalle extends NestedStack {
   constructor(scope: Construct, id: string, props: Props) {
-    super(scope, id, props);
+    super(scope, id, {...props, parameters: {id}});
     const {bucket, commonsLy, scraperLy} = props;
 
     const getSaveList = new SenadoNodejsFunction(this, `${prefix}-getSaveList`, {

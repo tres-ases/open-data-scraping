@@ -17,7 +17,7 @@ const pckName = 'GastosOperacionales';
 
 export default class GastosOperacionales extends NestedStack {
   constructor(scope: Construct, id: string, props: Props) {
-    super(scope, id, props);
+    super(scope, id, {...props, parameters: {id}});
     const {bucket, commonsLy, scraperLy} = props;
 
     const getAnoMesParlIdArrayFn = new SenadoNodejsFunction(this, `${prefix}-getSaveList`, {
