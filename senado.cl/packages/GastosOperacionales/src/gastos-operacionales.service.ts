@@ -10,9 +10,9 @@ import {AnoMes} from "@senado-cl/commons/model";
 const s3Client = new S3Client({});
 
 const getJsonBucketKey =
-  (ano: number, mes: number, parlId: number) => `/GastosOperacionales/JsonStructured/parlId=${parlId}/ano=${ano}/mes=${mes}/data.json`;
+  (ano: number, mes: number, parlId: number) => `GastosOperacionales/JsonStructured/parlId=${parlId}/ano=${ano}/mes=${mes}/data.json`;
 const getJsonLineBucketKey =
-  (ano: number, mes: number, parlId: number) => `/GastosOperacionales/JsonLines/parlId=${parlId}/ano=${ano}/mes=${mes}/data.jsonl`;
+  (ano: number, mes: number, parlId: number) => `GastosOperacionales/JsonLines/parlId=${parlId}/ano=${ano}/mes=${mes}/data.jsonl`;
 
 const anoMesParUrl = (ano: number, mes: number, parlId?: number) => `https://www.senado.cl/appsenado/index.php?mo=transparencia&ac=informeTransparencia&tipo=20&anno=${ano}&mesid=${mes}${parlId ? `&parlid=${parlId}` : ''}`;
 
