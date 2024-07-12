@@ -1,8 +1,27 @@
 import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import * as _ from "lodash";
 import Constants from "./constants";
+import {AnoMes} from "./model";
 
 const s3Client = new S3Client({});
+
+function getAnoMesArray(minAno: number, minMes: number): AnoMes[] {
+  const anoMesArray: AnoMes[] = [];
+
+  const currentDate = new Date();
+  const currentYear: number = currentDate.getFullYear();
+  const currentMonth: number = currentDate.getMonth() + 1;
+
+  for (let ano = minAno; ano <= currentYear; ano++) {
+    const mesInicio = (ano === minAno) ? minMes : 1;
+    const mesFim = (ano === currentYear) ? currentMonth : 12;
+    for (let mes = mesInicio; mes <= mesFim; mes++) {
+      anoMesArray.push({ano, mes});
+    }
+  }
+
+  return anoMesArray;
+}
 
 async function getFileFromS3(key: string): Promise<string> {
   try {
@@ -19,7 +38,7 @@ async function getFileFromS3(key: string): Promise<string> {
 
 
 function flattenObject(obj: any) {
-  let toReturn:{[k: string]: any} = {};
+  let toReturn: { [k: string]: any } = {};
 
   for (let i in obj) {
     if (!obj.hasOwnProperty(i)) continue;
@@ -43,5 +62,5 @@ export function cleanNumber(text: string): number {
 }
 
 export default {
-  flattenObject, cleanNumber, getFileFromS3
+  flattenObject, cleanNumber, getFileFromS3, getAnoMesArray
 }

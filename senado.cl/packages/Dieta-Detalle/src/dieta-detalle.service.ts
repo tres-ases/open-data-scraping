@@ -5,7 +5,6 @@ import DietaLib from "@senado-cl/commons/dieta";
 import {Ano, Dieta} from "@senado-cl/commons/dieta/model";
 import Commons from "@senado-cl/commons";
 import {AnoMes} from "./dieta-detalle.model";
-import {mapMesAnoArrayDietaHandler} from "./dieta-detalle";
 
 const s3Client = new S3Client({});
 
@@ -34,24 +33,28 @@ export const getSaveDietas = async (ano: string, mes: string) => {
   const getDieta = await axios.get(DietaLib.Constants.GET_ANO_MES_URL(ano, mes));
   const $ = cheerio.load(getDieta.data);
 
-  $('div[class="col1"] table tr').each((i, row) => {
-    if (i === 0) return;
-    const data = $(row)
-      .find('td')
-      .toArray()
-      .map(td => $(td).text());
+  $('div[class="col1"] table tr')
+    .each((i, row) => {
+      if (i === 0) return;
+      const data = $(row)
+        .find('td')
+        .toArray()
+        .map(td => $(td).text());
 
-    if (data.length > 3) {
-      result.push({
-        nombre: data[0],
-        monto: Commons.Fn.cleanNumber(data[1]),
-        descuentos: Commons.Fn.cleanNumber(data[2]),
-        saldo: Commons.Fn.cleanNumber(data[3]),
-      });
-    }
-  });
+      if (data.length > 3) {
+        result.push({
+          nombre: data[0],
+          monto: Commons.Fn.cleanNumber(data[1]),
+          descuentos: Commons.Fn.cleanNumber(data[2]),
+          saldo: Commons.Fn.cleanNumber(data[3]),
+        });
+      }
+    });
 
-  await Promise.all([saveJsonStructured(ano, mes, result), saveJsonLines(ano, mes, result)]);
+  await Promise.all([
+    saveJsonStructured(ano, mes, result),
+    saveJsonLines(ano, mes, result)
+  ]);
   return result;
 }
 

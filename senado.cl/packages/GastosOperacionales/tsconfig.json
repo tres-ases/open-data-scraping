@@ -1,5 +1,4 @@
 {
-  "include": ["src/**/*"],
   "compilerOptions": {
     "outDir": "./dist",
     "target": "es6",
@@ -25,5 +24,11 @@
     /* Experimental Options */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": false
-  }
+  },
+  "include": ["src"],
+  "exclude": [
+    "**/*.spec.ts",
+    "dist",
+    "node_modules"
+  ]
 }

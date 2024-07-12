@@ -29,4 +29,11 @@ La información de la Dieta se almacenará en las siguientes carpetas:
 Se recorre el listado de años disponibles y obtiene todos los meses que se encuentran disponibles para dicho año.
 
 ##### Detalle
-Se recorre el listado de 
+Se recorre el listado de años y meses generado previamente en función de un año y mes mínimos, y se extrae la información de la dieta parlamentaria para luego ser almacenada 
+
+#### Gastos Operacionales
+
+La información de Gastos Operacionales se almacenará en las siguientes carpetas:
+* ```GastosOperacionales```
+  * ```/JsonStructured/parlId=#/ano=#/mes=#/data.json```
+  * ```/JsonLines/parlId=#/ano=#/mes=#/data.jsonl```

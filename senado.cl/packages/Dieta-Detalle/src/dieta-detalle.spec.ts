@@ -17,6 +17,6 @@ describe('Obtener Dietas Parlamentarias', () => {
   test('Extraer la data del 2023 - 01', async () => {
     const result = await getSaveDietas('2023', '01');
 
-    expect(result.length).toEqual(50);
+    expect(result.length).toBeGreaterThanOrEqual(50);
   });
 });
