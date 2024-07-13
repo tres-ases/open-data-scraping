@@ -15,7 +15,7 @@ interface Props extends NestedStackProps {
 const prefix = 'dietaDetalle';
 const pckName = 'Dieta-Detalle';
 
-export default class DietaDetalle extends NestedStack {
+export default class DietaDetalleSubstack extends NestedStack {
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id, props);
     const {bucket, commonsLy, scraperLy} = props;

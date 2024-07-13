@@ -7,7 +7,7 @@ const s3Mock = mockClient(S3Client);
 describe('Listado AnoMesParlId', () => {
 
   test('Debe obtener la información', async () => {
-    const result = await getAnoMesParlIdArray(2024, 4);
+    const result = await getAnoMesParlIdArray([{ano: 2024, mes: 1}]);
 
     expect(result.length).toBeGreaterThanOrEqual(54);
   });

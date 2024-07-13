@@ -2,9 +2,10 @@ import {CfnElement, Stack, StackProps,} from 'aws-cdk-lib';
 import {Architecture, Code, LayerVersion, Runtime} from 'aws-cdk-lib/aws-lambda';
 import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
-import DietaAnoMesSubstack from "./dieta/dieta-anomes.substack";
-import DietaDetalleSubStack from "./dieta/dieta-detalle.substack";
-import GastosOperacionalesSubstack from "./gastosOpe/gastos-operacionales.substack";
+import DietaAnoMesSubstack from "./substacks/dieta-anomes.substack";
+import DietaDetalleSubStack from "./substacks/dieta-detalle.substack";
+import GastosOperacionalesSubstack from "./substacks/gastos-operacionales.substack";
+import SenadoresSubstack from "./substacks/senadores.substack";
 
 export class SenadoClStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -47,6 +48,11 @@ export class SenadoClStack extends Stack {
     });
 
     const gastosOpeStack = new GastosOperacionalesSubstack(this, 'gastosOpe', {
+      bucket: openDataBucket,
+      commonsLy, scraperLy
+    });
+
+    const senadoresStack = new SenadoresSubstack(this, 'senadores', {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
