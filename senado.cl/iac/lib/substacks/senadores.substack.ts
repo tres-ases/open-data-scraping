@@ -63,6 +63,15 @@ export default class SenadoresSubstack extends NestedStack {
             )
           )
       );
+
+    const stateMachine = new StateMachine(this, `${prefix}-sm`, {
+      definitionBody: DefinitionBody.fromChainable(
+        stateMachineDefinition
+      ),
+      stateMachineType: StateMachineType.STANDARD,
+      timeout: Duration.minutes(10),
+      stateMachineName: `${prefix}-sm`,
+    });
   }
 
   getLogicalId(element: CfnElement): string {
