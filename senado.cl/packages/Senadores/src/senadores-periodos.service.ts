@@ -106,5 +106,5 @@ const saveJsonLines = async (periodoSenadorArray: PeriodoSenador[]) => {
 export const getParlIdArray = async () => {
   const data: PeriodoSenador[] = JSON.parse(await Commons.Fn.getFileFromS3(JSON_BUCKET_KEY)) as PeriodoSenador[];
 
-  return data.map(d => d.id);
+  return data.map(d => ({parlId: d.id}));
 }

@@ -19,7 +19,6 @@ export const downloadSaveImages = async (parlId: number) => {
       const response = await axios.get(getFotoUrl(parlId, tipo), {responseType: 'arraybuffer'});
       const buffer = Buffer.from(response.data);
 
-      const s3Client = new S3Client({region: 'TU_REGION'}); // Reemplaza 'TU_REGION' con tu región de S3
       const command = new PutObjectCommand({
         Bucket: Commons.Constants.S3_BUCKET_SENADO,
         Key: getImageBucketKey(parlId, tipo),
