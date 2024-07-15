@@ -1,4 +1,4 @@
-import {getSenadoresPeriodos, Tipo} from "./senadores.service";
+import {getSenadoresPeriodos, Tipo} from "./senadores-periodos.service";
 
 describe('Listado Senadores y Períodos', () => {
 

@@ -11,7 +11,7 @@ export enum Tipo {
   ANTERIORES = 2
 }
 
-const getSenadoresUrl = (tipo: Tipo) => `https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=periodos&tipo=${tipo}`;
+const getSenadoresPeriodoUrl = (tipo: Tipo) => `https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=periodos&tipo=${tipo}`;
 
 function parseId(texto: string): number {
   const regex = /id=(\d+)/; // Expresión regular para encontrar "id=" seguido de números
@@ -60,7 +60,7 @@ export const getSenadoresPeriodos = async (tipo: Tipo): Promise<PeriodoSenador[]
 
   const periodoSenadorArray: PeriodoSenador[] = [];
 
-  const page = await axios.get(getSenadoresUrl(tipo));
+  const page = await axios.get(getSenadoresPeriodoUrl(tipo));
   const $ = cheerio.load(page.data);
 
   $('div.col1 table tbody tr')
@@ -82,13 +82,13 @@ export const getSenadoresPeriodos = async (tipo: Tipo): Promise<PeriodoSenador[]
   return periodoSenadorArray;
 }
 
-const getJsonBucketKey = 'Senadores/Periodos/JsonStructured/data.json';
-const getJsonLineBucketKey = 'Senadores/Periodos/JsonLines/data.jsonl';
+const JSON_BUCKET_KEY = 'Senadores/Periodos/JsonStructured/data.json';
+const JSON_LINE_BUCKET_KEY = 'Senadores/Periodos/JsonLines/data.jsonl';
 
 const saveJsonStructured = async (periodoSenadorArray: PeriodoSenador[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: Commons.Constants.S3_BUCKET_SENADO,
-    Key: getJsonBucketKey,
+    Key: JSON_BUCKET_KEY,
     Body: JSON.stringify(periodoSenadorArray)
   }));
 }
@@ -96,9 +96,15 @@ const saveJsonStructured = async (periodoSenadorArray: PeriodoSenador[]) => {
 const saveJsonLines = async (periodoSenadorArray: PeriodoSenador[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: Commons.Constants.S3_BUCKET_SENADO,
-    Key: getJsonLineBucketKey,
+    Key: JSON_LINE_BUCKET_KEY,
     Body: periodoSenadorArray.map(
       ps => JSON.stringify(ps)
     ).join('\n')
   }));
+}
+
+export const getParlIdArray = async () => {
+  const data: PeriodoSenador[] = JSON.parse(await Commons.Fn.getFileFromS3(JSON_BUCKET_KEY)) as PeriodoSenador[];
+
+  return data.map(d => d.id);
 }

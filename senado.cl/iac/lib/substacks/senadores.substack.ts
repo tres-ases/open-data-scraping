@@ -26,6 +26,43 @@ export default class SenadoresSubstack extends NestedStack {
       layers: [commonsLy, scraperLy]
     });
     bucket.grantWrite(getSaveSenadoresPeriodos);
+
+    const getParlIdArray = new SenadoNodejsFunction(this, `${prefix}-getParlIdArray`, {
+      pckName,
+      handler: 'senadores.getParlIdArrayHandler',
+      layers: [commonsLy, scraperLy]
+    });
+    bucket.grantRead(getParlIdArray);
+
+    const getSaveDetails = new SenadoNodejsFunction(this, `${prefix}-getSaveDetails`, {
+      pckName,
+      handler: 'senadores.getSaveDetailsHandler',
+      layers: [commonsLy, scraperLy]
+    });
+    bucket.grantWrite(getSaveDetails);
+
+    const getParlIdArrayJob = new LambdaInvoke(
+      this,
+      `${prefix}-getParlIdArray-job`, {
+        lambdaFunction: getParlIdArray,
+      }
+    );
+
+    const stateMachineDefinition = getParlIdArrayJob
+      .next(
+        new Map(this, `${prefix}-getSaveDetails-map`, {
+          maxConcurrency: 20,
+          itemsPath: JsonPath.stringAt('$.Payload')
+        })
+          .itemProcessor(new LambdaInvoke(
+              this,
+              `${prefix}-getSaveDetails-job`, {
+                lambdaFunction: getSaveDetails,
+                outputPath: JsonPath.stringAt('$.Payload')
+              }
+            )
+          )
+      );
   }
 
   getLogicalId(element: CfnElement): string {

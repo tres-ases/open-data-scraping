@@ -16,3 +16,16 @@ export interface PeriodoSenador {
   nombre: string
   periodos: Periodo[]
 }
+
+export enum SenadorFotoTipo {
+  NORMAL = 1,
+  MINI = 3
+}
+
+export interface ParlamentarioDetalle {
+  nombre: string
+  region: string
+  partido?: string
+  telefono?: string
+  correo?: string
+}
