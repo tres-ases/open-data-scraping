@@ -37,7 +37,7 @@ export default class VotacionesSubstack extends NestedStack {
     const getSaveLegislaturasJob = new LambdaInvoke(
       this,
       `${prefix}-getSaveLegislaturas-job`, {
-        lambdaFunction: getSaveLegislaturasSesiones,
+        lambdaFunction: getSaveLegislaturas,
       }
     );
 
