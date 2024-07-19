@@ -63,7 +63,7 @@ export default class VotacionesSubstack extends NestedStack {
       ),
       stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.minutes(10),
-      stateMachineName: `${prefix}-sm`,
+      stateMachineName: `${prefix}-legislaturasSesiones-sm`,
     });
   }
 
