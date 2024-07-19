@@ -5,7 +5,7 @@ import Commons from "@senado-cl/commons";
 import {getVotacionesUrl, VOTACIONES_URL} from "./votaciones.constants";
 import {
   getLegislaturaDetalleJsonStructuredBucketKey,
-  getLegislaturaListJsonListBucketKey,
+  getLegislaturaListJsonLinesBucketKey,
   getLegislaturaListJsonStructuredBucketKey,
   getLegislaturaSesionesJsonLinesBucketKey,
   getLegislaturaSesionesJsonStructuredBucketKey,
@@ -101,7 +101,7 @@ const saveLegislaturaSimpleList = async (legislaturas: LegislaturaSimple[]) => {
     })),
     s3Client.send(new PutObjectCommand({
       Bucket: Commons.Constants.S3_BUCKET_SENADO,
-      Key: getLegislaturaListJsonListBucketKey(),
+      Key: getLegislaturaListJsonLinesBucketKey(),
       Body: legislaturas.map(
         l => JSON.stringify(l)
       ).join('\n')

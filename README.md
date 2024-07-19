@@ -18,18 +18,12 @@ La extracción se realiza en 2 etapas:
 
 La información de la Dieta se almacenará en las siguientes carpetas:
 * ```Dieta```
-  * ```/AnoMes```
+  * ```/AnoMes```: listado de años disponibles y meses que se encuentran disponibles
     * ```/JsonStructured/data.json```
     * ```/JsonLines/data.jsonl```
-  * ```/detalle```
+  * ```/detalle```: información de la dieta parlamentaria separada por año y mes, los cuales son extraídos previamente
     * ```/JsonStructured/ano=#/mes=#/data.json```
-    * ```/JsonLines/ano=#/mes=#/data.jsonl```
-
-##### Año - Mes
-Se recorre el listado de años disponibles y obtiene todos los meses que se encuentran disponibles para dicho año.
-
-##### Detalle
-Se recorre el listado de años y meses generado previamente en función de un año y mes mínimos, y se extrae la información de la dieta parlamentaria para luego ser almacenada 
+    * ```/JsonLines/ano=#/mes=#/data.jsonl``` 
 
 #### Gastos Operacionales
 
@@ -37,3 +31,39 @@ La información de Gastos Operacionales se almacenará en las siguientes carpeta
 * ```GastosOperacionales```
   * ```/JsonStructured/parlId=#/ano=#/mes=#/data.json```
   * ```/JsonLines/parlId=#/ano=#/mes=#/data.jsonl```
+
+#### Personal Apoyo
+
+#### Senadores
+
+La información de los senadores y de los períodos en los que ha participado en las cámaras se puede obtener desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=periodos```
+
+El detalle de nombre, región, partido, teléfono y correo se puede obtener desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=fichasenador&id=985```
+
+* ```Senadores```
+  * ```/Periodos```: listado completo de todos los Senadores, incluyendo detalle de los períodos 
+    * ```/JsonStructured/data.json```
+    * ```/JsonLines/data.jsonl```
+  * ```/Detalle```
+    * ```/Foto/parlId=#```: fotos con distinto tamaño en formato jpeg de cada senador
+    * ```/JsonStructured/parlId=#/data.json```: información más detallada del senador
+
+#### Votaciones
+
+Las Votaciones se realizan dentro de una Sesión (en día en particular), se suelen realizar varias votaciones dentro de una misma Sesión. 
+
+Las Sesiones están asociados a una Legislatura, que abarca un período de tiempo más amplio, y por ende, varias Sesiones.
+
+Se extraen desde la página ```https://tramitacion.senado.cl/appsenado/index.php?mo=sesionessala&ac=votacionSala&legiini=462```
+
+##### Legislaturas y Sesiones
+
+La información de Gastos Operacionales se almacenará en las siguientes carpetas:
+* ```Votaciones/Legislaturas```
+  * ```/Lista```: listado simple de las Legislaturas
+    * ```/JsonStructured/data.json```
+    * ```/JsonLines/data.jsonl```
+  * ```/Detalle/JsonStructured/legisId=#/data.json```: información en detalle de la Legislatura, incluyendo información de Sesiones
+  * ```/Sesiones```: información de las Sesiones asociadas a una Legislatura en particular 
+    * ```/JsonStructured/legisId=#/data.json```
+    * ```/JsonLines/legisId=#/data.jsonl```

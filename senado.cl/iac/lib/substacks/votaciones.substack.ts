@@ -57,7 +57,7 @@ export default class VotacionesSubstack extends NestedStack {
           )
       );
 
-    const stateMachine = new StateMachine(this, `${prefix}-sm`, {
+    const stateMachine = new StateMachine(this, `${prefix}-legislaturasSesiones-sm`, {
       definitionBody: DefinitionBody.fromChainable(
         stateMachineDefinition
       ),
