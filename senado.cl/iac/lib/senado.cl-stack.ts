@@ -58,10 +58,10 @@ export class SenadoClStack extends Stack {
       commonsLy, scraperLy
     });
 
-    const votacionesStack = new VotacionesSubstack(this,  {
-      bucket: openDataBucket,
-      commonsLy, scraperLy
-    });
+    //const votacionesStack = new VotacionesSubstack(this,  {
+    //  bucket: openDataBucket,
+    //  commonsLy, scraperLy
+    //});
   }
 
   getLogicalId(element: CfnElement): string {
