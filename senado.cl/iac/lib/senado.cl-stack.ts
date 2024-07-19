@@ -6,6 +6,7 @@ import DietaAnoMesSubstack from "./substacks/dieta-anomes.substack";
 import DietaDetalleSubStack from "./substacks/dieta-detalle.substack";
 import GastosOperacionalesSubstack from "./substacks/gastos-operacionales.substack";
 import SenadoresSubstack from "./substacks/senadores.substack";
+import VotacionesSubstack from "./substacks/votaciones.substack";
 
 export class SenadoClStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -37,22 +38,27 @@ export class SenadoClStack extends Stack {
       ]
     });
 
-    const dietaAnoMesStack = new DietaAnoMesSubstack(this, 'dietaAnoMes', {
+    const dietaAnoMesStack = new DietaAnoMesSubstack(this, {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
 
-    const dietaDetalleStack = new DietaDetalleSubStack(this, 'dietaDetalle', {
+    const dietaDetalleStack = new DietaDetalleSubStack(this, {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
 
-    const gastosOpeStack = new GastosOperacionalesSubstack(this, 'gastosOpe', {
+    const gastosOpeStack = new GastosOperacionalesSubstack(this, {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });
 
-    const senadoresStack = new SenadoresSubstack(this, 'senadores', {
+    const senadoresStack = new SenadoresSubstack(this, {
+      bucket: openDataBucket,
+      commonsLy, scraperLy
+    });
+
+    const votacionesStack = new VotacionesSubstack(this,  {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });

@@ -16,8 +16,8 @@ const prefix = 'gastosOpe';
 const pckName = 'GastosOperacionales';
 
 export default class GastosOperacionalesSubstack extends NestedStack {
-  constructor(scope: Construct, id: string, props: Props) {
-    super(scope, id, props);
+  constructor(scope: Construct, props: Props) {
+    super(scope, prefix, props);
     const {bucket, commonsLy, scraperLy} = props;
 
     const getAnoMesArrayGroupsFn = new SenadoNodejsFunction(this, `${prefix}-getAnoMesArrayGroups`, {

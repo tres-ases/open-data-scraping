@@ -16,8 +16,8 @@ const prefix = 'dietaDetalle';
 const pckName = 'Dieta-Detalle';
 
 export default class DietaDetalleSubstack extends NestedStack {
-  constructor(scope: Construct, id: string, props: Props) {
-    super(scope, id, props);
+  constructor(scope: Construct, props: Props) {
+    super(scope, prefix, props);
     const {bucket, commonsLy, scraperLy} = props;
 
     const getSaveList = new SenadoNodejsFunction(this, `${prefix}-getSaveList`, {

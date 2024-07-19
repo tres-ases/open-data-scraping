@@ -4,7 +4,7 @@ import {downloadSaveImages, getSaveDetalle} from "./senadores-detalle.service";
 
 
 export const getSaveSenadoresPeriodosHandler: Handler = async () => {
-  return getSaveSenadoresPeriodos();
+  return await getSaveSenadoresPeriodos();
 };
 
 export const getParlIdArrayHandler: Handler = async () => {

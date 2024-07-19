@@ -1,6 +1,6 @@
 import axios from "axios";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import {ParlamentarioDetalle, PeriodoSenador, SenadorFotoTipo} from "./senadores.model";
+import {ParlamentarioDetalle, SenadorFotoTipo} from "./senadores.model";
 import Commons from "@senado-cl/commons";
 import * as cheerio from "cheerio";
 

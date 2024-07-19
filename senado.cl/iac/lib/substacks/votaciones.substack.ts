@@ -12,52 +12,45 @@ interface Props extends NestedStackProps {
   scraperLy: LayerVersion
 }
 
-const prefix = 'senadores';
-const pckName = 'Senadores';
+const prefix = 'votaciones';
+const pckName = 'Votaciones';
 
-export default class SenadoresSubstack extends NestedStack {
+export default class VotacionesSubstack extends NestedStack {
   constructor(scope: Construct, props: Props) {
     super(scope, prefix, props);
     const {bucket, commonsLy, scraperLy} = props;
 
-    const getSaveSenadoresPeriodos = new SenadoNodejsFunction(this, `${prefix}-getSaveSenadoresPeriodos`, {
+    const getSaveLegislaturas = new SenadoNodejsFunction(this, `${prefix}-getSaveLegislaturas`, {
       pckName,
-      handler: 'senadores.getSaveSenadoresPeriodosHandler',
+      handler: 'votaciones.getSaveLegislaturasHandler',
       layers: [commonsLy, scraperLy]
     });
-    bucket.grantWrite(getSaveSenadoresPeriodos);
+    bucket.grantWrite(getSaveLegislaturas);
 
-    const getParlIdArray = new SenadoNodejsFunction(this, `${prefix}-getParlIdArray`, {
+    const getSaveLegislaturasSesiones = new SenadoNodejsFunction(this, `${prefix}-getSaveLegislaturasSesiones`, {
       pckName,
-      handler: 'senadores.getParlIdArrayHandler',
+      handler: 'votaciones.getSaveLegislaturasSesionesHandler',
       layers: [commonsLy, scraperLy]
     });
-    bucket.grantRead(getParlIdArray);
+    bucket.grantWrite(getSaveLegislaturasSesiones);
 
-    const getSaveDetails = new SenadoNodejsFunction(this, `${prefix}-getSaveDetails`, {
-      pckName,
-      handler: 'senadores.getSaveDetailsHandler',
-      layers: [commonsLy, scraperLy]
-    });
-    bucket.grantWrite(getSaveDetails);
-
-    const getParlIdArrayJob = new LambdaInvoke(
+    const getSaveLegislaturasJob = new LambdaInvoke(
       this,
-      `${prefix}-getParlIdArray-job`, {
-        lambdaFunction: getParlIdArray,
+      `${prefix}-getSaveLegislaturas-job`, {
+        lambdaFunction: getSaveLegislaturasSesiones,
       }
     );
 
-    const stateMachineDefinition = getParlIdArrayJob
+    const stateMachineDefinition = getSaveLegislaturasJob
       .next(
-        new Map(this, `${prefix}-getSaveDetails-map`, {
+        new Map(this, `${prefix}-getSaveLegislaturasSesiones-map`, {
           maxConcurrency: 20,
           itemsPath: JsonPath.stringAt('$.Payload')
         })
           .itemProcessor(new LambdaInvoke(
               this,
-              `${prefix}-getSaveDetails-job`, {
-                lambdaFunction: getSaveDetails,
+              `${prefix}-getSaveLegislaturasSesiones-job`, {
+                lambdaFunction: getSaveLegislaturasSesiones,
                 outputPath: JsonPath.stringAt('$.Payload')
               }
             )
