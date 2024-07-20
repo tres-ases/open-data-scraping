@@ -23,7 +23,8 @@ export default class VotacionesSubstack extends NestedStack {
     const getLegislaturasSesionesIdSinVotacionResumen = new SenadoNodejsFunction(this, `${prefix}-getLegislaturasSesionesIdSinVotacionResumen`, {
       pckName,
       handler: 'votaciones.getLegislaturasSesionesIdSinVotacionResumenHandler',
-      layers: [commonsLy, scraperLy]
+      layers: [commonsLy, scraperLy],
+      timeout: 300
     });
     bucket.grantRead(getLegislaturasSesionesIdSinVotacionResumen);
 
