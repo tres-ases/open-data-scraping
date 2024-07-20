@@ -12,11 +12,11 @@ import Commons from "@senado-cl/commons";
 
 const s3Client = new S3Client({});
 
-export const getLegislaturasSesionesIdSinVotacionSimple = async (): Promise<LegislaturasSesionesId[]> => {
+export const getLegislaturasSesionesIdSinVotacionSimple = async (legisId: number): Promise<LegislaturasSesionesId[]> => {
   const list: LegislaturasSesionesId[] = [];
 
   const legislaturaList: LegislaturaSimple[] = JSON.parse(await Commons.Fn.getFileFromS3(getLegislaturaListJsonStructuredBucketKey()));
-  for(const l of legislaturaList) {
+  for(const l of legislaturaList.filter(l => l.id === legisId)) {
     const sesionList: Sesion[] = JSON.parse(await Commons.Fn.getFileFromS3(getLegislaturaSesionesJsonStructuredBucketKey(l.id)));
 
     for(const s of sesionList) {

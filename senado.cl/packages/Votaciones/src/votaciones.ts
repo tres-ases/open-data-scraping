@@ -11,8 +11,8 @@ export const getSaveLegislaturasSesionesHandler: Handler<{legisId: number}> = as
   return await getSaveLegislaturaSesiones(legisId);
 };
 
-export const getLegislaturasSesionesIdSinVotacionResumenHandler: Handler = async () => {
-  return await getLegislaturasSesionesIdSinVotacionSimple();
+export const getLegislaturasSesionesIdSinVotacionResumenHandler: Handler<{legisId: number}> = async ({legisId}) => {
+  return await getLegislaturasSesionesIdSinVotacionSimple(legisId);
 };
 
 export const getSaveVotacionSimpleListHandler: Handler<LegislaturasSesionesId> = async ({legisId, sesionId}) => {

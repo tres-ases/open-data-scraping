@@ -30,7 +30,7 @@ export default class VotacionesSubstack extends NestedStack {
 
     const getSaveVotacionSimpleList = new SenadoNodejsFunction(this, `${prefix}-getSaveVotacionSimpleList`, {
       pckName,
-      handler: 'votaciones.getSaveVotacionSimpleList',
+      handler: 'votaciones.getSaveVotacionSimpleListHandler',
       layers: [commonsLy, scraperLy]
     });
     bucket.grantWrite(getSaveVotacionSimpleList);
