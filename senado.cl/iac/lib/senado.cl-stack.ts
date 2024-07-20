@@ -6,6 +6,7 @@ import DietaAnoMesSubstack from "./substacks/dieta-anomes.substack";
 import DietaDetalleSubStack from "./substacks/dieta-detalle.substack";
 import GastosOperacionalesSubstack from "./substacks/gastos-operacionales.substack";
 import SenadoresSubstack from "./substacks/senadores.substack";
+import VotacionesLegislaturaSubstack from "./substacks/votaciones-legislatura.substack";
 import VotacionesSubstack from "./substacks/votaciones.substack";
 
 export class SenadoClStack extends Stack {
@@ -54,6 +55,11 @@ export class SenadoClStack extends Stack {
     });
 
     const senadoresStack = new SenadoresSubstack(this, {
+      bucket: openDataBucket,
+      commonsLy, scraperLy
+    });
+
+    const votacionesLegislaturaStack = new VotacionesLegislaturaSubstack(this,  {
       bucket: openDataBucket,
       commonsLy, scraperLy
     });

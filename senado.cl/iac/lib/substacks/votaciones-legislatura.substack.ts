@@ -12,58 +12,58 @@ interface Props extends NestedStackProps {
   scraperLy: LayerVersion
 }
 
-const prefix = 'votaciones';
-const pckName = 'Votaciones';
+const prefix = 'votaciones-legislaturas';
+const pckName = 'VotacionesLegislaturas';
 
-export default class VotacionesSubstack extends NestedStack {
+export default class VotacionesLegislaturaSubstack extends NestedStack {
   constructor(scope: Construct, props: Props) {
     super(scope, prefix, props);
     const {bucket, commonsLy, scraperLy} = props;
 
-    const getLegislaturasSesionesIdSinVotacionResumen = new SenadoNodejsFunction(this, `${prefix}-getLegislaturasSesionesIdSinVotacionResumen`, {
+    const getSaveLegislaturas = new SenadoNodejsFunction(this, `${prefix}-getSaveLegislaturas`, {
       pckName,
-      handler: 'votaciones.getLegislaturasSesionesIdSinVotacionResumenHandler',
+      handler: 'votaciones.getSaveLegislaturasHandler',
       layers: [commonsLy, scraperLy]
     });
-    bucket.grantRead(getLegislaturasSesionesIdSinVotacionResumen);
+    bucket.grantWrite(getSaveLegislaturas);
 
-    const getSaveVotacionSimpleList = new SenadoNodejsFunction(this, `${prefix}-getSaveVotacionSimpleList`, {
+    const getSaveLegislaturasSesiones = new SenadoNodejsFunction(this, `${prefix}-getSaveLegislaturasSesiones`, {
       pckName,
-      handler: 'votaciones.getSaveVotacionSimpleList',
+      handler: 'votaciones.getSaveLegislaturasSesionesHandler',
       layers: [commonsLy, scraperLy]
     });
-    bucket.grantWrite(getSaveVotacionSimpleList);
+    bucket.grantWrite(getSaveLegislaturasSesiones);
 
-    const getLegislaturasSesionesIdSinVotacionResumenJob = new LambdaInvoke(
+    const getSaveLegislaturasJob = new LambdaInvoke(
       this,
-      `${prefix}-getLegislaturasSesionesIdSinVotacionResumen-job`, {
-        lambdaFunction: getLegislaturasSesionesIdSinVotacionResumen,
+      `${prefix}-getSaveLegislaturas-job`, {
+        lambdaFunction: getSaveLegislaturas,
       }
     );
 
-    const stateMachineDefinition = getLegislaturasSesionesIdSinVotacionResumenJob
+    const stateMachineDefinition = getSaveLegislaturasJob
       .next(
-        new Map(this, `${prefix}-getSaveVotacionSimpleList-map`, {
+        new Map(this, `${prefix}-getSaveLegislaturasSesiones-map`, {
           maxConcurrency: 20,
           itemsPath: JsonPath.stringAt('$.Payload')
         })
           .itemProcessor(new LambdaInvoke(
               this,
-              `${prefix}-getSaveVotacionSimpleList-job`, {
-                lambdaFunction: getSaveVotacionSimpleList,
+              `${prefix}-getSaveLegislaturasSesiones-job`, {
+                lambdaFunction: getSaveLegislaturasSesiones,
                 outputPath: JsonPath.stringAt('$.Payload')
               }
             )
           )
       );
 
-    const stateMachine = new StateMachine(this, `${prefix}-resumen-sm`, {
+    const stateMachine = new StateMachine(this, `${prefix}-legislaturasSesiones-sm`, {
       definitionBody: DefinitionBody.fromChainable(
         stateMachineDefinition
       ),
       stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.minutes(10),
-      stateMachineName: `${prefix}-resumen-sm`,
+      stateMachineName: `${prefix}-legislaturasSesiones-sm`,
     });
   }
 

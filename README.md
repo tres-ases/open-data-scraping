@@ -54,16 +54,22 @@ Las Votaciones se realizan dentro de una Sesión (en día en particular), se sue
 
 Las Sesiones están asociados a una Legislatura, que abarca un período de tiempo más amplio, y por ende, varias Sesiones.
 
-Se extraen desde la página ```https://tramitacion.senado.cl/appsenado/index.php?mo=sesionessala&ac=votacionSala&legiini=462```
+Las Legislaturas y Sesiones se extraen desde la página ```https://tramitacion.senado.cl/appsenado/index.php?mo=sesionessala&ac=votacionSala&legiini=462```
+
+El resumen de las votaciones se extrae desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=sesionessala&ac=votacionSala&legiini=462```
 
 ##### Legislaturas y Sesiones
 
 La información de Gastos Operacionales se almacenará en las siguientes carpetas:
-* ```Votaciones/Legislaturas```
-  * ```/Lista```: listado simple de las Legislaturas
-    * ```/JsonStructured/data.json```
-    * ```/JsonLines/data.jsonl```
-  * ```/Detalle/JsonStructured/legisId=#/data.json```: información en detalle de la Legislatura, incluyendo información de Sesiones
-  * ```/Sesiones```: información de las Sesiones asociadas a una Legislatura en particular 
-    * ```/JsonStructured/legisId=#/data.json```
-    * ```/JsonLines/legisId=#/data.jsonl```
+* ```Votaciones```
+  * ```/Legislaturas```
+    * ```/Lista```: listado simple de las Legislaturas
+      * ```/JsonStructured/data.json```
+      * ```/JsonLines/data.jsonl```
+    * ```/Detalle/JsonStructured/legisId=#/data.json```: información en detalle de la Legislatura, incluyendo información de Sesiones
+    * ```/Sesiones```: información de las Sesiones asociadas a una Legislatura en particular 
+      * ```/JsonStructured/legisId=#/data.json```
+      * ```/JsonLines/legisId=#/data.jsonl```
+  * ```/Resumen```
+    * ```/JsonStructured/legisId=#/sesionId=#/data.json```
+    * ```/JsonLines/legisId=#/sesionId=#/data.jsonl```

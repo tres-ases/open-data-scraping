@@ -1,4 +1,4 @@
-import { getSaveDietas } from './dieta-detalle.service';
+import {getSaveDietas} from './dieta-detalle.service';
 import {expect} from "@jest/globals";
 import {mockClient} from "aws-sdk-client-mock";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";

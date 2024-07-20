@@ -1,4 +1,4 @@
-import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {GetObjectCommand, HeadObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import * as _ from "lodash";
 import Constants from "./constants";
 import {AnoMes} from "./model";
@@ -56,6 +56,19 @@ async function getFileFromS3(key: string): Promise<string> {
   }
 }
 
+async function existsFromS3(key: string): Promise<boolean> {
+  const command = new HeadObjectCommand({Bucket: Constants.S3_BUCKET_SENADO, Key: key,});
+  try {
+    await s3Client.send(command);
+    return true; // La clave existe
+  } catch (error) {
+    if (error.name === 'NotFound') {
+      return false; // La clave no existe
+    } else {
+      throw error; // Otro tipo de error (permisos, red, etc.)
+    }
+  }
+}
 
 function flattenObject(obj: any) {
   let toReturn: { [k: string]: any } = {};
@@ -82,5 +95,5 @@ export function cleanNumber(text: string): number {
 }
 
 export default {
-  flattenObject, cleanNumber, getFileFromS3, getAnoMesArray
+  flattenObject, cleanNumber, getFileFromS3, existsFromS3, getAnoMesArray
 }

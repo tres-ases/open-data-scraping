@@ -2,8 +2,7 @@ import * as _ from "lodash";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import Commons from "@senado-cl/commons";
-import {AnoMesParl} from "./gastos-operacionales.model";
-import {GastosOperacionales} from "./gastos-operacionales.model";
+import {AnoMesParl, GastosOperacionales} from "./gastos-operacionales.model";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {AnoMes} from "@senado-cl/commons/model";
 
