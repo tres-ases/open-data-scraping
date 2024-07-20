@@ -13,7 +13,7 @@ interface Props extends NestedStackProps {
 }
 
 const prefix = 'votaciones-legislaturas';
-const pckName = 'VotacionesLegislaturas';
+const pckName = 'Votaciones';
 
 export default class VotacionesLegislaturaSubstack extends NestedStack {
   constructor(scope: Construct, props: Props) {
