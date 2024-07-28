@@ -46,6 +46,7 @@ jobs:
 
       - name: Build SRC
         run: |
+          pnpm @senado.cl/packages:build
           pnpm @senado.cl/packages:package
 
       - name: Build IAC
