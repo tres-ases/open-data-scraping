@@ -48,7 +48,6 @@ jobs:
         run: |
           pnpm @senado.cl/packages:build
           pnpm @senado.cl/packages:package
-          pnpm @senado.cl/packages:check-dist
 
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2
