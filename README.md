@@ -58,8 +58,6 @@ Las Legislaturas y Sesiones se extraen desde la página ```https://tramitacion.s
 
 El resumen de las votaciones se extrae desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=sesionessala&ac=votacionSala&legiini=462```
 
-##### Legislaturas y Sesiones
-
 La información de Gastos Operacionales se almacenará en las siguientes carpetas:
 * ```Votaciones```
   * ```/Legislaturas```
