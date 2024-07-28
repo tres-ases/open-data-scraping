@@ -49,8 +49,9 @@ jobs:
           pnpm @senado.cl/packages:package
 
       - name: Build IAC
+        working-directory: './senado.cl/iac'
         run: |
-          pnpm @senado.cl/iac:build
+          npm install
 
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2

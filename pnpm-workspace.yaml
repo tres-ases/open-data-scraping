@@ -1,5 +1,4 @@
 packages:
   - "senado.cl/packages/*"
-  - "senado.cl/iac"
   - "senado.cl/admin/front"
   - "senado.cl/admin/api/*"

@@ -1,4 +1,4 @@
-import {CfnElement, NestedStack, NestedStackProps, RemovalPolicy,} from 'aws-cdk-lib';
+import {CfnElement, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from "constructs";
 import {
