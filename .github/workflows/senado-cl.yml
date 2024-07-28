@@ -46,8 +46,11 @@ jobs:
 
       - name: Build SRC
         run: |
-          pnpm @senado.cl/packages:build
           pnpm @senado.cl/packages:package
+
+      - name: Build IAC
+        run: |
+          pnpm @senado.cl/iac:build
 
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2

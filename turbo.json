@@ -13,7 +13,7 @@
       "dependsOn": ["^check-dist"]
     },
     "package": {
-      "dependsOn": ["^package"],
+      "dependsOn": ["^package", "build"],
       "outputs": ["dist/**", "layer/**"]
     }
   }
