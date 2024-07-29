@@ -43,6 +43,7 @@ export default class AdminSubstack extends NestedStack {
     hostingBucket.grantRead(originAccessIdentity);
 
     const distribution = new Distribution(this, `${prefix}-distribution`, {
+      domainNames: [subdomain],
       defaultBehavior: {
         origin: new S3Origin(hostingBucket),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -68,7 +69,6 @@ export default class AdminSubstack extends NestedStack {
           behaviors: [{ isDefaultBehavior: true }],
         },
       ],
-
     });
 
     // Create the wildcard DNS entry in route53 as an alias to the new CloudFront Distribution.
