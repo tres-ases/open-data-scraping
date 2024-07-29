@@ -86,6 +86,10 @@ jobs:
       - name: Cache for turbo
         uses: rharkor/caching-for-turbo@v1.5
 
+      - name: Install dependencies
+        run: |
+          pnpm install
+
       - name: Build SRC
         run: |
           pnpm @senado.cl/admin-front:build
