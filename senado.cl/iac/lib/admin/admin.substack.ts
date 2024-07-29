@@ -2,82 +2,75 @@ import {CfnElement, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from "constructs";
 import {
-  CloudFrontWebDistribution,
+  AllowedMethods,
   Distribution,
   OriginAccessIdentity,
+  SecurityPolicyProtocol,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
 import {S3Origin} from 'aws-cdk-lib/aws-cloudfront-origins';
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
-import {Certificate} from "aws-cdk-lib/aws-certificatemanager";
+import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
+import {CanonicalUserPrincipal, PolicyStatement} from "aws-cdk-lib/aws-iam";
 
 const prefix = 'senado-cl-admin';
-const subdomain = 'senado-admin.open-data.cl';
+const domain = 'open-data.cl';
+const subdomain = `senado-admin.${domain}`;
 
 export default class AdminSubstack extends NestedStack {
   constructor(scope: Construct) {
     super(scope, prefix);
 
-    const hostingBucket = new Bucket(this, 'open-data-senado-cl-admin', {
-      autoDeleteObjects: true,
+    const zone = HostedZone.fromLookup(this, `${prefix}-zone`, { domainName: domain });
+    const siteDomain = subdomain;
+    const cloudfrontOAI = new OriginAccessIdentity(this, `${prefix}-cloudfront-OAI`, {
+      comment: `OAI for ${subdomain}`
+    });
+
+    const hostingBucket = new Bucket(this, subdomain, {
+      bucketName: subdomain,
+      publicReadAccess: false,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY, // NOT recommended for production code
+      autoDeleteObjects: true, // NOT recommended for production code
     });
 
-    const zone = HostedZone.fromLookup(this, `${prefix}-hz`, {
-      domainName: 'open-data.cl',
-    });
+    hostingBucket.addToResourcePolicy(new PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: [hostingBucket.arnForObjects('*')],
+      principals: [new CanonicalUserPrincipal(cloudfrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId)]
+    }));
 
-    const myCertificate = new Certificate(this, `${prefix}-certificate`, {
-      domainName: subdomain
+    const certificate = new Certificate(this, `${prefix}-certificate`, {
+      domainName: subdomain,
+      validation: CertificateValidation.fromDns(zone),
     });
-
-    const originAccessIdentity = new OriginAccessIdentity(
-      this,
-      "OIA",
-      {
-        comment: "Setup access from CloudFront to the bucket ( read )",
-      }
-    );
-    hostingBucket.grantRead(originAccessIdentity);
 
     const distribution = new Distribution(this, `${prefix}-distribution`, {
-      domainNames: [subdomain],
-      defaultBehavior: {
-        origin: new S3Origin(hostingBucket),
-        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      },
-      defaultRootObject: 'index.html',
-      errorResponses: [
+      certificate: certificate,
+      defaultRootObject: "index.html",
+      domainNames: [siteDomain],
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
+      errorResponses:[
         {
           httpStatus: 404,
           responseHttpStatus: 200,
-          responsePagePath: '/index.html',
-        },
+          responsePagePath: '/index.html'
+        }
       ],
-      certificate: myCertificate
+      defaultBehavior: {
+        origin: new S3Origin(hostingBucket, {originAccessIdentity: cloudfrontOAI}),
+        compress: true,
+        allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      }
     });
 
-    const cfDist = new CloudFrontWebDistribution(this, `${prefix}-cloudfront`, {
-      originConfigs: [
-        {
-          s3OriginSource: {
-            s3BucketSource: hostingBucket,
-            originAccessIdentity: originAccessIdentity,
-          },
-          behaviors: [{ isDefaultBehavior: true }],
-        },
-      ],
-    });
-
-    // Create the wildcard DNS entry in route53 as an alias to the new CloudFront Distribution.
     new ARecord(this, `${prefix}-alias-record`, {
       zone,
       recordName: subdomain,
-      target: RecordTarget.fromAlias(
-        new CloudFrontTarget(cfDist)
-      ),
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
   }
 
