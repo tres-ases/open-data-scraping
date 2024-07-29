@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  senado-cl:
+  senado-cl-build:
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -48,11 +48,19 @@ jobs:
         run: |
           pnpm @senado.cl/packages:build
           pnpm @senado.cl/packages:package
+          pnpm @senado.cl/admin-front:build
 
       - name: Build IAC
         working-directory: './senado.cl/iac'
         run: |
           npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'
 
       - name: CDK Deploy
         uses: youyo/aws-cdk-github-actions@v2
@@ -66,3 +74,15 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-1'
+
+      - name: Deploy Admin SPA to S3
+        run: aws s3 sync ./out s3://senado-admin.open-data.cl
+
+      - name: Invalidate CloudFront Admin SPA
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: 'E1SSZ22XLGRCXK'
+          PATHS: "/*"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-east-1'

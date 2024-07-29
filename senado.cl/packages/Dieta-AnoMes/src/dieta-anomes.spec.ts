@@ -1,6 +1,6 @@
 import {PutObjectCommandInput} from "@aws-sdk/client-s3/dist-types/commands/PutObjectCommand";
 import {PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
-import {Ano} from "@senado-cl/commons/dist/dieta/model";
+import {Ano} from "@senado-cl/commons/dieta/model";
 import {mockClient} from 'aws-sdk-client-mock';
 import {getAnos, saveJsonLines} from "./dieta-anomes.service";
 
