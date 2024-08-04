@@ -1,5 +1,5 @@
 import {Handler} from 'aws-lambda';
 
-export const getAnosHandler: Handler = async () => {
+export const hi: Handler = async () => {
   return {hola: 'mundo'};
 }

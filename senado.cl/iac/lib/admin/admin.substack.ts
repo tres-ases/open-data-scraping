@@ -1,6 +1,7 @@
+import {Construct} from "constructs";
 import {CfnElement, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
-import {Construct} from "constructs";
+import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import {
   AllowedMethods,
   Distribution,
@@ -13,6 +14,7 @@ import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {CanonicalUserPrincipal, PolicyStatement} from "aws-cdk-lib/aws-iam";
+import AdminApiSubstack from "./admin-api.substack";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -57,7 +59,12 @@ export default class AdminSubstack extends NestedStack {
           httpStatus: 404,
           responseHttpStatus: 200,
           responsePagePath: '/index.html'
-        }
+        },
+        {
+          httpStatus: 403,
+          responseHttpStatus: 200,
+          responsePagePath: '/index.html'
+        },
       ],
       defaultBehavior: {
         origin: new S3Origin(hostingBucket, {originAccessIdentity: cloudfrontOAI}),
@@ -72,6 +79,8 @@ export default class AdminSubstack extends NestedStack {
       recordName: subdomain,
       target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
+
+    const apiSubtack = new AdminApiSubstack(this);
   }
 
   getLogicalId(element: CfnElement): string {
