@@ -7,7 +7,8 @@
     "@senado.cl/packages:build": "turbo build --filter=\"./senado.cl/packages/*\"",
     "@senado.cl/packages:package": "turbo package --filter=@senado-cl/commons",
     "@senado.cl/packages:check-dist": "turbo check-dist --filter=\"./senado.cl/packages/*\"",
-    "@senado.cl/admin-front:build": "turbo build --filter=@senado-cl/admin-front"
+    "@senado.cl/admin-front:build": "turbo build --filter=@senado-cl/admin-front",
+    "@senado.cl/admin-api:build": "turbo build --filter=\"./senado.cl/admin/api/*\""
   },
   "devDependencies": {
     "turbo": "^2.0.5",
