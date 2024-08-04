@@ -1,7 +1,7 @@
 import {Construct} from "constructs";
 import {CfnElement, NestedStack,} from 'aws-cdk-lib';
 import {LambdaIntegration, RestApi} from "aws-cdk-lib/aws-apigateway";
-import AdminNodejsFunction from "./AdminNodejsFunction";
+import AdminNodejsFunction from "../cdk/AdminNodejsFunction";
 
 const prefix = 'senado-cl-admin-api';
 
