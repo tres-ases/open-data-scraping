@@ -2,9 +2,9 @@ import {Construct} from "constructs";
 import {CfnElement, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {
-  AllowedMethods,
+  AllowedMethods, CachePolicy,
   Distribution,
-  OriginAccessIdentity,
+  OriginAccessIdentity, OriginRequestPolicy,
   SecurityPolicyProtocol,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
@@ -78,10 +78,12 @@ export default class AdminSubstack extends NestedStack {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       additionalBehaviors: {
-        '/api/': {
+        '/api/*': {
           origin: new RestApiOrigin(apiSubtack.api, {}),
           allowedMethods: AllowedMethods.ALLOW_ALL,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: CachePolicy.CACHING_DISABLED,
+          originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         }
       }
     });

@@ -1,7 +1,7 @@
 import {Construct} from "constructs";
 import {CfnElement, Duration, NestedStack,} from 'aws-cdk-lib';
 import {UserPool, UserPoolClient, UserPoolEmail} from 'aws-cdk-lib/aws-cognito';
-import {CfnAuthorizer, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {CfnAuthorizer, Deployment, RestApi, Stage} from "aws-cdk-lib/aws-apigateway";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 
@@ -43,6 +43,9 @@ export default class AdminApiSubstack extends NestedStack {
     });
 
     this.api = new RestApi(this, `${prefix}-apigw`, { deploy: false });
+
+    const deployment  = new Deployment(this, `${prefix}-apigw`, { api: this.api });
+    const stage = new Stage(this, `${prefix}-apigw-stage`, { deployment, stageName: 'api' })
 
     const authorizer = new CfnAuthorizer(this, `${prefix}-authorizer`, {
       restApiId: this.api.restApiId,
