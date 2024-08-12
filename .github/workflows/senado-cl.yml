@@ -20,6 +20,9 @@ jobs:
     outputs:
       admin-front-changed: steps.changes.outputs.admin-front-changed
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - uses: dorny/paths-filter@v3
         id: changes
         with:
@@ -34,7 +37,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
