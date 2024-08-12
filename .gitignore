@@ -38,6 +38,7 @@ out/
 !**/deploy.template.sh
 
 # Transpilated SRC packages
+senado.cl/global/dist
 senado.cl/packages/**/dist
 senado.cl/packages/**/layer
 

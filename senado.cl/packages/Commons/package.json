@@ -25,5 +25,8 @@
     "@types/node": "^20.11.15",
     "lodash": "^4.17.21",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@senado-cl/global": "workspace:*"
   }
 }

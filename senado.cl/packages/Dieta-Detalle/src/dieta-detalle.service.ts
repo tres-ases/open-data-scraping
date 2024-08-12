@@ -2,24 +2,24 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import DietaLib from "@senado-cl/commons/dieta";
-import {Ano, Dieta} from "@senado-cl/commons/dieta/model";
+import {Ano, AnoMes, Dieta, DietaBucketKey} from "@senado-cl/global/dieta";
+import SenadoConst from "@senado-cl/global";
 import Commons from "@senado-cl/commons";
-import {AnoMes} from "./dieta-detalle.model";
 
 const s3Client = new S3Client({});
 
 const saveJsonStructured = async (ano: string, mes: string, dietas: Dieta[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: Commons.Constants.S3_BUCKET_SENADO,
-    Key: DietaLib.Constants.S3_BUCKET_KEY_DETALLE_JSON_STRUCTURED(ano, mes),
+    Bucket: SenadoConst.S3_BUCKET,
+    Key: DietaBucketKey.detalleJsonStructured(ano, mes),
     Body: JSON.stringify(dietas)
   }));
 }
 
 const saveJsonLines = async (ano: string, mes: string, dietas: Dieta[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: Commons.Constants.S3_BUCKET_SENADO,
-    Key: DietaLib.Constants.S3_BUCKET_KEY_DETALLE_JSON_LINES(ano, mes),
+    Bucket: SenadoConst.S3_BUCKET,
+    Key: DietaBucketKey.detalleJsonLines(ano, mes),
     Body: dietas.map(
       d => JSON.stringify(d)
     ).join('\n')
@@ -63,7 +63,7 @@ export const mapMesAnoArrayDieta = async (ano: number, mes: number): Promise<Ano
 
   const anos = JSON.parse(
     await Commons.Fn.getFileFromS3(
-      DietaLib.Constants.S3_BUCKET_KEY_ANO_MES_JSON_STRUCTURED
+      DietaBucketKey.anoMesJsonStructured
     )
   ) as Ano[];
 
@@ -73,7 +73,7 @@ export const mapMesAnoArrayDieta = async (ano: number, mes: number): Promise<Ano
         m => +a.id > ano || (+a.id === ano && +m.id >= mes)
       )
       .forEach(
-        m => anoMesArray.push({ano: a.id, mes: m.id})
+        m => anoMesArray.push({ano: +a.id, mes: +m.id})
       )
   )
 

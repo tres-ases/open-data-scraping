@@ -1,7 +1,6 @@
 import {Construct} from "constructs";
 import {CfnElement, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
-import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import {
   AllowedMethods,
   Distribution,
@@ -20,8 +19,12 @@ const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
 const subdomain = `senado-admin.${domain}`;
 
+interface AdminSubstackProps {
+  bucket: Bucket
+}
+
 export default class AdminSubstack extends NestedStack {
-  constructor(scope: Construct) {
+  constructor(scope: Construct, {bucket}: AdminSubstackProps) {
     super(scope, prefix);
 
     const zone = HostedZone.fromLookup(this, `${prefix}-zone`, { domainName: domain });
@@ -80,7 +83,7 @@ export default class AdminSubstack extends NestedStack {
       target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
 
-    const apiSubtack = new AdminApiSubstack(this);
+    const apiSubtack = new AdminApiSubstack(this, {bucket});
   }
 
   getLogicalId(element: CfnElement): string {

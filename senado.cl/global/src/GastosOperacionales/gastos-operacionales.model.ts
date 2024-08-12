@@ -1,4 +1,4 @@
-import {AnoMes} from "@senado-cl/commons/model";
+import {AnoMes} from "@senado-cl/global/dieta";
 
 export interface Parlamentario {
   id: string

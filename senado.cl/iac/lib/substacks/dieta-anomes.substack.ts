@@ -1,6 +1,6 @@
-import {aws_lambda_nodejs as nodejs, CfnElement, Duration, NestedStack, NestedStackProps} from "aws-cdk-lib";
+import {CfnElement, Duration, NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Bucket} from "aws-cdk-lib/aws-s3";
-import {Code, LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda";
+import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {Construct} from "constructs";
 import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks";
 import {DefinitionBody, Parallel, StateMachine, StateMachineType, TaskInput} from "aws-cdk-lib/aws-stepfunctions";
@@ -8,8 +8,7 @@ import SenadoNodejsFunction from "../cdk/SenadoNodejsFunction";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
-  commonsLy: LayerVersion
-  scraperLy: LayerVersion
+  layers: LayerVersion[]
 }
 
 const prefix = 'dietaAnoMes';
@@ -18,26 +17,26 @@ const pckName = 'Dieta-AnoMes';
 export default class DietaAnomesSubstack extends NestedStack {
   constructor(scope: Construct, props: Props) {
     super(scope, prefix, props);
-    const {bucket, commonsLy, scraperLy} = props;
+    const {bucket, layers} = props;
 
     const saveJsonFn = new SenadoNodejsFunction(this, `${prefix}-saveJson`, {
       pckName,
       handler: 'dieta-anomes.saveAnosJsonStructured',
-      layers: [commonsLy, scraperLy]
+      layers
     });
     bucket.grantWrite(saveJsonFn);
 
     const saveJsonLinesFn = new SenadoNodejsFunction(this, `${prefix}-saveJsonLines`, {
       pckName,
       handler: 'dieta-anomes.saveAnosJsonLines',
-      layers: [commonsLy, scraperLy]
+      layers
     });
     bucket.grantWrite(saveJsonLinesFn);
 
     const getFn = new SenadoNodejsFunction(this, `${prefix}-get`, {
       pckName,
       handler: 'dieta-anomes.getAnosHandler',
-      layers: [commonsLy, scraperLy],
+      layers,
       timeout: 90
     });
 

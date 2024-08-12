@@ -8,8 +8,7 @@ import {DefinitionBody, JsonPath, Map, StateMachine, StateMachineType} from "aws
 
 interface Props extends NestedStackProps {
   bucket: Bucket
-  commonsLy: LayerVersion
-  scraperLy: LayerVersion
+  layers: LayerVersion[]
 }
 
 const prefix = 'gastosOpe';
@@ -18,25 +17,25 @@ const pckName = 'GastosOperacionales';
 export default class GastosOperacionalesSubstack extends NestedStack {
   constructor(scope: Construct, props: Props) {
     super(scope, prefix, props);
-    const {bucket, commonsLy, scraperLy} = props;
+    const {bucket, layers} = props;
 
     const getAnoMesArrayGroupsFn = new SenadoNodejsFunction(this, `${prefix}-getAnoMesArrayGroups`, {
       pckName,
       handler: 'gastos-operacionales.getAnoMesArrayGroupsHandler',
-      layers: [commonsLy, scraperLy]
+      layers
     });
 
     const getAnoMesParlIdArrayFn = new SenadoNodejsFunction(this, `${prefix}-getAnoMesParlIdArray`, {
       pckName,
       handler: 'gastos-operacionales.getAnoMesParlIdArrayHandler',
-      layers: [commonsLy, scraperLy],
+      layers,
       timeout: 180
     });
 
     const getSaveDataFn = new SenadoNodejsFunction(this, `${prefix}-getSaveData`, {
       pckName,
       handler: 'gastos-operacionales.getSaveDataHandler',
-      layers: [commonsLy, scraperLy]
+      layers
     });
     bucket.grantWrite(getSaveDataFn);
 

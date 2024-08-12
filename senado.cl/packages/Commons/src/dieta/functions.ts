@@ -1,4 +1,4 @@
-import {Ano, AnoMesFlatten} from "./model";
+import {Ano, AnoMesFlatten} from "@senado-cl/global/dieta";
 
 function flattenAno(ano: Ano) {
   return ano.meses

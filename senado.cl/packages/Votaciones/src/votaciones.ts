@@ -1,7 +1,7 @@
 import {Handler} from "aws-lambda";
 import {getSaveLegislaturaSesiones, getSaveLegislaturaSimpleList} from "./votaciones-legislatura.service";
 import {getLegislaturasSesionesIdSinVotacionSimple, getSaveVotacionSimpleList} from "./votaciones.service";
-import {LegislaturasSesionesId} from "./votaciones.model";
+import {LegislaturasSesionesId} from "@senado-cl/global/votaciones";
 
 export const getSaveLegislaturasHandler: Handler<{cantidad: number}> = async ({cantidad}) => {
   return await getSaveLegislaturaSimpleList(cantidad);

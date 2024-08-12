@@ -1,6 +1,6 @@
 import {Handler} from 'aws-lambda';
 import {getAnos, saveJsonLines, saveJsonStructured} from "./dieta-anomes.service";
-import {Ano} from "@senado-cl/commons/dieta/model";
+import {Ano} from "@senado-cl/global/dieta";
 
 export const getAnosHandler: Handler<undefined> = async (event, context) => {
   try {

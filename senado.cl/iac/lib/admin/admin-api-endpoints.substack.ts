@@ -1,27 +1,47 @@
 import {Construct} from "constructs";
 import {CfnElement, NestedStack,} from 'aws-cdk-lib';
-import {LambdaIntegration, RestApi} from "aws-cdk-lib/aws-apigateway";
-import AdminNodejsFunction from "../cdk/AdminNodejsFunction";
+import {AwsIntegration, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
+import {Bucket} from "aws-cdk-lib/aws-s3";
+import {SenadoresBucketKey} from "@senado-cl/global/senadores";
 
-const prefix = 'senado-cl-admin-api';
+const prefix = 'senado-cl-admin-api-endpoints';
 
 interface AdminApiEndpointsSubstackProps {
   api: RestApi
+  bucket: Bucket
 }
 
 export default class AdminApiEndpointsSubstack extends NestedStack {
 
-  constructor(scope: Construct, {api}: AdminApiEndpointsSubstackProps) {
+  constructor(scope: Construct, {api, bucket}: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
-    const senadoresLambda = new AdminNodejsFunction(this, `${prefix}-Senadores-Fn`, {
-      pckName: 'Senadores',
-      handler: 'senadores.hi'
-    })
+    const readRole = new Role(this, `${prefix}-readRole`, {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+    readRole.addToPolicy(new PolicyStatement({
+      resources: [`${bucket.bucketArn}/*`],
+      actions: ['s3:GetObject']
+    }))
 
-    const senadoresLambdaInt = new LambdaIntegration(senadoresLambda);
-
-    api.root.addMethod('GET', senadoresLambdaInt);
+    api.root
+      .addResource('senadores')
+      .addMethod('GET', new AwsIntegration({
+          service: 's3',
+          path: `${bucket.bucketName}/${SenadoresBucketKey.periodoJsonStructured}`,
+          integrationHttpMethod: 'GET',
+          options: {
+            credentialsRole: readRole,
+            requestParameters: {
+              'integration.request.path.file': 'method.request.path.file'
+            },
+            integrationResponses: [{
+              statusCode: "200"
+            }]
+          }
+        })
+      );
   }
 
   getLogicalId(element: CfnElement): string {

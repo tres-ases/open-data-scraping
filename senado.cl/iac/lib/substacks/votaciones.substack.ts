@@ -8,8 +8,7 @@ import {DefinitionBody, JsonPath, Map, StateMachine, StateMachineType} from "aws
 
 interface Props extends NestedStackProps {
   bucket: Bucket
-  commonsLy: LayerVersion
-  scraperLy: LayerVersion
+  layers: LayerVersion[]
 }
 
 const prefix = 'votaciones';
@@ -18,12 +17,12 @@ const pckName = 'Votaciones';
 export default class VotacionesSubstack extends NestedStack {
   constructor(scope: Construct, props: Props) {
     super(scope, prefix, props);
-    const {bucket, commonsLy, scraperLy} = props;
+    const {bucket, layers} = props;
 
     const getLegislaturasSesionesIdSinVotacionResumen = new SenadoNodejsFunction(this, `${prefix}-getLegislaturasSesionesIdSinVotacionResumen`, {
       pckName,
       handler: 'votaciones.getLegislaturasSesionesIdSinVotacionResumenHandler',
-      layers: [commonsLy, scraperLy],
+      layers,
       timeout: 300
     });
     bucket.grantRead(getLegislaturasSesionesIdSinVotacionResumen);
@@ -31,7 +30,7 @@ export default class VotacionesSubstack extends NestedStack {
     const getSaveVotacionSimpleList = new SenadoNodejsFunction(this, `${prefix}-getSaveVotacionSimpleList`, {
       pckName,
       handler: 'votaciones.getSaveVotacionSimpleListHandler',
-      layers: [commonsLy, scraperLy]
+      layers
     });
     bucket.grantWrite(getSaveVotacionSimpleList);
 

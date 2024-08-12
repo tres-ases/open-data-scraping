@@ -3,15 +3,20 @@ import {CfnElement, Duration, NestedStack,} from 'aws-cdk-lib';
 import {UserPool, UserPoolClient, UserPoolEmail} from 'aws-cdk-lib/aws-cognito';
 import {CfnAuthorizer, RestApi} from "aws-cdk-lib/aws-apigateway";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
+import {Bucket} from "aws-cdk-lib/aws-s3";
 
 const prefix = 'senado-cl-admin-api';
+
+interface AdminApiSubstackProps {
+  bucket: Bucket
+}
 
 export default class AdminApiSubstack extends NestedStack {
   readonly userPool: UserPool;
   readonly client: UserPoolClient;
   readonly api: RestApi;
 
-  constructor(scope: Construct) {
+  constructor(scope: Construct, {bucket}: AdminApiSubstackProps) {
     super(scope, prefix);
 
     this.userPool = new UserPool(this, `${prefix}-user-pool`, {
@@ -47,7 +52,7 @@ export default class AdminApiSubstack extends NestedStack {
       identitySource: 'method.request.header.Authorization',
     });
 
-    const endpointsSubstack = new AdminApiEndpointsSubstack(this, {api: this.api});
+    const endpointsSubstack = new AdminApiEndpointsSubstack(this, {api: this.api, bucket});
   }
 
   getLogicalId(element: CfnElement): string {

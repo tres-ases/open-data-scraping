@@ -1,17 +1,13 @@
 import axios from "axios";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import {ParlamentarioDetalle, SenadorFotoTipo} from "./senadores.model";
-import Commons from "@senado-cl/commons";
+import SenadoConst from "@senado-cl/global";
 import * as cheerio from "cheerio";
+import {ParlamentarioDetalle, SenadorFotoTipo, SenadoresBucketKey} from "@senado-cl/global/senadores";
 
 const s3Client = new S3Client({});
 
 const getDetalleUrl = (parlId: number) => `https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=fichasenador&id=${parlId}`;
 const getFotoUrl = (parlId: number, tipo: SenadorFotoTipo) => `https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=getFoto&id=${parlId}&tipo=${tipo}`;
-
-const getImageBucketKey = (parlId: number, tipo: SenadorFotoTipo) => `Senadores/Detalle/Foto/parlId=${parlId}/${tipo}.jpeg`;
-
-const getJsonBucketKey = (parlId: number) => `Senadores/Detalle/JsonStructured/parlId=${parlId}/data.json`;
 
 export const downloadSaveImages = async (parlId: number) => {
   try {
@@ -20,8 +16,8 @@ export const downloadSaveImages = async (parlId: number) => {
       const buffer = Buffer.from(response.data);
 
       const command = new PutObjectCommand({
-        Bucket: Commons.Constants.S3_BUCKET_SENADO,
-        Key: getImageBucketKey(parlId, tipo),
+        Bucket: SenadoConst.S3_BUCKET,
+        Key: SenadoresBucketKey.image(parlId, tipo),
         Body: buffer,
       });
 
@@ -56,8 +52,8 @@ export const getSaveDetalle = async (parlId: number): Promise<ParlamentarioDetal
 
 const saveJsonStructured = async (parlId: number, detalle: ParlamentarioDetalle) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: Commons.Constants.S3_BUCKET_SENADO,
-    Key: getJsonBucketKey(parlId),
+    Bucket: SenadoConst.S3_BUCKET,
+    Key: SenadoresBucketKey.json(parlId),
     Body: JSON.stringify(detalle)
   }));
 }

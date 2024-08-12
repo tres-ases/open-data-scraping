@@ -1,7 +1,7 @@
 import {Handler} from "aws-lambda";
 import {getAnoMesArray, getAnoMesParlIdArray, getSaveData} from "./gastos-operacionales.service";
-import {AnoMesParl} from "./gastos-operacionales.model";
-import {AnoMes} from "@senado-cl/commons/model";
+import {AnoMesParl} from "@senado-cl/global/gastos-operacionales";
+import {AnoMes} from "@senado-cl/global/dieta";
 
 export const getAnoMesArrayGroupsHandler: Handler<{ ano: number }> = async ({ano}) => {
   return getAnoMesArray(ano);

@@ -22,3 +22,8 @@ export interface Dieta {
   descuentos: number
   saldo: number
 }
+
+export interface AnoMes {
+  ano: number
+  mes: number
+}

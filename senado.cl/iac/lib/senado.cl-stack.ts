@@ -9,13 +9,25 @@ import SenadoresSubstack from "./substacks/senadores.substack";
 import VotacionesLegislaturaSubstack from "./substacks/votaciones-legislatura.substack";
 import VotacionesSubstack from "./substacks/votaciones.substack";
 import AdminSubstack from "./admin/admin.substack";
+import SenadoConst from "@senado-cl/global";
 
 export class SenadoClStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const openDataBucket = new Bucket(this, 'openDataBucket', {
-      bucketName: 'open-data-senado-cl'
+      bucketName: SenadoConst.S3_BUCKET
+    });
+
+    const globalLy = new LayerVersion(this, 'global-ly', {
+      layerVersionName: 'global-layer',
+      compatibleRuntimes: [
+        Runtime.NODEJS_20_X
+      ],
+      code: Code.fromAsset('../global/layer'),
+      compatibleArchitectures: [
+        Architecture.X86_64
+      ]
     });
 
     const commonsLy = new LayerVersion(this, 'commons-ly', {
@@ -42,35 +54,35 @@ export class SenadoClStack extends Stack {
 
     const dietaAnoMesStack = new DietaAnoMesSubstack(this, {
       bucket: openDataBucket,
-      commonsLy, scraperLy
+      layers: [commonsLy, scraperLy, globalLy]
     });
 
     const dietaDetalleStack = new DietaDetalleSubStack(this, {
       bucket: openDataBucket,
-      commonsLy, scraperLy
+      layers: [commonsLy, scraperLy, globalLy]
     });
 
     const gastosOpeStack = new GastosOperacionalesSubstack(this, {
       bucket: openDataBucket,
-      commonsLy, scraperLy
+      layers: [commonsLy, scraperLy, globalLy]
     });
 
     const senadoresStack = new SenadoresSubstack(this, {
       bucket: openDataBucket,
-      commonsLy, scraperLy
+      layers: [commonsLy, scraperLy, globalLy]
     });
 
     const votacionesLegislaturaStack = new VotacionesLegislaturaSubstack(this,  {
       bucket: openDataBucket,
-      commonsLy, scraperLy
+      layers: [commonsLy, scraperLy, globalLy]
     });
 
     const votacionesStack = new VotacionesSubstack(this,  {
       bucket: openDataBucket,
-      commonsLy, scraperLy
+      layers: [commonsLy, scraperLy, globalLy]
     });
 
-    const adminStack = new AdminSubstack(this);
+    const adminStack = new AdminSubstack(this, {bucket: openDataBucket});
   }
 
   getLogicalId(element: CfnElement): string {

@@ -2,23 +2,23 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import Dieta from "@senado-cl/commons/dieta";
-import Commons from "@senado-cl/commons";
-import {Ano, Mes} from "@senado-cl/commons/dieta/model";
+import {Ano, DietaBucketKey, Mes} from "@senado-cl/global/dieta";
+import SenadoConst from "@senado-cl/global";
 
 const s3Client = new S3Client({});
 
 export const saveJsonStructured = async (anos: Ano[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: Commons.Constants.S3_BUCKET_SENADO,
-    Key: Dieta.Constants.S3_BUCKET_KEY_ANO_MES_JSON_STRUCTURED,
+    Bucket: SenadoConst.S3_BUCKET,
+    Key: DietaBucketKey.anoMesJsonStructured,
     Body: JSON.stringify(anos)
   }));
 }
 
 export const saveJsonLines = async (anos: Ano[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: Commons.Constants.S3_BUCKET_SENADO,
-    Key: Dieta.Constants.S3_BUCKET_KEY_ANO_MES_JSON_LINES,
+    Bucket: SenadoConst.S3_BUCKET,
+    Key: DietaBucketKey.anoMesJsonLines,
     Body: anos.map(
       a => Dieta.Fn.flattenAno(a)
     ).join('\n')
