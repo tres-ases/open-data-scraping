@@ -8,7 +8,7 @@ import {
   SecurityPolicyProtocol,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
-import {S3Origin} from 'aws-cdk-lib/aws-cloudfront-origins';
+import {RestApiOrigin, S3Origin} from 'aws-cdk-lib/aws-cloudfront-origins';
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
@@ -52,6 +52,8 @@ export default class AdminSubstack extends NestedStack {
       validation: CertificateValidation.fromDns(zone),
     });
 
+    const apiSubtack = new AdminApiSubstack(this, {bucket});
+
     const distribution = new Distribution(this, `${prefix}-distribution`, {
       certificate: certificate,
       defaultRootObject: "index.html",
@@ -74,6 +76,13 @@ export default class AdminSubstack extends NestedStack {
         compress: true,
         allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      additionalBehaviors: {
+        '/api/': {
+          origin: new RestApiOrigin(apiSubtack.api, {}),
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        }
       }
     });
 
@@ -83,7 +92,7 @@ export default class AdminSubstack extends NestedStack {
       target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
 
-    const apiSubtack = new AdminApiSubstack(this, {bucket});
+
   }
 
   getLogicalId(element: CfnElement): string {

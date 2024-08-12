@@ -32,10 +32,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           path: `${bucket.bucketName}/${SenadoresBucketKey.periodoJsonStructured}`,
           integrationHttpMethod: 'GET',
           options: {
-            credentialsRole: readRole,
-            integrationResponses: [{
-              statusCode: "200"
-            }]
+            credentialsRole: readRole
           }
         })
       );
