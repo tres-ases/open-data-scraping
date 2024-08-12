@@ -33,9 +33,6 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           integrationHttpMethod: 'GET',
           options: {
             credentialsRole: readRole,
-            requestParameters: {
-              'integration.request.path.file': 'method.request.path.file'
-            },
             integrationResponses: [{
               statusCode: "200"
             }]
