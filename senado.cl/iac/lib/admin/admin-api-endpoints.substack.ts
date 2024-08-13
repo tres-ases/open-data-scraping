@@ -34,11 +34,6 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           options: {
             credentialsRole: readRole,
             passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-            requestParameters: {
-              //'integration.request.path.bucket': 'method.request.path.folder',
-              //'integration.request.path.object': 'method.request.path.item',
-              'integration.request.header.Accept': 'method.request.header.Accept'
-            },
             integrationResponses: [{
               statusCode: '200',
               responseParameters: {
