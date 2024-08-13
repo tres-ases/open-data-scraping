@@ -1,6 +1,6 @@
 import {Construct} from "constructs";
 import {CfnElement, NestedStack,} from 'aws-cdk-lib';
-import {AwsIntegration, PassthroughBehavior, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {AuthorizationType, AwsIntegration, PassthroughBehavior, RestApi} from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {SenadoresBucketKey} from "@senado-cl/global/senadores";
@@ -41,7 +41,20 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
               }
             }]
           }
-        })
+        }),
+        {
+          authorizationType: AuthorizationType.IAM,
+          requestParameters: {
+            'method.request.header.Accept': true
+          },
+          methodResponses: [
+            {
+              statusCode: '200',
+              responseParameters: {
+                'method.response.header.Content-Type': true
+              }
+            }]
+        }
       );
   }
 
