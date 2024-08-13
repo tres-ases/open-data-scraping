@@ -45,7 +45,7 @@ export default class AdminApiSubstack extends NestedStack {
     this.api = new RestApi(this, `${prefix}-apigw`, { deploy: false });
 
     const deployment  = new Deployment(this, `${prefix}-apigw-deployment`, { api: this.api });
-    const stage = new Stage(this, `${prefix}-apigw-stage`, { deployment, stageName: 'api' })
+    this.api.deploymentStage = new Stage(this, `${prefix}-apigw-stage`, { deployment, stageName: 'api' });
 
     const authorizer = new CfnAuthorizer(this, `${prefix}-authorizer`, {
       restApiId: this.api.restApiId,
