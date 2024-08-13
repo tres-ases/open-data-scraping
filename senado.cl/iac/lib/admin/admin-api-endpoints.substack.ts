@@ -1,6 +1,6 @@
 import {Construct} from "constructs";
 import {CfnElement, NestedStack,} from 'aws-cdk-lib';
-import {AwsIntegration, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {AwsIntegration, PassthroughBehavior, RestApi} from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {SenadoresBucketKey} from "@senado-cl/global/senadores";
@@ -32,7 +32,19 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           path: `${bucket.bucketName}/${SenadoresBucketKey.periodoJsonStructured}`,
           integrationHttpMethod: 'GET',
           options: {
-            credentialsRole: readRole
+            credentialsRole: readRole,
+            passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+            requestParameters: {
+              //'integration.request.path.bucket': 'method.request.path.folder',
+              //'integration.request.path.object': 'method.request.path.item',
+              'integration.request.header.Accept': 'method.request.header.Accept'
+            },
+            integrationResponses: [{
+              statusCode: '200',
+              responseParameters: {
+                'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+              }
+            }]
           }
         })
       );
