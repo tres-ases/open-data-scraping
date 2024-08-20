@@ -1,7 +1,12 @@
 import {Construct} from "constructs";
 import {CfnElement, CfnOutput, Duration, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
-import {CloudFrontAllowedMethods, CloudFrontWebDistribution, OriginAccessIdentity} from 'aws-cdk-lib/aws-cloudfront';
+import {
+  CloudFrontAllowedMethods,
+  CloudFrontWebDistribution,
+  OriginAccessIdentity,
+  ViewerCertificate
+} from 'aws-cdk-lib/aws-cloudfront';
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
@@ -46,14 +51,15 @@ export default class AdminSubstack extends NestedStack {
       validation: CertificateValidation.fromDns(zone),
     });
 
-    const apiSubtack = new AdminApiSubstack(this, {bucket});
+    const apiSubstack = new AdminApiSubstack(this, {bucket});
 
     const distribution = new CloudFrontWebDistribution(this, `${prefix}-distribution`, {
+      viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
       originConfigs: [
         {
           // make sure your backend origin is first in the originConfigs list so it takes precedence over the S3 origin
           customOriginSource: {
-            domainName: `${apiSubtack.api.restApiId}.execute-api.${this.region}.amazonaws.com`,
+            domainName: `${apiSubstack.api.restApiId}.execute-api.${this.region}.amazonaws.com`,
           },
           behaviors: [
             {
