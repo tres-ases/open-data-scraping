@@ -116,7 +116,7 @@ jobs:
         uses: dkershner6/aws-ssm-getparameters-action@v1
         with:
           parameterPairs: "
-            openData/senadoCl/admin/distributionId = DISTRIBUTION"
+            /openData/senadoCl/admin/distributionId = DISTRIBUTION"
           withDecryption: "true"
 
       - name: Invalidate CloudFront Admin SPA

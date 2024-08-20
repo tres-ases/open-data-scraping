@@ -87,7 +87,7 @@ export default class AdminSubstack extends NestedStack {
     });
 
     new StringParameter(this, `${prefix}-parameter-distribution-id`, {
-      parameterName: "openData/senadoCl/admin/distributionId",
+      parameterName: "/openData/senadoCl/admin/distributionId",
       description: `${prefix}-parameter-distribution-id`,
       stringValue: distribution.distributionId,
     });
