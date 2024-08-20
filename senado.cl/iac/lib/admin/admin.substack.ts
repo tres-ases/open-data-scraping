@@ -27,7 +27,7 @@ export default class AdminSubstack extends NestedStack {
     super(scope, prefix);
 
     const zone = HostedZone.fromLookup(this, `${prefix}-zone`, { domainName: domain });
-    const siteDomain = subdomain;
+
     const cloudfrontOAI = new OriginAccessIdentity(this, `${prefix}-cloudfront-OAI`, {
       comment: `OAI for ${subdomain}`
     });

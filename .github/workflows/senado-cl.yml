@@ -18,8 +18,8 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      adminFrontChanged: steps.changes.outputs.admin-front-changed
-      infraChanged: steps.changes.outputs.infra-changed
+      adminFrontChanged: steps.changes.outputs.adminFrontChanged
+      infraChanged: steps.changes.outputs.infraChanged
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,9 +28,9 @@ jobs:
         id: changes
         with:
           filters: |
-            admin-front-changed:
+            adminFrontChanged:
               - 'senado.cl/admin/front/**'
-            infra-changed:
+            infraChanged:
               - 'senado.cl/**'
               - '!senado.cl/admin/front/**'
               - 'layers/**'
