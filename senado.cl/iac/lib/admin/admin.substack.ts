@@ -1,18 +1,20 @@
 import {Construct} from "constructs";
-import {CfnElement, Duration, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
+import {CfnElement, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {
-  CloudFrontAllowedMethods,
-  CloudFrontWebDistribution,
+  AllowedMethods,
+  CachePolicy,
+  Distribution,
   OriginAccessIdentity,
-  OriginProtocolPolicy,
-  ViewerCertificate
+  PriceClass,
+  ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import AdminApiSubstack from "./admin-api.substack";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
+import {RestApiOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -48,36 +50,27 @@ export default class AdminSubstack extends NestedStack {
 
     const apiSubstack = new AdminApiSubstack(this, {bucket});
 
-    const distribution = new CloudFrontWebDistribution(this, `${prefix}-distribution`, {
-      viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
-      originConfigs: [
-        {
-          // make sure your backend origin is first in the originConfigs list so it takes precedence over the S3 origin
-          customOriginSource: {
-            domainName: `${apiSubstack.api.restApiId}.execute-api.${this.region}.amazonaws.com`,
-            originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
-          },
-          behaviors: [
-            {
-              pathPattern: "/api/*"
-            },
-          ],
+    const distribution = new Distribution(scope, 'cloudfront-distribution', {
+      domainNames: [subdomain],
+      defaultBehavior: {
+        origin: new S3Origin(hostingBucket, {
+          originAccessIdentity: cloudfrontOAI,
+          originPath: '/',
+        }),
+        cachePolicy: CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      additionalBehaviors: {
+        'api/*': {
+          origin: new RestApiOrigin(apiSubstack.api),
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+          cachePolicy: CachePolicy.CACHING_DISABLED,
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
-        {
-          s3OriginSource: {
-            s3BucketSource: hostingBucket,
-            originAccessIdentity: cloudfrontOAI,
-          },
-          behaviors: [
-            {
-              compress: true,
-              isDefaultBehavior: true,
-              defaultTtl: Duration.seconds(0),
-              allowedMethods: CloudFrontAllowedMethods.GET_HEAD_OPTIONS,
-            },
-          ],
-        },
-      ]
+      },
+      defaultRootObject: 'index.html',
+      priceClass: PriceClass.PRICE_CLASS_ALL,
+      certificate
     });
 
     new ARecord(this, `${prefix}-alias-record`, {
