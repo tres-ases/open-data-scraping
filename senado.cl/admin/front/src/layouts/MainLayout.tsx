@@ -7,16 +7,17 @@ import {
   FolderIcon,
   HomeIcon,
   PowerIcon,
+  UserIcon,
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import {Outlet, useNavigate} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import {useAuthenticator} from "@aws-amplify/ui-react";
-import {authRoutes} from "../routes/routes.auth.ts";
+import {mainRoutes} from "../routes/routes.main.ts";
 
 const navigation = [
   { name: 'Inicio', href: '/', icon: HomeIcon, current: true },
-  { name: 'Senadores', href: '#', icon: UsersIcon, current: false },
+  { name: 'Senadores', href: mainRoutes.senadores.path, icon: UsersIcon, current: false },
   { name: 'Remuneraciones', href: '#', icon: CurrencyDollarIcon, current: false },
   { name: 'Gastos', href: '#', icon: DocumentCurrencyDollarIcon, current: false },
   { name: 'Votaciones', href: '#', icon: FolderIcon, current: false },
@@ -28,11 +29,7 @@ function classNames(...classes: string[]) {
 
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const {user} = useAuthenticator(context => [context.user]);
-  const navigate = useNavigate();
-
-  console.log('user', user);
-  if(!user) navigate(authRoutes.login.path, {replace: true});
+  const {user, signOut} = useAuthenticator(context => [context.user]);
 
   return (
     <>
@@ -126,8 +123,12 @@ export default function MainLayout() {
                   </ul>
                 </li>
                 <li className="-mx-6 mt-auto mb-5">
+                  <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-800 hover:text-gray-700">
+                    <UserIcon className="h-6 w-6 rounded-full bg-gray-50"/>
+                    <span aria-hidden="true">{user?.signInDetails?.loginId}</span>
+                  </div>
                   <a
-                    href="#"
+                    onClick={signOut}
                     className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-rose-800 hover:text-rose-700 hover:bg-gray-50"
                   >
                     <PowerIcon className="h-6 w-6 rounded-full bg-gray-50"/>
@@ -145,7 +146,7 @@ export default function MainLayout() {
             <Bars3Icon aria-hidden="true" className="h-6 w-6" />
           </button>
           <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">Dashboard</div>
-          <a href="#" >
+          <a onClick={signOut}>
             <span className="sr-only">Cerrar Sesión</span>
             <PowerIcon className="h-6 w-6 rounded-full text-rose-800 bg-rose-50"/>
           </a>

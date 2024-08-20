@@ -1,14 +1,7 @@
 import {Construct} from "constructs";
-import {CfnElement, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
+import {CfnElement, Duration, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
-import {
-  AllowedMethods, CachePolicy,
-  Distribution,
-  OriginAccessIdentity, OriginRequestPolicy,
-  SecurityPolicyProtocol,
-  ViewerProtocolPolicy
-} from 'aws-cdk-lib/aws-cloudfront';
-import {RestApiOrigin, S3Origin} from 'aws-cdk-lib/aws-cloudfront-origins';
+import {CloudFrontAllowedMethods, CloudFrontWebDistribution, OriginAccessIdentity} from 'aws-cdk-lib/aws-cloudfront';
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
@@ -54,38 +47,40 @@ export default class AdminSubstack extends NestedStack {
 
     const apiSubtack = new AdminApiSubstack(this, {bucket});
 
-    const distribution = new Distribution(this, `${prefix}-distribution`, {
-      certificate: certificate,
-      defaultRootObject: "index.html",
-      domainNames: [siteDomain],
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
-      errorResponses:[
+    const distribution = new CloudFrontWebDistribution(this, `${prefix}-distribution`, {
+      originConfigs: [
         {
-          httpStatus: 404,
-          responseHttpStatus: 200,
-          responsePagePath: '/index.html'
+          // make sure your backend origin is first in the originConfigs list so it takes precedence over the S3 origin
+          customOriginSource: {
+            domainName: `${apiSubtack.api.restApiId}.execute-api.${this.region}.amazonaws.com`,
+          },
+          behaviors: [
+            {
+              pathPattern: "/api/*", // CloudFront will forward `/api/*` to the backend so make sure all your routes are prepended with `/api/`
+              allowedMethods: CloudFrontAllowedMethods.ALL,
+              defaultTtl: Duration.seconds(0),
+              forwardedValues: {
+                queryString: true,
+                headers: ["Authorization"], // By default CloudFront will not forward any headers through so if your API needs authentication make sure you forward auth headers across
+              },
+            },
+          ],
         },
         {
-          httpStatus: 403,
-          responseHttpStatus: 200,
-          responsePagePath: '/index.html'
+          s3OriginSource: {
+            s3BucketSource: hostingBucket,
+            originAccessIdentity: cloudfrontOAI,
+          },
+          behaviors: [
+            {
+              compress: true,
+              isDefaultBehavior: true,
+              defaultTtl: Duration.seconds(0),
+              allowedMethods: CloudFrontAllowedMethods.GET_HEAD_OPTIONS,
+            },
+          ],
         },
-      ],
-      defaultBehavior: {
-        origin: new S3Origin(hostingBucket, {originAccessIdentity: cloudfrontOAI}),
-        compress: true,
-        allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
-        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      },
-      additionalBehaviors: {
-        '/api/*': {
-          origin: new RestApiOrigin(apiSubtack.api, {}),
-          allowedMethods: AllowedMethods.ALLOW_ALL,
-          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          cachePolicy: CachePolicy.CACHING_DISABLED,
-          originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
-        }
-      }
+      ]
     });
 
     new ARecord(this, `${prefix}-alias-record`, {
