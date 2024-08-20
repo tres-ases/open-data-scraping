@@ -38,10 +38,7 @@ jobs:
   infra:
     runs-on: ubuntu-latest
     needs: [ changes ]
-    if: needs.changes.outputs.infraChanged != 'true'
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    if: needs.changes.outputs.infraChanged == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -97,7 +94,7 @@ jobs:
   admin-front:
     runs-on: ubuntu-latest
     needs: [changes, infra]
-    if: needs.changes.outputs.adminFrontChanged != 'true'
+    if: needs.changes.outputs.adminFrontChanged == 'true'
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -115,10 +112,17 @@ jobs:
       - name: Deploy Admin SPA to S3
         run: aws s3 sync ./dist s3://senado-admin.open-data.cl
 
+      - name: Get AWS SSM Parameters
+        uses: dkershner6/aws-ssm-getparameters-action@v1
+        with:
+          parameterPairs: "
+            openData/senadoCl/admin/distributionId = DISTRIBUTION"
+          withDecryption: "true"
+
       - name: Invalidate CloudFront Admin SPA
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          DISTRIBUTION: 'E1SSZ22XLGRCXK'
+          DISTRIBUTION: ${{ env.DISTRIBUTION }}
           PATHS: "/*"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

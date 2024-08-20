@@ -1,5 +1,5 @@
 import {Construct} from "constructs";
-import {CfnElement, Duration, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
+import {CfnElement, CfnOutput, Duration, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {CloudFrontAllowedMethods, CloudFrontWebDistribution, OriginAccessIdentity} from 'aws-cdk-lib/aws-cloudfront';
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
@@ -7,6 +7,7 @@ import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificateman
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {CanonicalUserPrincipal, PolicyStatement} from "aws-cdk-lib/aws-iam";
 import AdminApiSubstack from "./admin-api.substack";
+import {StringParameter} from "aws-cdk-lib/aws-ssm";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -89,7 +90,11 @@ export default class AdminSubstack extends NestedStack {
       target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
 
-
+    new StringParameter(this, `${prefix}-parameter-distribution-id`, {
+      parameterName: "openData/senadoCl/admin/distributionId",
+      description: `${prefix}-parameter-distribution-id`,
+      stringValue: distribution.distributionId,
+    });
   }
 
   getLogicalId(element: CfnElement): string {
