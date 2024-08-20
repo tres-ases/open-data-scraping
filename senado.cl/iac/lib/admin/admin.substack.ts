@@ -39,12 +39,7 @@ export default class AdminSubstack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY, // NOT recommended for production code
       autoDeleteObjects: true, // NOT recommended for production code
     });
-
-    hostingBucket.addToResourcePolicy(new PolicyStatement({
-      actions: ['s3:GetObject'],
-      resources: [hostingBucket.arnForObjects('*')],
-      principals: [new CanonicalUserPrincipal(cloudfrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId)]
-    }));
+    hostingBucket.grantRead(cloudfrontOAI);
 
     const certificate = new Certificate(this, `${prefix}-certificate`, {
       domainName: subdomain,
@@ -64,13 +59,7 @@ export default class AdminSubstack extends NestedStack {
           },
           behaviors: [
             {
-              pathPattern: "/api/*", // CloudFront will forward `/api/*` to the backend so make sure all your routes are prepended with `/api/`
-              allowedMethods: CloudFrontAllowedMethods.ALL,
-              defaultTtl: Duration.seconds(0),
-              forwardedValues: {
-                queryString: true,
-                headers: ["Authorization"], // By default CloudFront will not forward any headers through so if your API needs authentication make sure you forward auth headers across
-              },
+              pathPattern: "/api/*"
             },
           ],
         },
