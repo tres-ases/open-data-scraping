@@ -63,9 +63,6 @@ export default class AdminApiSubstack extends NestedStack {
       }
     });
 
-    const deployment  = new Deployment(this, `${prefix}-apigw-deployment`, { api: this.api });
-    this.api.deploymentStage = new Stage(this, `${prefix}-apigw-stage`, { deployment, stageName: 'api' });
-
     const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
       cognitoUserPools: [this.userPool]
     });
