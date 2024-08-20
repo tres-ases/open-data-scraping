@@ -1,6 +1,12 @@
 import {Construct} from "constructs";
 import {CfnElement, NestedStack,} from 'aws-cdk-lib';
-import {AuthorizationType, AwsIntegration, PassthroughBehavior, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {
+  AuthorizationType,
+  AwsIntegration,
+  CfnAuthorizer, CognitoUserPoolsAuthorizer,
+  PassthroughBehavior,
+  RestApi
+} from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {SenadoresBucketKey} from "@senado-cl/global/senadores";
@@ -10,11 +16,12 @@ const prefix = 'senado-cl-admin-api-endpoints';
 interface AdminApiEndpointsSubstackProps {
   api: RestApi
   bucket: Bucket
+  authorizer: CognitoUserPoolsAuthorizer
 }
 
 export default class AdminApiEndpointsSubstack extends NestedStack {
 
-  constructor(scope: Construct, {api, bucket}: AdminApiEndpointsSubstackProps) {
+  constructor(scope: Construct, {api, authorizer, bucket}: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
     const readRole = new Role(this, `${prefix}-readRole`, {
@@ -43,7 +50,8 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           }
         }),
         {
-          authorizationType: AuthorizationType.IAM,
+          authorizationType: AuthorizationType.COGNITO,
+          authorizer: authorizer,
           requestParameters: {
             'method.request.header.Accept': true
           },

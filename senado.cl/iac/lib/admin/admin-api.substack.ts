@@ -1,7 +1,7 @@
 import {Construct} from "constructs";
 import {CfnElement, Duration, NestedStack,} from 'aws-cdk-lib';
 import {UserPool, UserPoolClient, UserPoolEmail} from 'aws-cdk-lib/aws-cognito';
-import {CfnAuthorizer, Deployment, RestApi, Stage} from "aws-cdk-lib/aws-apigateway";
+import {CognitoUserPoolsAuthorizer, Cors, Deployment, RestApi, Stage} from "aws-cdk-lib/aws-apigateway";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 
@@ -42,20 +42,35 @@ export default class AdminApiSubstack extends NestedStack {
       accessTokenValidity: Duration.hours(8),
     });
 
-    this.api = new RestApi(this, `${prefix}-apigw`, { deploy: false });
+    this.api = new RestApi(this, `${prefix}-apigw`, {
+      deploy: true,
+      deployOptions: {
+        stageName: 'api'
+      },
+      defaultCorsPreflightOptions: {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'Access-Control-Allow-Credentials',
+          'Access-Control-Allow-Headers',
+          'Impersonating-User-Sub'
+        ],
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowCredentials: true,
+        allowOrigins: Cors.ALL_ORIGINS
+      }
+    });
 
     const deployment  = new Deployment(this, `${prefix}-apigw-deployment`, { api: this.api });
     this.api.deploymentStage = new Stage(this, `${prefix}-apigw-stage`, { deployment, stageName: 'api' });
 
-    const authorizer = new CfnAuthorizer(this, `${prefix}-authorizer`, {
-      restApiId: this.api.restApiId,
-      type: 'COGNITO_USER_POOLS',
-      name: `${prefix}-authorizer`,
-      providerArns: [this.userPool.userPoolArn], // userPoolArn is userPool.arn value
-      identitySource: 'method.request.header.Authorization',
+    const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
+      cognitoUserPools: [this.userPool]
     });
 
-    const endpointsSubstack = new AdminApiEndpointsSubstack(this, {api: this.api, bucket});
+    const endpointsSubstack = new AdminApiEndpointsSubstack(this, {api: this.api, bucket, authorizer});
   }
 
   getLogicalId(element: CfnElement): string {

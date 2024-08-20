@@ -18,7 +18,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      front: ${{ steps.changes.outputs.front }}
+      admin-front: ${{ steps.changes.outputs.admin-front }}
       infra: ${{ steps.changes.outputs.infra }}
     steps:
       - name: Checkout
@@ -28,7 +28,7 @@ jobs:
         id: changes
         with:
           filters: |
-            front:
+            admin-front:
               - 'senado.cl/admin/front/**'
             infra:
               - 'senado.cl/**'
@@ -94,7 +94,7 @@ jobs:
   admin-front:
     runs-on: ubuntu-latest
     needs: [changes, infra]
-    if: ${{ needs.changes.outputs.front == 'true' }}
+    if: ${{ needs.changes.outputs.admin-front == 'true' }}
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4

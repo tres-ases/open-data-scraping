@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://senado-admin.open-data.cl',
+      target: 'https://dhyukio1988dv.cloudfront.net',
       changeOrigin: true,
     })
   );
