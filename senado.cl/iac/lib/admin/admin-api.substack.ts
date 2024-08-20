@@ -1,7 +1,7 @@
 import {Construct} from "constructs";
 import {CfnElement, Duration, NestedStack,} from 'aws-cdk-lib';
-import {UserPool, UserPoolClient, UserPoolEmail} from 'aws-cdk-lib/aws-cognito';
-import {CognitoUserPoolsAuthorizer, Cors, Deployment, RestApi, Stage} from "aws-cdk-lib/aws-apigateway";
+import {UserPool, UserPoolEmail} from 'aws-cdk-lib/aws-cognito';
+import {CognitoUserPoolsAuthorizer, RestApi} from "aws-cdk-lib/aws-apigateway";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 
@@ -9,17 +9,14 @@ const prefix = 'senado-cl-admin-api';
 
 interface AdminApiSubstackProps {
   bucket: Bucket
+  api: RestApi
 }
 
 export default class AdminApiSubstack extends NestedStack {
-  readonly userPool: UserPool;
-  readonly client: UserPoolClient;
-  readonly api: RestApi;
-
-  constructor(scope: Construct, {bucket}: AdminApiSubstackProps) {
+  constructor(scope: Construct, {bucket, api}: AdminApiSubstackProps) {
     super(scope, prefix);
 
-    this.userPool = new UserPool(this, `${prefix}-user-pool`, {
+    const userPool = new UserPool(this, `${prefix}-user-pool`, {
       passwordPolicy: {
         requireUppercase: true,
         requireSymbols: true,
@@ -37,37 +34,16 @@ export default class AdminApiSubstack extends NestedStack {
       })
     });
 
-    this.client = this.userPool.addClient(`${prefix}-user-pool-client`, {
+    const client = userPool.addClient(`${prefix}-user-pool-client`, {
       idTokenValidity: Duration.hours(8),
       accessTokenValidity: Duration.hours(8),
     });
 
-    this.api = new RestApi(this, `${prefix}-apigw`, {
-      deploy: true,
-      deployOptions: {
-        stageName: 'api'
-      },
-      defaultCorsPreflightOptions: {
-        allowHeaders: [
-          'Content-Type',
-          'X-Amz-Date',
-          'Authorization',
-          'X-Api-Key',
-          'Access-Control-Allow-Credentials',
-          'Access-Control-Allow-Headers',
-          'Impersonating-User-Sub'
-        ],
-        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        allowCredentials: true,
-        allowOrigins: Cors.ALL_ORIGINS
-      }
-    });
-
     const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
-      cognitoUserPools: [this.userPool]
+      cognitoUserPools: [userPool]
     });
 
-    const endpointsSubstack = new AdminApiEndpointsSubstack(this, {api: this.api, bucket, authorizer});
+    const endpointsSubstack = new AdminApiEndpointsSubstack(this, {api: api, bucket, authorizer});
   }
 
   getLogicalId(element: CfnElement): string {

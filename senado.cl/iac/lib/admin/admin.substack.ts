@@ -15,6 +15,7 @@ import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import AdminApiSubstack from "./admin-api.substack";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
 import {RestApiOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
+import {Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -48,7 +49,28 @@ export default class AdminSubstack extends NestedStack {
       validation: CertificateValidation.fromDns(zone),
     });
 
-    const apiSubstack = new AdminApiSubstack(this, {bucket});
+    const api = new RestApi(this, `${prefix}-apigw`, {
+      deploy: true,
+      deployOptions: {
+        stageName: 'api'
+      },
+      defaultCorsPreflightOptions: {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'Access-Control-Allow-Credentials',
+          'Access-Control-Allow-Headers',
+          'Impersonating-User-Sub'
+        ],
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowCredentials: true,
+        allowOrigins: Cors.ALL_ORIGINS
+      }
+    });
+
+    const apiSubstack = new AdminApiSubstack(this, {bucket, api});
 
     const distribution = new Distribution(scope, 'cloudfront-distribution', {
       domainNames: [subdomain],
@@ -62,7 +84,7 @@ export default class AdminSubstack extends NestedStack {
       },
       additionalBehaviors: {
         'api/*': {
-          origin: new RestApiOrigin(apiSubstack.api),
+          origin: new RestApiOrigin(api),
           allowedMethods: AllowedMethods.ALLOW_ALL,
           cachePolicy: CachePolicy.CACHING_DISABLED,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
