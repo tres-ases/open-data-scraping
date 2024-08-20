@@ -4,7 +4,7 @@ import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {
   CloudFrontAllowedMethods,
   CloudFrontWebDistribution,
-  OriginAccessIdentity,
+  OriginAccessIdentity, OriginProtocolPolicy,
   ViewerCertificate
 } from 'aws-cdk-lib/aws-cloudfront';
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
@@ -60,6 +60,7 @@ export default class AdminSubstack extends NestedStack {
           // make sure your backend origin is first in the originConfigs list so it takes precedence over the S3 origin
           customOriginSource: {
             domainName: `${apiSubstack.api.restApiId}.execute-api.${this.region}.amazonaws.com`,
+            originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
           },
           behaviors: [
             {
