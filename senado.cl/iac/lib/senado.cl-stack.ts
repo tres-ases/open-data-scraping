@@ -82,7 +82,7 @@ export class SenadoClStack extends Stack {
       layers: [commonsLy, scraperLy, globalLy]
     });
 
-    const adminStack = new AdminSubstack(this, {bucket: openDataBucket});
+    //const adminStack = new AdminSubstack(this, {bucket: openDataBucket});
   }
 
   getLogicalId(element: CfnElement): string {
