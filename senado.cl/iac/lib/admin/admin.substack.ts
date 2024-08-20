@@ -46,23 +46,23 @@ export default class AdminSubstack extends NestedStack {
       validation: CertificateValidation.fromDns(zone),
     });
 
-    const apiSubstack = new AdminApiSubstack(this, {bucket});
+    //const apiSubstack = new AdminApiSubstack(this, {bucket});
 
     const distribution = new CloudFrontWebDistribution(this, `${prefix}-distribution`, {
       viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
       originConfigs: [
-        {
-          // make sure your backend origin is first in the originConfigs list so it takes precedence over the S3 origin
-          customOriginSource: {
-            domainName: `${apiSubstack.api.restApiId}.execute-api.${this.region}.amazonaws.com`,
-            originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
-          },
-          behaviors: [
-            {
-              pathPattern: "/api/*"
-            },
-          ],
-        },
+        //{
+        //  // make sure your backend origin is first in the originConfigs list so it takes precedence over the S3 origin
+        //  customOriginSource: {
+        //    domainName: `${apiSubstack.api.restApiId}.execute-api.${this.region}.amazonaws.com`,
+        //    originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
+        //  },
+        //  behaviors: [
+        //    {
+        //      pathPattern: "/api/*"
+        //    },
+        //  ],
+        //},
         {
           s3OriginSource: {
             s3BucketSource: hostingBucket,
