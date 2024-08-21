@@ -139,11 +139,11 @@ export default class AdminSubstack extends NestedStack {
     //  target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     //});
 
-    new StringParameter(this, `${prefix}-parameter-distribution-id`, {
-      parameterName: "/openData/senadoCl/admin/distributionId",
-      description: `${prefix}-parameter-distribution-id`,
-      stringValue: distribution.distributionId,
-    });
+    //new StringParameter(this, `${prefix}-parameter-distribution-id`, {
+    //  parameterName: "/openData/senadoCl/admin/distributionId",
+    //  description: `${prefix}-parameter-distribution-id`,
+    //  stringValue: distribution.distributionId,
+    //});
 
     //const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
   }
