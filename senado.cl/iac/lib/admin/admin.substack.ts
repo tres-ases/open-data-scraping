@@ -16,7 +16,6 @@ import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificateman
 import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
-import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 import {PolicyStatement} from "aws-cdk-lib/aws-iam";
 
 const prefix = 'senado-cl-admin';
@@ -42,6 +41,7 @@ export default class AdminSubstack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY, // NOT recommended for production code
       autoDeleteObjects: true, // NOT recommended for production code
     });
+
     hostingBucket.addToResourcePolicy(
       new PolicyStatement({
         sid: "Grant Cloudfront Origin Access Identity access to S3 bucket",
@@ -141,7 +141,7 @@ export default class AdminSubstack extends NestedStack {
       stringValue: distribution.distributionId,
     });
 
-    const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
+    //const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
   }
 
   getLogicalId(element: CfnElement): string {
