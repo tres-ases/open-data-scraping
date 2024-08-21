@@ -2,7 +2,7 @@ import {Construct} from "constructs";
 import {CfnElement, Duration, RemovalPolicy, Stack, StackProps,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {
-  AllowedMethods,
+  AllowedMethods, CacheHeaderBehavior,
   CachePolicy,
   Distribution,
   OriginAccessIdentity,
@@ -109,10 +109,15 @@ export default class AdminStack extends Stack {
       additionalBehaviors: {
         'api/*': {
           origin: new HttpOrigin(`${api.restApiId}.execute-api.${api.env.region}.amazonaws.com`, {
-            originId: `${prefix}-dist-origin-apigw`,
+            originId: `${prefix}-dist-origin-apigw`
           }),
           allowedMethods: AllowedMethods.ALLOW_ALL,
-          cachePolicy: CachePolicy.CACHING_DISABLED,
+          cachePolicy: new CachePolicy(this, `${prefix}-dist-origin-apigw-cacheplcy`, {
+            defaultTtl: Duration.minutes(0),
+            minTtl: Duration.minutes(0),
+            maxTtl: Duration.minutes(0),
+            headerBehavior: CacheHeaderBehavior.allowList('Authorization'),
+          }),
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
       },
