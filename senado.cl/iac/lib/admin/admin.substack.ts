@@ -16,7 +16,6 @@ import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificateman
 import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
-import {PolicyStatement} from "aws-cdk-lib/aws-iam";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -41,15 +40,7 @@ export default class AdminSubstack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY, // NOT recommended for production code
       autoDeleteObjects: true, // NOT recommended for production code
     });
-
-    hostingBucket.addToResourcePolicy(
-      new PolicyStatement({
-        sid: "Grant Cloudfront Origin Access Identity access to S3 bucket",
-        actions: ["s3:GetObject"],
-        resources: [hostingBucket.bucketArn + "/*"],
-        principals: [oai.grantPrincipal],
-      })
-    );
+    hostingBucket.grantRead(oai);
 
     const api = new RestApi(this, `${prefix}-apigw`, {
       deploy: true,
@@ -129,11 +120,11 @@ export default class AdminSubstack extends NestedStack {
       certificate
     });
 
-    new ARecord(this, `${prefix}-alias-record`, {
-      zone,
-      recordName: subdomain,
-      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
-    });
+    //new ARecord(this, `${prefix}-alias-record`, {
+    //  zone,
+    //  recordName: subdomain,
+    //  target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    //});
 
     new StringParameter(this, `${prefix}-parameter-distribution-id`, {
       parameterName: "/openData/senadoCl/admin/distributionId",
