@@ -106,40 +106,40 @@ export default class AdminSubstack extends NestedStack {
       validation: CertificateValidation.fromDns(zone),
     });
 
-    //const distribution = new Distribution(scope, 'cloudfront-distribution', {
-    //  domainNames: [subdomain],
-    //  defaultBehavior: {
-    //    origin: new S3Origin(hostingBucket, {
-    //      originAccessIdentity: oai,
-    //      originPath: '/',
-    //    }),
-    //    cachePolicy: CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS,
-    //    viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    //  },
-    //  additionalBehaviors: {
-    //    'api/*': {
-    //      origin: new HttpOrigin(`${api.restApiId}.execute-api.${api.env.region}.amazonaws.com`),
-    //      allowedMethods: AllowedMethods.ALLOW_ALL,
-    //      cachePolicy: CachePolicy.CACHING_DISABLED,
-    //      viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    //    },
-    //  },
-    //  defaultRootObject: 'index.html',
-    //  priceClass: PriceClass.PRICE_CLASS_ALL,
-    //  certificate
-    //});
-//
-    //new ARecord(this, `${prefix}-alias-record`, {
-    //  zone,
-    //  recordName: subdomain,
-    //  target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
-    //});
-//
-    //new StringParameter(this, `${prefix}-parameter-distribution-id`, {
-    //  parameterName: "/openData/senadoCl/admin/distributionId",
-    //  description: `${prefix}-parameter-distribution-id`,
-    //  stringValue: distribution.distributionId,
-    //});
+    const distribution = new Distribution(scope, 'cloudfront-distribution', {
+      domainNames: [subdomain],
+      defaultBehavior: {
+        origin: new S3Origin(hostingBucket, {
+          originAccessIdentity: oai,
+          originPath: '/',
+        }),
+        cachePolicy: CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      additionalBehaviors: {
+        'api/*': {
+          origin: new HttpOrigin(`${api.restApiId}.execute-api.${api.env.region}.amazonaws.com`),
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+          cachePolicy: CachePolicy.CACHING_DISABLED,
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+      },
+      defaultRootObject: 'index.html',
+      priceClass: PriceClass.PRICE_CLASS_ALL,
+      certificate
+    });
+
+    new ARecord(this, `${prefix}-alias-record`, {
+      zone,
+      recordName: subdomain,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    });
+
+    new StringParameter(this, `${prefix}-parameter-distribution-id`, {
+      parameterName: "/openData/senadoCl/admin/distributionId",
+      description: `${prefix}-parameter-distribution-id`,
+      stringValue: distribution.distributionId,
+    });
 
     //const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
   }
