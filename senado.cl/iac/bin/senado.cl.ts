@@ -8,6 +8,6 @@ const app = new cdk.App();
 new SenadoClStack(app, 'odata-scraping-senado-cl', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
-//new AdminStack(app, 'odata-admin-senado-cl', {
-//  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-//});
+new AdminStack(app, 'odata-admin-senado-cl', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+});
