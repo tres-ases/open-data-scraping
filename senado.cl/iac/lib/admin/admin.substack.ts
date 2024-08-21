@@ -96,10 +96,11 @@ export default class AdminSubstack extends NestedStack {
       validation: CertificateValidation.fromDns(zone),
     });
 
-    const distribution = new Distribution(scope, 'cloudfront-distribution', {
+    const distribution = new Distribution(scope, `${prefix}-distribution`, {
       domainNames: [subdomain],
       defaultBehavior: {
         origin: new S3Origin(hostingBucket, {
+          originId: `${prefix}-dist-origin-s3`,
           originAccessIdentity: oai,
           originPath: '/',
         }),
@@ -108,7 +109,9 @@ export default class AdminSubstack extends NestedStack {
       },
       additionalBehaviors: {
         'api/*': {
-          origin: new HttpOrigin(`${api.restApiId}.execute-api.${api.env.region}.amazonaws.com`),
+          origin: new HttpOrigin(`${api.restApiId}.execute-api.${api.env.region}.amazonaws.com`, {
+            originId: `${prefix}-dist-origin-apigw`,
+          }),
           allowedMethods: AllowedMethods.ALLOW_ALL,
           cachePolicy: CachePolicy.CACHING_DISABLED,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
