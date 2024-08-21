@@ -16,6 +16,7 @@ import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificateman
 import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
+import {StringParameter} from "aws-cdk-lib/aws-ssm";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -93,7 +94,7 @@ export default class AdminStack extends Stack {
       validation: CertificateValidation.fromDns(zone),
     });
 
-    const distribution = new Distribution(scope, `${prefix}-distribution`, {
+    const distribution = new Distribution(this, `${prefix}-distribution`, {
       domainNames: [subdomain],
       defaultBehavior: {
         origin: new S3Origin(hostingBucket, {
@@ -125,11 +126,11 @@ export default class AdminStack extends Stack {
       target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
 
-    //new StringParameter(this, `${prefix}-parameter-distribution-id`, {
-    //  parameterName: "/openData/senadoCl/admin/distributionId",
-    //  description: `${prefix}-parameter-distribution-id`,
-    //  stringValue: distribution.distributionId,
-    //});
+    new StringParameter(this, `${prefix}-parameter-distribution-id`, {
+      parameterName: "/openData/senadoCl/admin/distributionId",
+      description: `${prefix}-parameter-distribution-id`,
+      stringValue: distribution.distributionId,
+    });
 
     const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer});
   }
