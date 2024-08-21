@@ -1,5 +1,5 @@
 import {Construct} from "constructs";
-import {CfnElement, Duration, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
+import {CfnElement, Duration, RemovalPolicy, Stack, StackProps,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {
   AllowedMethods,
@@ -11,23 +11,19 @@ import {
 } from 'aws-cdk-lib/aws-cloudfront';
 import {CognitoUserPoolsAuthorizer, Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
 import {UserPool, UserPoolEmail} from "aws-cdk-lib/aws-cognito";
-import {HostedZone} from "aws-cdk-lib/aws-route53";
+import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
-import {StringParameter} from "aws-cdk-lib/aws-ssm";
+import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
 const subdomain = `senado-admin.${domain}`;
 
-interface AdminSubstackProps {
-  bucket: Bucket
-}
-
-export default class AdminSubstack extends NestedStack {
-  constructor(scope: Construct, {bucket}: AdminSubstackProps) {
-    super(scope, prefix);
+export default class AdminStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
 
     const oai = new OriginAccessIdentity(this, `${prefix}-cloudfront-OAI`, {
       comment: `OAI for ${subdomain}`
@@ -123,19 +119,19 @@ export default class AdminSubstack extends NestedStack {
       certificate
     });
 
-    //new ARecord(this, `${prefix}-alias-record`, {
-    //  zone,
-    //  recordName: subdomain,
-    //  target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
-    //});
-
-    new StringParameter(this, `${prefix}-parameter-distribution-id`, {
-      parameterName: "/openData/senadoCl/admin/distributionId",
-      description: `${prefix}-parameter-distribution-id`,
-      stringValue: distribution.distributionId,
+    new ARecord(this, `${prefix}-alias-record`, {
+      zone,
+      recordName: subdomain,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
 
-    const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
+    //new StringParameter(this, `${prefix}-parameter-distribution-id`, {
+    //  parameterName: "/openData/senadoCl/admin/distributionId",
+    //  description: `${prefix}-parameter-distribution-id`,
+    //  stringValue: distribution.distributionId,
+    //});
+
+    const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer});
   }
 
   getLogicalId(element: CfnElement): string {

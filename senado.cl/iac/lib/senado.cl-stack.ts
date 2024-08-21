@@ -8,7 +8,7 @@ import GastosOperacionalesSubstack from "./substacks/gastos-operacionales.substa
 import SenadoresSubstack from "./substacks/senadores.substack";
 import VotacionesLegislaturaSubstack from "./substacks/votaciones-legislatura.substack";
 import VotacionesSubstack from "./substacks/votaciones.substack";
-import AdminSubstack from "./admin/admin.substack";
+import AdminStack from "./admin/admin.stack";
 import SenadoConst from "@senado-cl/global";
 
 export class SenadoClStack extends Stack {
@@ -81,8 +81,6 @@ export class SenadoClStack extends Stack {
       bucket: openDataBucket,
       layers: [commonsLy, scraperLy, globalLy]
     });
-
-    const adminStack = new AdminSubstack(this, {bucket: openDataBucket});
   }
 
   getLogicalId(element: CfnElement): string {

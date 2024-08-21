@@ -8,27 +8,25 @@ import {
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {Bucket} from "aws-cdk-lib/aws-s3";
 import {SenadoresBucketKey} from "@senado-cl/global/senadores";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
 interface AdminApiEndpointsSubstackProps {
   api: RestApi
-  bucket: Bucket
   authorizer: CognitoUserPoolsAuthorizer
 }
 
 export default class AdminApiEndpointsSubstack extends NestedStack {
 
-  constructor(scope: Construct, {api, authorizer, bucket}: AdminApiEndpointsSubstackProps) {
+  constructor(scope: Construct, {api, authorizer}: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
     const readRole = new Role(this, `${prefix}-readRole`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
     readRole.addToPolicy(new PolicyStatement({
-      resources: [`${bucket.bucketArn}/*`],
+      resources: [`arn:aws:s3:::${'open-data-senado-cl'}/*`],
       actions: ['s3:GetObject']
     }))
 
@@ -36,7 +34,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       .addResource('senadores')
       .addMethod('GET', new AwsIntegration({
           service: 's3',
-          path: `${bucket.bucketName}/${SenadoresBucketKey.periodoJsonStructured}`,
+          path: `${'open-data-senado-cl'}/${SenadoresBucketKey.periodoJsonStructured}`,
           integrationHttpMethod: 'GET',
           options: {
             credentialsRole: readRole,

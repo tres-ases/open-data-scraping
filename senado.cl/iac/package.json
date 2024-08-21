@@ -2,7 +2,8 @@
   "name": "@senado.cl/iac",
   "version": "0.1.0",
   "bin": {
-    "senado.cl": "bin/senado.cl.ts"
+    "senado.cl": "bin/senado.cl.ts",
+    "senado.cl-admin": "bin/senado.cl.ts"
   },
   "scripts": {
     "build": "tsc",

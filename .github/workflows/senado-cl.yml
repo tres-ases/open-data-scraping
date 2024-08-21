@@ -80,7 +80,7 @@ jobs:
           path: senado.cl/admin/front/dist
 
       - name: CDK Deploy
-        uses: youyo/aws-cdk-github-actions@v2
+        uses: youyo/aws-cdk-github-actions@v2.1.4
         with:
           cdk_subcommand: 'deploy'
           working_dir: './senado.cl/iac'
