@@ -11,10 +11,11 @@ import {
 } from 'aws-cdk-lib/aws-cloudfront';
 import {CognitoUserPoolsAuthorizer, Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
 import {UserPool, UserPoolEmail} from "aws-cdk-lib/aws-cognito";
-import {HostedZone} from "aws-cdk-lib/aws-route53";
+import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
+import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -122,11 +123,11 @@ export default class AdminSubstack extends NestedStack {
       certificate
     });
 
-    //new ARecord(this, `${prefix}-alias-record`, {
-    //  zone,
-    //  recordName: subdomain,
-    //  target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
-    //});
+    new ARecord(this, `${prefix}-alias-record`, {
+      zone,
+      recordName: subdomain,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    });
 
     //new StringParameter(this, `${prefix}-parameter-distribution-id`, {
     //  parameterName: "/openData/senadoCl/admin/distributionId",
