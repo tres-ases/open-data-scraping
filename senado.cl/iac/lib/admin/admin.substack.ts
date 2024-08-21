@@ -92,13 +92,13 @@ export default class AdminSubstack extends NestedStack {
 
     const zone = HostedZone.fromLookup(this, `${prefix}-zone`, {domainName: domain});
 
-    const certificate = new Certificate(this, `${prefix}-certificate`, {
-      domainName: subdomain,
-      validation: CertificateValidation.fromDns(zone),
-    });
+    //const certificate = new Certificate(this, `${prefix}-certificate`, {
+    //  domainName: subdomain,
+    //  validation: CertificateValidation.fromDns(zone),
+    //});
 
     const distribution = new Distribution(scope, 'cloudfront-distribution', {
-      domainNames: [subdomain],
+      //domainNames: [subdomain],
       defaultBehavior: {
         origin: new S3Origin(hostingBucket, {
           originAccessIdentity: oai,
@@ -117,7 +117,7 @@ export default class AdminSubstack extends NestedStack {
       },
       defaultRootObject: 'index.html',
       priceClass: PriceClass.PRICE_CLASS_ALL,
-      certificate
+      //certificate
     });
 
     //new ARecord(this, `${prefix}-alias-record`, {
