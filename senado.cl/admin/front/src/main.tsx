@@ -11,8 +11,8 @@ import '@aws-amplify/ui-react/styles.css';
 Amplify.configure({
     Auth: {
       Cognito: {
-        userPoolId: "us-east-1_1bA9KXqIb",
-        userPoolClientId: "43eloqtqcqeo252jus2d7cutc5",
+        userPoolId: "us-east-1_UU467OK5k",
+        userPoolClientId: "16vs3clkgnak4bcl4cgqmrjf70",
       },
     },
     API: {

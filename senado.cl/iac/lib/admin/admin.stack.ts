@@ -118,7 +118,12 @@ export default class AdminStack extends Stack {
       },
       defaultRootObject: 'index.html',
       priceClass: PriceClass.PRICE_CLASS_ALL,
-      certificate
+      certificate,
+      errorResponses: [{
+        httpStatus: 404,
+        responsePagePath: '/index.html',
+        responseHttpStatus: 200
+      }]
     });
 
     new ARecord(this, `${prefix}-alias-record`, {
