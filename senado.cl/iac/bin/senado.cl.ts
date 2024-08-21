@@ -11,3 +11,4 @@ new SenadoClStack(app, 'odata-scraping-senado-cl', {
 new AdminStack(app, 'odata-admin-senado-cl', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
+app.synth();
