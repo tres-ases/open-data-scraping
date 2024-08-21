@@ -9,7 +9,7 @@ import {
   PriceClass,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
-import {CognitoUserPoolsAuthorizer, Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
 import {UserPool, UserPoolEmail} from "aws-cdk-lib/aws-cognito";
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
@@ -95,9 +95,9 @@ export default class AdminSubstack extends NestedStack {
       accessTokenValidity: Duration.hours(8),
     });
 
-    const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
-      cognitoUserPools: [userPool]
-    });
+    //const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
+    //  cognitoUserPools: [userPool]
+    //});
 
     const zone = HostedZone.fromLookup(this, `${prefix}-zone`, {domainName: domain});
 
