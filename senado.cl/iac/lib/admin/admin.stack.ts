@@ -60,7 +60,7 @@ export default class AdminStack extends Stack {
       }
     });
 
-    const userPool = new UserPool(this, `${prefix}-user-pool`, {
+    const userPool = new UserPool(this, `${prefix}-user-pool-2`, {
       userPoolName: `${prefix}-user-pool`,
       passwordPolicy: {
         requireUppercase: true,
