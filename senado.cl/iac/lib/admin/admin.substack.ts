@@ -9,13 +9,14 @@ import {
   PriceClass,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
-import {Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {CognitoUserPoolsAuthorizer, Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
 import {UserPool, UserPoolEmail} from "aws-cdk-lib/aws-cognito";
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
+import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -86,9 +87,9 @@ export default class AdminSubstack extends NestedStack {
       accessTokenValidity: Duration.hours(8),
     });
 
-    //const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
-    //  cognitoUserPools: [userPool]
-    //});
+    const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
+      cognitoUserPools: [userPool]
+    });
 
     const zone = HostedZone.fromLookup(this, `${prefix}-zone`, {domainName: domain});
 
@@ -111,7 +112,7 @@ export default class AdminSubstack extends NestedStack {
     //});
 
     const distribution = new Distribution(scope, 'cloudfront-distribution', {
-      //domainNames: [subdomain],
+      domainNames: [subdomain],
       defaultBehavior: {
         origin: new S3Origin(hostingBucket, {
           originAccessIdentity: oai,
@@ -130,22 +131,22 @@ export default class AdminSubstack extends NestedStack {
       },
       defaultRootObject: 'index.html',
       priceClass: PriceClass.PRICE_CLASS_ALL,
-      //certificate
+      certificate
     });
 
-    //new ARecord(this, `${prefix}-alias-record`, {
-    //  zone,
-    //  recordName: subdomain,
-    //  target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
-    //});
+    new ARecord(this, `${prefix}-alias-record`, {
+      zone,
+      recordName: subdomain,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    });
 
-    //new StringParameter(this, `${prefix}-parameter-distribution-id`, {
-    //  parameterName: "/openData/senadoCl/admin/distributionId",
-    //  description: `${prefix}-parameter-distribution-id`,
-    //  stringValue: distribution.distributionId,
-    //});
+    new StringParameter(this, `${prefix}-parameter-distribution-id`, {
+      parameterName: "/openData/senadoCl/admin/distributionId",
+      description: `${prefix}-parameter-distribution-id`,
+      stringValue: distribution.distributionId,
+    });
 
-    //const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
+    const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
   }
 
   getLogicalId(element: CfnElement): string {
