@@ -1,21 +1,11 @@
 import {Construct} from "constructs";
-import {CfnElement, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
+import {CfnElement, Duration, NestedStack, RemovalPolicy,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
-import {
-  AllowedMethods,
-  CachePolicy,
-  Distribution,
-  OriginAccessIdentity,
-  PriceClass,
-  ViewerProtocolPolicy
-} from 'aws-cdk-lib/aws-cloudfront';
-import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
-import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
-import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
-import AdminApiSubstack from "./admin-api.substack";
-import {StringParameter} from "aws-cdk-lib/aws-ssm";
-import {RestApiOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
-import {Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {OriginAccessIdentity} from 'aws-cdk-lib/aws-cloudfront';
+import AdminDistributionSubstack from "./admin-distribution.substack";
+import {CognitoUserPoolsAuthorizer, Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {UserPool, UserPoolEmail} from "aws-cdk-lib/aws-cognito";
+import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -29,9 +19,7 @@ export default class AdminSubstack extends NestedStack {
   constructor(scope: Construct, {bucket}: AdminSubstackProps) {
     super(scope, prefix);
 
-    const zone = HostedZone.fromLookup(this, `${prefix}-zone`, { domainName: domain });
-
-    const cloudfrontOAI = new OriginAccessIdentity(this, `${prefix}-cloudfront-OAI`, {
+    const oai = new OriginAccessIdentity(this, `${prefix}-cloudfront-OAI`, {
       comment: `OAI for ${subdomain}`
     });
 
@@ -42,12 +30,7 @@ export default class AdminSubstack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY, // NOT recommended for production code
       autoDeleteObjects: true, // NOT recommended for production code
     });
-    hostingBucket.grantRead(cloudfrontOAI);
-
-    const certificate = new Certificate(this, `${prefix}-certificate`, {
-      domainName: subdomain,
-      validation: CertificateValidation.fromDns(zone),
-    });
+    hostingBucket.grantRead(oai);
 
     const api = new RestApi(this, `${prefix}-apigw`, {
       deploy: true,
@@ -70,42 +53,36 @@ export default class AdminSubstack extends NestedStack {
       }
     });
 
-    const apiSubstack = new AdminApiSubstack(this, {bucket, api});
-
-    const distribution = new Distribution(scope, 'cloudfront-distribution', {
-      domainNames: [subdomain],
-      defaultBehavior: {
-        origin: new S3Origin(hostingBucket, {
-          originAccessIdentity: cloudfrontOAI,
-          originPath: '/',
-        }),
-        cachePolicy: CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS,
-        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    const userPool = new UserPool(this, `${prefix}-user-pool`, {
+      passwordPolicy: {
+        requireUppercase: true,
+        requireSymbols: true,
+        requireDigits: true,
+        minLength: 8,
       },
-      additionalBehaviors: {
-        'api/*': {
-          origin: new RestApiOrigin(api),
-          allowedMethods: AllowedMethods.ALLOW_ALL,
-          cachePolicy: CachePolicy.CACHING_DISABLED,
-          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        },
+      selfSignUpEnabled: true,
+      signInAliases: {
+        email: true,
       },
-      defaultRootObject: 'index.html',
-      priceClass: PriceClass.PRICE_CLASS_ALL,
-      certificate
+      email: UserPoolEmail.withSES({
+        sesRegion: 'us-east-1',
+        fromEmail: 'no-responder@open-data.cl',
+        fromName: 'Open Data Admin'
+      })
     });
 
-    new ARecord(this, `${prefix}-alias-record`, {
-      zone,
-      recordName: subdomain,
-      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    const client = userPool.addClient(`${prefix}-user-pool-client`, {
+      idTokenValidity: Duration.hours(8),
+      accessTokenValidity: Duration.hours(8),
     });
 
-    new StringParameter(this, `${prefix}-parameter-distribution-id`, {
-      parameterName: "/openData/senadoCl/admin/distributionId",
-      description: `${prefix}-parameter-distribution-id`,
-      stringValue: distribution.distributionId,
+    const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
+      cognitoUserPools: [userPool]
     });
+
+    const endpointsSubstack = new AdminApiEndpointsSubstack(this, {api, bucket, authorizer});
+
+    const apiSubstack = new AdminDistributionSubstack(this, {bucket, api, domain, subdomain, oai});
   }
 
   getLogicalId(element: CfnElement): string {

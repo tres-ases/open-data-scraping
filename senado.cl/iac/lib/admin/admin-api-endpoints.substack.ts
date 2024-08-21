@@ -3,7 +3,7 @@ import {CfnElement, NestedStack,} from 'aws-cdk-lib';
 import {
   AuthorizationType,
   AwsIntegration,
-  CfnAuthorizer, CognitoUserPoolsAuthorizer,
+  CognitoUserPoolsAuthorizer,
   PassthroughBehavior,
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
