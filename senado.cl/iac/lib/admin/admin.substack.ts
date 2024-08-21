@@ -116,14 +116,7 @@ export default class AdminSubstack extends NestedStack {
         cachePolicy: CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS,
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
-      additionalBehaviors: {
-        'api/*': {
-          origin: new HttpOrigin(`${api.restApiId}.execute-api.${api.env.region}.amazonaws.com`),
-          allowedMethods: AllowedMethods.ALLOW_ALL,
-          cachePolicy: CachePolicy.CACHING_DISABLED,
-          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        },
-      },
+
       defaultRootObject: 'index.html',
       priceClass: PriceClass.PRICE_CLASS_ALL,
       certificate
