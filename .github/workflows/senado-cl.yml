@@ -73,6 +73,7 @@ jobs:
           pnpm @senado.cl/admin-api:build
 
       - name: Upload admin-front build
+        if: ${{ needs.changes.outputs.admin-front == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: admin-front
