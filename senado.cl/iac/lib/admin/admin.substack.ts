@@ -87,9 +87,9 @@ export default class AdminSubstack extends NestedStack {
       accessTokenValidity: Duration.hours(8),
     });
 
-    const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
-      cognitoUserPools: [userPool]
-    });
+    //const authorizer = new CognitoUserPoolsAuthorizer(this, `${prefix}-authorizer`, {
+    //  cognitoUserPools: [userPool]
+    //});
 
     const zone = HostedZone.fromLookup(this, `${prefix}-zone`, {domainName: domain});
 
@@ -146,7 +146,7 @@ export default class AdminSubstack extends NestedStack {
       stringValue: distribution.distributionId,
     });
 
-    const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
+    //const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer, bucket});
   }
 
   getLogicalId(element: CfnElement): string {
