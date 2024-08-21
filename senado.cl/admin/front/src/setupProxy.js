@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://dhyukio1988dv.cloudfront.net',
+      target: 'https://d1ucdnv48zk2zl.cloudfront.net',
       changeOrigin: true,
     })
   );
