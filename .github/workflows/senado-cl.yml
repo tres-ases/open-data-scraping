@@ -84,7 +84,6 @@ jobs:
         with:
           cdk_subcommand: 'deploy'
           working_dir: './senado.cl/iac'
-          cdk_stack: 'odata-scraping-senado-cl'
           cdk_args: '--require-approval never'
           actions_comment: false
         env:
