@@ -93,10 +93,10 @@ export default class AdminSubstack extends NestedStack {
 
     const zone = HostedZone.fromLookup(this, `${prefix}-zone`, {domainName: domain});
 
-    const certificate = new Certificate(this, `${prefix}-certificate`, {
-      domainName: subdomain,
-      validation: CertificateValidation.fromDns(zone),
-    });
+    //const certificate = new Certificate(this, `${prefix}-certificate`, {
+    //  domainName: subdomain,
+    //  validation: CertificateValidation.fromDns(zone),
+    //});
 
     //const distribution = new Distribution(scope, 'cloudfront-distribution', {
     //  domainNames: [subdomain],
@@ -131,14 +131,14 @@ export default class AdminSubstack extends NestedStack {
       },
       defaultRootObject: 'index.html',
       priceClass: PriceClass.PRICE_CLASS_ALL,
-      certificate
+      //certificate
     });
 
-    new ARecord(this, `${prefix}-alias-record`, {
-      zone,
-      recordName: subdomain,
-      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
-    });
+    //new ARecord(this, `${prefix}-alias-record`, {
+    //  zone,
+    //  recordName: subdomain,
+    //  target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    //});
 
     new StringParameter(this, `${prefix}-parameter-distribution-id`, {
       parameterName: "/openData/senadoCl/admin/distributionId",
