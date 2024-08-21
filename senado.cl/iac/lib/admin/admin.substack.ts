@@ -13,7 +13,7 @@ import {CognitoUserPoolsAuthorizer, Cors, RestApi} from "aws-cdk-lib/aws-apigate
 import {UserPool, UserPoolEmail} from "aws-cdk-lib/aws-cognito";
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
-import {RestApiOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
+import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
@@ -82,7 +82,7 @@ export default class AdminSubstack extends NestedStack {
       })
     });
 
-    const client = userPool.addClient(`${prefix}-user-pool-client`, {
+    userPool.addClient(`${prefix}-user-pool-client`, {
       idTokenValidity: Duration.hours(8),
       accessTokenValidity: Duration.hours(8),
     });
@@ -110,7 +110,7 @@ export default class AdminSubstack extends NestedStack {
       },
       additionalBehaviors: {
         'api/*': {
-          origin: new RestApiOrigin(api),
+          origin: new HttpOrigin(`${api.restApiId}.execute-api.${api.env.region}.amazonaws.com`),
           allowedMethods: AllowedMethods.ALLOW_ALL,
           cachePolicy: CachePolicy.CACHING_DISABLED,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
