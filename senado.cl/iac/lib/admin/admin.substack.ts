@@ -17,6 +17,7 @@ import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
+import {PolicyStatement} from "aws-cdk-lib/aws-iam";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -41,7 +42,14 @@ export default class AdminSubstack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY, // NOT recommended for production code
       autoDeleteObjects: true, // NOT recommended for production code
     });
-    hostingBucket.grantRead(oai);
+    hostingBucket.addToResourcePolicy(
+      new PolicyStatement({
+        sid: "Grant Cloudfront Origin Access Identity access to S3 bucket",
+        actions: ["s3:GetObject"],
+        resources: [hostingBucket.bucketArn + "/*"],
+        principals: [oai.grantPrincipal],
+      })
+    );
 
     const api = new RestApi(this, `${prefix}-apigw`, {
       deploy: true,
@@ -101,7 +109,7 @@ export default class AdminSubstack extends NestedStack {
     const distribution = new Distribution(scope, 'cloudfront-distribution', {
       domainNames: [subdomain],
       defaultBehavior: {
-        origin: new S3Origin(bucket, {
+        origin: new S3Origin(hostingBucket, {
           originAccessIdentity: oai,
           originPath: '/',
         }),
