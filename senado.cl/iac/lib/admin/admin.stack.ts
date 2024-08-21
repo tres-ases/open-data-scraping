@@ -2,8 +2,8 @@ import {Construct} from "constructs";
 import {CfnElement, Duration, RemovalPolicy, Stack, StackProps,} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {
-  AllowedMethods, CacheHeaderBehavior,
-  CachePolicy,
+  AllowedMethods, CacheCookieBehavior, CacheHeaderBehavior,
+  CachePolicy, CacheQueryStringBehavior,
   Distribution,
   OriginAccessIdentity,
   PriceClass,
@@ -113,10 +113,9 @@ export default class AdminStack extends Stack {
           }),
           allowedMethods: AllowedMethods.ALLOW_ALL,
           cachePolicy: new CachePolicy(this, `${prefix}-dist-origin-apigw-cacheplcy`, {
-            defaultTtl: Duration.minutes(0),
-            minTtl: Duration.minutes(0),
-            maxTtl: Duration.minutes(0),
-            headerBehavior: CacheHeaderBehavior.allowList('Authorization'),
+            headerBehavior: CacheHeaderBehavior.allowList('Accept', 'Content-Type', 'Authorization'),
+            queryStringBehavior: CacheQueryStringBehavior.all(),
+            cookieBehavior: CacheCookieBehavior.all(),
           }),
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
