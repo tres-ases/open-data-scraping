@@ -9,14 +9,13 @@ import {
   PriceClass,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
-import {CognitoUserPoolsAuthorizer, Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
 import {UserPool, UserPoolEmail} from "aws-cdk-lib/aws-cognito";
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
-import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -93,10 +92,10 @@ export default class AdminSubstack extends NestedStack {
 
     const zone = HostedZone.fromLookup(this, `${prefix}-zone`, {domainName: domain});
 
-    //const certificate = new Certificate(this, `${prefix}-certificate`, {
-    //  domainName: subdomain,
-    //  validation: CertificateValidation.fromDns(zone),
-    //});
+    const certificate = new Certificate(this, `${prefix}-certificate`, {
+      domainName: subdomain,
+      validation: CertificateValidation.fromDns(zone),
+    });
 
     //const distribution = new Distribution(scope, 'cloudfront-distribution', {
     //  domainNames: [subdomain],
@@ -112,7 +111,7 @@ export default class AdminSubstack extends NestedStack {
     //});
 
     const distribution = new Distribution(scope, 'cloudfront-distribution', {
-      domainNames: [subdomain],
+      //domainNames: [subdomain],
       defaultBehavior: {
         origin: new S3Origin(hostingBucket, {
           originAccessIdentity: oai,
