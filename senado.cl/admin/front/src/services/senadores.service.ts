@@ -4,7 +4,7 @@ const SenadoresService = {
   getAll: async () => {
     const response = await get({
       apiName: 'admin',
-      path: 'senadores'
+      path: '/senadores'
     }).response;
     return await response.body.text();
   }

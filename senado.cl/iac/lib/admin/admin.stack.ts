@@ -79,7 +79,7 @@ export default class AdminStack extends Stack {
       })
     });
 
-    userPool.addClient(`${prefix}-user-pool-client`, {
+    const userPoolClient = userPool.addClient(`${prefix}-user-pool-client`, {
       idTokenValidity: Duration.hours(8),
       accessTokenValidity: Duration.hours(8),
     });
@@ -140,6 +140,18 @@ export default class AdminStack extends Stack {
       parameterName: "/openData/senadoCl/admin/distributionId",
       description: `${prefix}-parameter-distribution-id`,
       stringValue: distribution.distributionId,
+    });
+
+    new StringParameter(this, `${prefix}-parameter-userpool-id`, {
+      parameterName: "/openData/senadoCl/admin/UserPool/id",
+      description: `${prefix}-parameter-userpool-id`,
+      stringValue: userPool.userPoolId,
+    });
+
+    new StringParameter(this, `${prefix}-parameter-userpool-clientid`, {
+      parameterName: "/openData/senadoCl/admin/cognitoUserPool/clientId",
+      description: `${prefix}-parameter-userpool-clientid`,
+      stringValue: userPoolClient.userPoolClientId,
     });
 
     const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {api, authorizer});

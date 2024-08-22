@@ -8,18 +8,19 @@ import App from "./App.tsx";
 import {BrowserRouter} from "react-router-dom";
 import '@aws-amplify/ui-react/styles.css';
 
+console.log(import.meta.env);
+
 Amplify.configure({
     Auth: {
       Cognito: {
-        userPoolId: "us-east-1_UU467OK5k",
-        userPoolClientId: "16vs3clkgnak4bcl4cgqmrjf70",
+        userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
+        userPoolClientId: import.meta.env.VITE_COGNITO_USER_POOL_CLIENT_ID,
       },
     },
     API: {
       REST: {
-        admin: {
-          endpoint: "http://localhost:5173/api/",
-          region: "us-east-1",
+        'admin': {
+          endpoint: `${window.location.origin}/api`,
         }
       }
     }

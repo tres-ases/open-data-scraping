@@ -63,6 +63,22 @@ jobs:
         run: |
           pnpm layers:build
 
+#      - name: Get AWS SSM Parameters
+#        uses: dkershner6/aws-ssm-getparameters-action@v1
+#        with:
+#          parameterPairs: "
+#            /openData/senadoCl/admin/UserPool/id = USER_POOL_ID
+#            /openData/senadoCl/admin/cognitoUserPool/clientId = USER_POOL_CLIENT_ID"
+#          withDecryption: "true"
+#
+#      - name: 'Create admin env file'
+#        working-directory: ./senado.cl/admin/front
+#        run: |
+#          touch .env.production
+#          echo VITE_COGNITO_USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env.production
+#          echo VITE_COGNITO_USER_POOL_CLIENT_ID=${{ env.USER_POOL_CLIENT_ID }} >> .env.production
+#          cat .env
+
       - name: Build SRC
         run: |
           pnpm @senado.cl/global:build

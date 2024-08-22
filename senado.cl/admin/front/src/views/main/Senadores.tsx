@@ -5,8 +5,8 @@ export default function Senadores() {
 
   useEffect(() => {
     SenadoresService.getAll()
-      .then(result => console.log(result) );
-  })
+      .then(() => {} );
+  }, [])
 
   return <h1>Senadores</h1>
 }
