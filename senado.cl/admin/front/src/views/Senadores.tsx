@@ -8,5 +8,7 @@ export default function Senadores() {
       .then(() => {} );
   }, [])
 
-  return <h1>Senadores</h1>
+  return (
+    <h1>Senadores</h1>
+  );
 }
