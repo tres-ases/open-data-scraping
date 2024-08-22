@@ -83,7 +83,7 @@ jobs:
           touch .env.production
           echo VITE_COGNITO_USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env.production
           echo VITE_COGNITO_USER_POOL_CLIENT_ID=${{ env.USER_POOL_CLIENT_ID }} >> .env.production
-          cat .env
+          cat .env.production
 
       - name: Build SRC
         run: |
