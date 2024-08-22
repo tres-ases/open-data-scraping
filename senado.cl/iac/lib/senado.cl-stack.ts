@@ -8,14 +8,14 @@ import GastosOperacionalesSubstack from "./substacks/gastos-operacionales.substa
 import SenadoresSubstack from "./substacks/senadores.substack";
 import VotacionesLegislaturaSubstack from "./substacks/votaciones-legislatura.substack";
 import VotacionesSubstack from "./substacks/votaciones.substack";
-import SenadoConst from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global";
 
 export class SenadoClStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const openDataBucket = new Bucket(this, 'openDataBucket', {
-      bucketName: SenadoConst.S3_BUCKET
+      bucketName: MainBucketKey.S3_BUCKET
     });
 
     const globalLy = new LayerVersion(this, 'global-ly', {
