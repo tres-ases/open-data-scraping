@@ -49,6 +49,7 @@ senado.cl/packages/**/layer
 .idea
 
 **/**.d.ts
+!**/vite-env.d.ts
 **/packages/**/*.js
 !**/packages/**/jest.config.js
 **/iac/**/*.js
