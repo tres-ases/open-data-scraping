@@ -65,8 +65,8 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     );
 
     senadoresResource.addResource('{id}')
-    senadoresResource.addResource('image')
-    senadoresResource.addResource('{tipo}')
+      .addResource('image')
+      .addResource('{tipo}')
       .addMethod('GET', new AwsIntegration({
           service: 's3',
           path: `${MainBucketKey.S3_BUCKET}/${SenadoresBucketKey.image('{id}', '{tipo}')}`,
