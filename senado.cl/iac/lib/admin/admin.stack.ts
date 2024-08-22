@@ -45,8 +45,8 @@ export default class AdminStack extends Stack {
     });
     hostingBucket.grantRead(oai);
 
-    const existingBucket = Bucket.fromBucketArn(this, `${prefix}-data`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}`);
-    existingBucket.grantRead(oai);
+    const dataBucket = Bucket.fromBucketArn(this, `${prefix}-data`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}`);
+    dataBucket.grantRead(oai);
 
     const api = new RestApi(this, `${prefix}-apigw`, {
       deploy: true,
@@ -129,7 +129,7 @@ export default class AdminStack extends Stack {
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
         'images/*': {
-          origin: new S3Origin(hostingBucket, {
+          origin: new S3Origin(dataBucket, {
             originId: `${prefix}-dist-origin-s3-data`,
             originAccessIdentity: oai2,
             originPath: `/${SenadoresBucketKey.imgPrefix}`,
