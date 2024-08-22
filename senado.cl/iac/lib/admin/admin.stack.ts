@@ -17,6 +17,8 @@ import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
+import {MainBucketKey} from "@senado-cl/global";
+import {SenadoresBucketKey} from "@senado-cl/global/dist";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -30,6 +32,10 @@ export default class AdminStack extends Stack {
       comment: `OAI for ${subdomain}`
     });
 
+    const oai2 = new OriginAccessIdentity(this, `${prefix}-cloudfront-OAI-2`, {
+      comment: `OAI for ${MainBucketKey.S3_BUCKET}`
+    });
+
     const hostingBucket = new Bucket(this, subdomain, {
       bucketName: subdomain,
       publicReadAccess: false,
@@ -38,6 +44,9 @@ export default class AdminStack extends Stack {
       autoDeleteObjects: true, // NOT recommended for production code
     });
     hostingBucket.grantRead(oai);
+
+    const existingBucket = Bucket.fromBucketArn(this, `${prefix}-apigw`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}`);
+    existingBucket.grantRead(oai);
 
     const api = new RestApi(this, `${prefix}-apigw`, {
       deploy: true,
@@ -119,6 +128,15 @@ export default class AdminStack extends Stack {
           }),
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
+        'images/*': {
+          origin: new S3Origin(hostingBucket, {
+            originId: `${prefix}-dist-origin-s3-data`,
+            originAccessIdentity: oai2,
+            originPath: `/${SenadoresBucketKey}`,
+          }),
+          cachePolicy: CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS,
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        }
       },
       defaultRootObject: 'index.html',
       priceClass: PriceClass.PRICE_CLASS_ALL,

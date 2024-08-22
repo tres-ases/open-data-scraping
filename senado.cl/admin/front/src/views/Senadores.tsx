@@ -25,7 +25,7 @@ export default function Senadores() {
             <div className="h-56 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:h-72 xl:h-80">
               <img
                 alt={s.nombre}
-                src={'https://tailwindui.com/img/ecommerce-images/home-page-04-trending-product-02.jpg'}
+                src={`/api/senadores/${s.id}/image/1`}
                 className="h-full w-full object-cover object-center"
               />
             </div>
