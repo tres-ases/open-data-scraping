@@ -45,7 +45,7 @@ export default class AdminStack extends Stack {
     });
     hostingBucket.grantRead(oai);
 
-    const existingBucket = Bucket.fromBucketArn(this, `${prefix}-data-bucket`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}`);
+    const existingBucket = Bucket.fromBucketArn(this, `${prefix}-data`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}`);
     existingBucket.grantRead(oai);
 
     const api = new RestApi(this, `${prefix}-apigw`, {
