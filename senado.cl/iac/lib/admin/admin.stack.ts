@@ -143,7 +143,7 @@ export default class AdminStack extends Stack {
     });
 
     new StringParameter(this, `${prefix}-parameter-userpool-id`, {
-      parameterName: "/openData/senadoCl/admin/UserPool/id",
+      parameterName: "/openData/senadoCl/admin/cognitoUserPool/id",
       description: `${prefix}-parameter-userpool-id`,
       stringValue: userPool.userPoolId,
     });
