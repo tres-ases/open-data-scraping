@@ -32,10 +32,6 @@ export default class AdminStack extends Stack {
       comment: `OAI for ${subdomain}`
     });
 
-    const oai2 = new OriginAccessIdentity(this, `${prefix}-cloudfront-OAI-2`, {
-      comment: `OAI for ${MainBucketKey.S3_BUCKET}`
-    });
-
     const hostingBucket = new Bucket(this, subdomain, {
       bucketName: subdomain,
       publicReadAccess: false,
@@ -44,6 +40,10 @@ export default class AdminStack extends Stack {
       autoDeleteObjects: true, // NOT recommended for production code
     });
     hostingBucket.grantRead(oai);
+
+    const oai2 = new OriginAccessIdentity(this, `${prefix}-cloudfront-OAI-2`, {
+      comment: `OAI for ${MainBucketKey.S3_BUCKET}`
+    });
 
     const dataBucket = Bucket.fromBucketArn(this, `${prefix}-data`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}`);
     dataBucket.grantRead(oai2);
@@ -128,7 +128,7 @@ export default class AdminStack extends Stack {
           }),
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
-        'images/*': {
+        'img/*': {
           origin: new S3Origin(dataBucket, {
             originId: `${prefix}-dist-origin-s3-data`,
             originAccessIdentity: oai2,
