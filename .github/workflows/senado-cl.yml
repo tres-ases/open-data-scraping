@@ -101,7 +101,7 @@ jobs:
           name: admin-front
           path: senado.cl/admin/front/dist
 
-      - run: pnpm cdk deploy --require-approval never
+      - run: pnpm cdk deploy --require-approval never --all
         working-directory: ./senado.cl/iac
 
   admin-front:
