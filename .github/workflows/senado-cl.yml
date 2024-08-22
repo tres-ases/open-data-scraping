@@ -101,17 +101,8 @@ jobs:
           name: admin-front
           path: senado.cl/admin/front/dist
 
-      - name: CDK Deploy
-        uses: youyo/aws-cdk-github-actions@v2.1.4
-        with:
-          cdk_subcommand: 'deploy'
-          working_dir: './senado.cl/iac'
-          cdk_args: '--require-approval never'
-          actions_comment: false
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-1'
+      - run: pnpm cdk deploy --require-approval never
+        working-directory: ./senado.cl/iac
 
   admin-front:
     runs-on: ubuntu-latest

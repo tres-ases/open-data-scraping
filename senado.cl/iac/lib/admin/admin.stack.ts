@@ -18,7 +18,7 @@ import AdminApiEndpointsSubstack from "./admin-api-endpoints.substack";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
 import {MainBucketKey} from "@senado-cl/global";
-import {SenadoresBucketKey} from "@senado-cl/global/dist";
+import {SenadoresBucketKey} from "@senado-cl/global/senadores";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -132,7 +132,7 @@ export default class AdminStack extends Stack {
           origin: new S3Origin(hostingBucket, {
             originId: `${prefix}-dist-origin-s3-data`,
             originAccessIdentity: oai2,
-            originPath: `/${SenadoresBucketKey}`,
+            originPath: `/${SenadoresBucketKey.imgPrefix}`,
           }),
           cachePolicy: CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
