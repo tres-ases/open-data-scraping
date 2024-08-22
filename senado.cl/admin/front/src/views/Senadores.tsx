@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import SenadoresService from "../../services/senadores.service.ts";
+import SenadoresService from "../services/senadores.service.ts";
 
 export default function Senadores() {
 

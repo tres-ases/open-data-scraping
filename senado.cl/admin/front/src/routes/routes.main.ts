@@ -1,5 +1,5 @@
-import Inicio from "../views/main/Inicio.tsx";
-import Senadores from "../views/main/Senadores.tsx";
+import Inicio from "../views/Inicio.tsx";
+import Senadores from "../views/Senadores.tsx";
 
 export const mainRoutes = {
   inicio: {
