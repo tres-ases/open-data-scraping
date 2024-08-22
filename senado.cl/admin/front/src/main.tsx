@@ -8,8 +8,6 @@ import App from "./App.tsx";
 import {BrowserRouter} from "react-router-dom";
 import '@aws-amplify/ui-react/styles.css';
 
-console.log(import.meta.env);
-
 Amplify.configure({
     Auth: {
       Cognito: {

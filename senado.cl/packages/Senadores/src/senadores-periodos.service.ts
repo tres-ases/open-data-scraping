@@ -2,7 +2,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import Commons from "@senado-cl/commons";
-import SenadoConst from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global";
 import {Periodo, PeriodoSenador, PeriodoTipo, SenadoresBucketKey} from "@senado-cl/global/senadores";
 
 const s3Client = new S3Client({});
@@ -85,7 +85,7 @@ export const getSenadoresPeriodos = async (tipo: Tipo): Promise<PeriodoSenador[]
 
 const saveJsonStructured = async (periodoSenadorArray: PeriodoSenador[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: SenadoConst.S3_BUCKET,
+    Bucket: MainBucketKey.S3_BUCKET,
     Key: SenadoresBucketKey.periodoJsonStructured,
     Body: JSON.stringify(periodoSenadorArray)
   }));
@@ -93,7 +93,7 @@ const saveJsonStructured = async (periodoSenadorArray: PeriodoSenador[]) => {
 
 const saveJsonLines = async (periodoSenadorArray: PeriodoSenador[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: SenadoConst.S3_BUCKET,
+    Bucket: MainBucketKey.S3_BUCKET,
     Key: SenadoresBucketKey.periodoJsonLines,
     Body: periodoSenadorArray.map(
       ps => JSON.stringify(ps)

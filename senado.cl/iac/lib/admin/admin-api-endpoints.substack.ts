@@ -8,7 +8,8 @@ import {
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {SenadoresBucketKey} from "@senado-cl/global/senadores";
+import {SenadoresBucketKey, SenadorFotoTipo} from "@senado-cl/global/senadores";
+import {MainBucketKey} from "@senado-cl/global";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
@@ -26,19 +27,56 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
     readRole.addToPolicy(new PolicyStatement({
-      resources: [`arn:aws:s3:::${'open-data-senado-cl'}/*`],
+      resources: [`arn:aws:s3:::${MainBucketKey.S3_BUCKET}/*`],
       actions: ['s3:GetObject']
     }))
 
-    api.root
-      .addResource('senadores')
+    const senadoresResource = api.root.addResource('senadores');
+
+    senadoresResource.addMethod('GET', new AwsIntegration({
+        service: 's3',
+        path: `${MainBucketKey.S3_BUCKET}/${SenadoresBucketKey.periodoJsonStructured}`,
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsRole: readRole,
+          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+          integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            }
+          }]
+        }
+      }),
+      {
+        authorizationType: AuthorizationType.COGNITO,
+        authorizer: authorizer,
+        requestParameters: {
+          'method.request.header.Accept': true
+        },
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true
+            }
+          }]
+      }
+    );
+
+    senadoresResource.addResource('{id}/image/{tipo}')
       .addMethod('GET', new AwsIntegration({
           service: 's3',
-          path: `${'open-data-senado-cl'}/${SenadoresBucketKey.periodoJsonStructured}`,
+          path: `${MainBucketKey.S3_BUCKET}/${SenadoresBucketKey.image('{id}', '{tipo}')}`,
           integrationHttpMethod: 'GET',
           options: {
             credentialsRole: readRole,
             passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+            requestParameters: {
+              'integration.request.path.id': 'method.request.path.id',
+              'integration.request.path.tipo': 'method.request.path.tipo',
+              'integration.request.header.Accept': 'method.request.header.Accept'
+            },
             integrationResponses: [{
               statusCode: '200',
               responseParameters: {
@@ -51,6 +89,8 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           authorizationType: AuthorizationType.COGNITO,
           authorizer: authorizer,
           requestParameters: {
+            'method.request.path.id': true,
+            'method.request.path.tipo': true,
             'method.request.header.Accept': true
           },
           methodResponses: [

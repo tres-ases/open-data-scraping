@@ -7,7 +7,7 @@
     "esModuleInterop": true,
 
     /* Basic Options */
-    "incremental": true,
+    "incremental": false,
     "declaration": false,
     "allowJs": true,
 

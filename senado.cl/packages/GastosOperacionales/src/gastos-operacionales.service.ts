@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import Commons from "@senado-cl/commons";
-import SenadoConst from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global";
 import {AnoMesParl, GastosOperacionales} from "@senado-cl/global/gastos-operacionales";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {AnoMes} from "@senado-cl/global/dieta";
@@ -18,7 +18,7 @@ const anoMesParUrl = (ano: number, mes: number, parlId?: number) => `https://www
 
 const saveJsonStructured = async (ano: number, mes: number, parlId: number, gastos: GastosOperacionales[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: SenadoConst.S3_BUCKET,
+    Bucket: MainBucketKey.S3_BUCKET,
     Key: getJsonBucketKey(ano, mes, parlId),
     Body: JSON.stringify(gastos)
   }));
@@ -26,7 +26,7 @@ const saveJsonStructured = async (ano: number, mes: number, parlId: number, gast
 
 const saveJsonLines = async (ano: number, mes: number, parlId: number, gastos: GastosOperacionales[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: SenadoConst.S3_BUCKET,
+    Bucket: MainBucketKey.S3_BUCKET,
     Key: getJsonLineBucketKey(ano, mes, parlId),
     Body: gastos.map(
       d => JSON.stringify(d)

@@ -1,6 +1,6 @@
 import {GetObjectCommand, HeadObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import * as _ from "lodash";
-import SenadoConst from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global";
 import {AnoMes} from "@senado-cl/global/dieta";
 
 const s3Client = new S3Client({});
@@ -45,7 +45,7 @@ function getAnoMesArray(ano?: number): AnoMes[] {
 
 async function getFileFromS3(key: string): Promise<string> {
   try {
-    const response = await s3Client.send(new GetObjectCommand({Bucket: SenadoConst.S3_BUCKET, Key: key}));
+    const response = await s3Client.send(new GetObjectCommand({Bucket: MainBucketKey.S3_BUCKET, Key: key}));
     // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
     const str = await response.Body!.transformToString();
     console.log(str);
@@ -57,7 +57,7 @@ async function getFileFromS3(key: string): Promise<string> {
 }
 
 async function existsFromS3(key: string): Promise<boolean> {
-  const command = new HeadObjectCommand({Bucket: SenadoConst.S3_BUCKET, Key: key,});
+  const command = new HeadObjectCommand({Bucket: MainBucketKey.S3_BUCKET, Key: key,});
   try {
     await s3Client.send(command);
     return true; // La clave existe

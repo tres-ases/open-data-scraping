@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {getVotacionesUrl, VOTACIONES_URL} from "./votaciones.constants";
 import {Legislatura, LegislaturaSimple, VotacionesBucketKey} from "@senado-cl/global/votaciones";
-import SenadoConst from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global";
 
 const s3Client = new S3Client({});
 
@@ -78,7 +78,7 @@ export const getSaveLegislaturaSesiones = async (legisId: number): Promise<Legis
 
 const saveLegislatura = async (legislatura: Legislatura) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: SenadoConst.S3_BUCKET,
+    Bucket: MainBucketKey.S3_BUCKET,
     Key: VotacionesBucketKey.legislaturaDetalleJsonStructured(legislatura.id),
     Body: JSON.stringify(legislatura)
   }))
@@ -87,12 +87,12 @@ const saveLegislatura = async (legislatura: Legislatura) => {
 const saveLegislaturaSimpleList = async (legislaturas: LegislaturaSimple[]) => {
   await Promise.all([
     s3Client.send(new PutObjectCommand({
-      Bucket: SenadoConst.S3_BUCKET,
+      Bucket: MainBucketKey.S3_BUCKET,
       Key: VotacionesBucketKey.legislaturaListJsonStructured,
       Body: JSON.stringify(legislaturas)
     })),
     s3Client.send(new PutObjectCommand({
-      Bucket: SenadoConst.S3_BUCKET,
+      Bucket: MainBucketKey.S3_BUCKET,
       Key: VotacionesBucketKey.legislaturaListJsonLines,
       Body: legislaturas.map(
         l => JSON.stringify(l)
@@ -104,12 +104,12 @@ const saveLegislaturaSimpleList = async (legislaturas: LegislaturaSimple[]) => {
 const saveSesionesList = async (legislatura: Legislatura) => {
   await Promise.all([
     s3Client.send(new PutObjectCommand({
-      Bucket: SenadoConst.S3_BUCKET,
+      Bucket: MainBucketKey.S3_BUCKET,
       Key: VotacionesBucketKey.sesionListJsonStructured(legislatura.id),
       Body: JSON.stringify(legislatura.sesiones)
     })),
     s3Client.send(new PutObjectCommand({
-      Bucket: SenadoConst.S3_BUCKET,
+      Bucket: MainBucketKey.S3_BUCKET,
       Key: VotacionesBucketKey.sesionListJsonLines(legislatura.id),
       Body: legislatura.sesiones.map(
         s => JSON.stringify(s)

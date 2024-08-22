@@ -3,14 +3,14 @@ import * as cheerio from "cheerio";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import DietaLib from "@senado-cl/commons/dieta";
 import {Ano, AnoMes, Dieta, DietaBucketKey} from "@senado-cl/global/dieta";
-import SenadoConst from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global";
 import Commons from "@senado-cl/commons";
 
 const s3Client = new S3Client({});
 
 const saveJsonStructured = async (ano: string, mes: string, dietas: Dieta[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: SenadoConst.S3_BUCKET,
+    Bucket: MainBucketKey.S3_BUCKET,
     Key: DietaBucketKey.detalleJsonStructured(ano, mes),
     Body: JSON.stringify(dietas)
   }));
@@ -18,7 +18,7 @@ const saveJsonStructured = async (ano: string, mes: string, dietas: Dieta[]) => 
 
 const saveJsonLines = async (ano: string, mes: string, dietas: Dieta[]) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: SenadoConst.S3_BUCKET,
+    Bucket: MainBucketKey.S3_BUCKET,
     Key: DietaBucketKey.detalleJsonLines(ano, mes),
     Body: dietas.map(
       d => JSON.stringify(d)

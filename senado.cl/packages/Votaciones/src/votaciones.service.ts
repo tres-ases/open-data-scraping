@@ -10,7 +10,7 @@ import {getVotacionesUrl} from "./votaciones.constants";
 import * as cheerio from "cheerio";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import Commons from "@senado-cl/commons";
-import SenadoConst from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global";
 
 const s3Client = new S3Client({});
 
@@ -18,16 +18,16 @@ export const getLegislaturasSesionesIdSinVotacionSimple = async (legisId: number
   const list: LegislaturasSesionesId[] = [];
 
   const legislaturaList: LegislaturaSimple[] = JSON.parse(await Commons.Fn.getFileFromS3(VotacionesBucketKey.legislaturaListJsonStructured));
-  for(const l of legislaturaList.filter(l => l.id === legisId)) {
+  for (const l of legislaturaList.filter(l => l.id === legisId)) {
     const sesionList: Sesion[] = JSON.parse(await Commons.Fn.getFileFromS3(VotacionesBucketKey.sesionListJsonStructured(l.id)));
 
-    for(const s of sesionList) {
+    for (const s of sesionList) {
       const [existe1, existe2] = await Promise.all([
         Commons.Fn.existsFromS3(VotacionesBucketKey.votacionResumenListJsonStructured(l.id, s.id)),
         Commons.Fn.existsFromS3(VotacionesBucketKey.votacionResumenListJsonLines(l.id, s.id))
       ]);
 
-      if(!existe1 || !existe2) list.push({legisId: l.id, sesionId: s.id});
+      if (!existe1 || !existe2) list.push({legisId: l.id, sesionId: s.id});
     }
   }
 
@@ -49,8 +49,8 @@ export const getSaveVotacionSimpleList = async (legisId: number, sesionId: numbe
     const titulo = $(tdTema).find('label').text();
     const quorum = $(tdTema).find('span').text();
 
-    const trLink = trArray[i+1];
-    const tdDatosList = $(trArray[i+2]).find('td').toArray();
+    const trLink = trArray[i + 1];
+    const tdDatosList = $(trArray[i + 2]).find('td').toArray();
     const boletin = $(tdDatosList[1]).text().trim();
 
     list.push({
@@ -78,12 +78,12 @@ export const getSaveVotacionSimpleList = async (legisId: number, sesionId: numbe
 const saveLegislaturaSimpleList = async (legisId: number, sesionId: number, votaciones: VotacionSimple[]) => {
   await Promise.all([
     s3Client.send(new PutObjectCommand({
-      Bucket: SenadoConst.S3_BUCKET,
+      Bucket: MainBucketKey.S3_BUCKET,
       Key: VotacionesBucketKey.votacionResumenListJsonStructured(legisId, sesionId),
       Body: JSON.stringify(votaciones)
     })),
     s3Client.send(new PutObjectCommand({
-      Bucket: SenadoConst.S3_BUCKET,
+      Bucket: MainBucketKey.S3_BUCKET,
       Key: VotacionesBucketKey.votacionResumenListJsonLines(legisId, sesionId),
       Body: votaciones.map(
         v => JSON.stringify(v)

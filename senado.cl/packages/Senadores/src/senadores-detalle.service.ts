@@ -1,6 +1,6 @@
 import axios from "axios";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import SenadoConst from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global";
 import * as cheerio from "cheerio";
 import {ParlamentarioDetalle, SenadorFotoTipo, SenadoresBucketKey} from "@senado-cl/global/senadores";
 
@@ -16,7 +16,7 @@ export const downloadSaveImages = async (parlId: number) => {
       const buffer = Buffer.from(response.data);
 
       const command = new PutObjectCommand({
-        Bucket: SenadoConst.S3_BUCKET,
+        Bucket: MainBucketKey.S3_BUCKET,
         Key: SenadoresBucketKey.image(parlId, tipo),
         Body: buffer,
       });
@@ -52,7 +52,7 @@ export const getSaveDetalle = async (parlId: number): Promise<ParlamentarioDetal
 
 const saveJsonStructured = async (parlId: number, detalle: ParlamentarioDetalle) => {
   await s3Client.send(new PutObjectCommand({
-    Bucket: SenadoConst.S3_BUCKET,
+    Bucket: MainBucketKey.S3_BUCKET,
     Key: SenadoresBucketKey.json(parlId),
     Body: JSON.stringify(detalle)
   }));
