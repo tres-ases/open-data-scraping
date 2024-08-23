@@ -128,11 +128,10 @@ export default class AdminStack extends Stack {
           }),
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
-        'img/*': {
+        '/Senadores/Detalle/Foto/*': {
           origin: new S3Origin(dataBucket, {
             originId: `${prefix}-dist-origin-s3-data`,
             originAccessIdentity: oai2,
-            originPath: `/${SenadoresBucketKey.imgPrefix}`,
           }),
           cachePolicy: CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,

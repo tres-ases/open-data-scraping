@@ -65,18 +65,15 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     );
 
     senadoresResource.addResource('{id}')
-      .addResource('image')
-      .addResource('{tipo}')
       .addMethod('GET', new AwsIntegration({
           service: 's3',
-          path: `${MainBucketKey.S3_BUCKET}/${SenadoresBucketKey.image('{id}', '{tipo}')}`,
+          path: `${MainBucketKey.S3_BUCKET}/${SenadoresBucketKey.json('{id}')}`,
           integrationHttpMethod: 'GET',
           options: {
             credentialsRole: readRole,
             passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
             requestParameters: {
               'integration.request.path.id': 'method.request.path.id',
-              'integration.request.path.tipo': 'method.request.path.tipo',
               'integration.request.header.Accept': 'method.request.header.Accept'
             },
             integrationResponses: [{
@@ -92,7 +89,6 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           authorizer: authorizer,
           requestParameters: {
             'method.request.path.id': true,
-            'method.request.path.tipo': true,
             'method.request.header.Accept': true
           },
           methodResponses: [

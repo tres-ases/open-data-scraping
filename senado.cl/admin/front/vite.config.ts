@@ -15,6 +15,10 @@ export default defineConfig({
         target: env.VITE_DEV_PROXY_TARGET,
         changeOrigin: true,
       },
+      '/Senadores/Detalle/Foto': {
+        target: env.VITE_DEV_PROXY_TARGET,
+        changeOrigin: true,
+      },
     },
   },
 })
