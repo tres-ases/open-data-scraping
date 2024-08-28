@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import SenadoresService from "../services/senadores.service.ts";
+import SenadoresService from "../services/senadores.service";
 import {PeriodoSenador} from "@senado-cl/global/senadores";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {
@@ -68,7 +68,7 @@ export default function Senadores() {
 
   const sortIndex = searchParams.get('ordenar') ?? 'alfabetico';
   let selected = searchParams.getAll('anos');
-  if(selected.length === 0) selected = [`${new Date().getFullYear()}`]
+  if (selected.length === 0) selected = [`${new Date().getFullYear()}`]
   const senadoresFiltrados = senadores ? senadores
     .filter(
       s => s.periodos.some(
@@ -79,7 +79,7 @@ export default function Senadores() {
           return false;
         }
       )
-    ).sort(sortOptions[sortIndex] ? sortOptions[sortIndex].fn : sortOptions.alfabetico.fn ) : [];
+    ).sort(sortOptions[sortIndex] ? sortOptions[sortIndex].fn : sortOptions.alfabetico.fn) : [];
 
   return (
     <>
@@ -166,13 +166,13 @@ export default function Senadores() {
                         type="checkbox"
                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         onClick={() => {
-                          setSearchParams(prev => (
-                            {
-                              ...prev,
-                              anos: selected.includes(periodo) ?
-                                selected.filter(a => a !== periodo) :
-                                [...selected, periodo].sort((a, b) => a.localeCompare(b)),
-                            }));
+                          let anos;
+                          if (selected.includes(periodo)) anos = selected.filter(s => s !== periodo);
+                          else {
+                            anos = [...selected, periodo];
+                            anos = anos.sort((a, b) => a.localeCompare(b))
+                          }
+                          setSearchParams(prev => ({...prev, anos}))
                         }}
                       />
                       <label
