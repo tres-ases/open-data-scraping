@@ -105,8 +105,9 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     senadorResource.addResource('gastos-operacionales')
       .addMethod('GET', new AwsIntegration({
           service: 's3',
-          path: `${MainBucketKey.S3_BUCKET}/${GastosOperacionalesBucketKey.parlIdPrefixJsonStructured('{id}')}`,
+          path: `${MainBucketKey.S3_BUCKET}?prefix=${GastosOperacionalesBucketKey.parlIdPrefixJsonStructured('{id}')}`,
           integrationHttpMethod: 'GET',
+
           options: {
             credentialsRole: readRole,
             passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
