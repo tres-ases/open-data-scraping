@@ -28,7 +28,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
     readRole.addToPolicy(new PolicyStatement({
-      resources: [`arn:aws:s3:::${MainBucketKey.S3_BUCKET}/*`],
+      resources: [`arn:aws:s3:::${MainBucketKey.S3_BUCKET}`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}/*`],
       actions: ['s3:GetObject', 's3:ListBucket']
     }))
 
