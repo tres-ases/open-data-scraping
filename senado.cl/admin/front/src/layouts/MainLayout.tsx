@@ -13,14 +13,13 @@ import {
 } from '@heroicons/react/24/outline'
 import {Outlet} from "react-router-dom";
 import {useAuthenticator} from "@aws-amplify/ui-react";
-import {mainRoutes} from "../routes/routes.main.ts";
 
 const navigation = [
-  { name: 'Inicio', href: '/', icon: HomeIcon, current: true },
-  { name: 'Senadores', href: mainRoutes.senadores.path, icon: UsersIcon, current: false },
-  { name: 'Remuneraciones', href: '#', icon: CurrencyDollarIcon, current: false },
-  { name: 'Gastos', href: '#', icon: DocumentCurrencyDollarIcon, current: false },
-  { name: 'Votaciones', href: '#', icon: FolderIcon, current: false },
+  {name: 'Inicio', href: '/inicio', icon: HomeIcon, current: true},
+  {name: 'Senadores', href: '/senadores', icon: UsersIcon, current: false},
+  {name: 'Remuneraciones', href: '#', icon: CurrencyDollarIcon, current: false},
+  {name: 'Gastos', href: '#', icon: DocumentCurrencyDollarIcon, current: false},
+  {name: 'Votaciones', href: '#', icon: FolderIcon, current: false},
 ]
 
 function classNames(...classes: string[]) {
@@ -46,10 +45,11 @@ export default function MainLayout() {
               className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
             >
               <TransitionChild>
-                <div className="absolute left-full top-0 flex w-16 justify-center pt-5 duration-300 ease-in-out data-[closed]:opacity-0">
+                <div
+                  className="absolute left-full top-0 flex w-16 justify-center pt-5 duration-300 ease-in-out data-[closed]:opacity-0">
                   <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
                     <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon aria-hidden="true" className="h-6 w-6 text-white" />
+                    <XMarkIcon aria-hidden="true" className="h-6 w-6 text-white"/>
                   </button>
                 </div>
               </TransitionChild>
@@ -123,15 +123,14 @@ export default function MainLayout() {
                   </ul>
                 </li>
                 <li className="-mx-6 mt-auto mb-5">
-                  <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-800 hover:text-gray-700">
+                  <div
+                    className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-800 hover:text-gray-700">
                     <UserIcon className="h-6 w-6 rounded-full bg-gray-50"/>
                     <span aria-hidden="true">{user?.signInDetails?.loginId}</span>
                   </div>
-                  <a
-                    onClick={signOut}
-                    className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-rose-800 hover:text-rose-700 hover:bg-gray-50"
-                  >
-                    <PowerIcon className="h-6 w-6 rounded-full bg-gray-50"/>
+                  <a onClick={signOut}
+                     className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-rose-800 hover:text-rose-700 hover:bg-gray-50 cursor-pointer">
+                    <PowerIcon className="h-5 w-5 rounded-full bg-gray-50"/>
                     <span aria-hidden="true">Cerrar Sesión</span>
                   </a>
                 </li>
@@ -143,12 +142,12 @@ export default function MainLayout() {
         <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden">
           <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
             <span className="sr-only">Open sidebar</span>
-            <Bars3Icon aria-hidden="true" className="h-6 w-6" />
+            <Bars3Icon aria-hidden="true" className="h-6 w-6"/>
           </button>
           <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">Dashboard</div>
-          <a onClick={signOut}>
+          <a onClick={signOut} className="cursor-pointer">
             <span className="sr-only">Cerrar Sesión</span>
-            <PowerIcon className="h-6 w-6 rounded-full text-rose-800 bg-rose-50"/>
+            <PowerIcon className="h-5 w-5 rounded-full text-rose-800 bg-rose-50"/>
           </a>
         </div>
         <main className="py-10 lg:pl-72">

@@ -1,5 +1,5 @@
 import { get } from 'aws-amplify/api';
-import {PeriodoSenador} from "@senado-cl/global/senadores";
+import {ParlamentarioDetalle, PeriodoSenador} from "@senado-cl/global/senadores";
 
 const SenadoresService = {
   getAll: async () => {
@@ -8,6 +8,14 @@ const SenadoresService = {
       path: '/senadores'
     }).response;
     return JSON.parse(await response.body.text()) as PeriodoSenador[];
+  },
+
+  getOne: async (id: string) => {
+    const response = await get({
+      apiName: 'admin',
+      path: `/senadores/${id}`
+    }).response;
+    return JSON.parse(await response.body.text()) as ParlamentarioDetalle;
   }
 }
 
