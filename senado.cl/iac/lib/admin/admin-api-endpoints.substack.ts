@@ -10,6 +10,7 @@ import {
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {SenadoresBucketKey, SenadorFotoTipo} from "@senado-cl/global/senadores";
 import {MainBucketKey} from "@senado-cl/global";
+import {GastosOperacionalesBucketKey} from "@senado-cl/global/gastos-operacionales";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
@@ -64,10 +65,47 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       }
     );
 
-    senadoresResource.addResource('{id}')
-      .addMethod('GET', new AwsIntegration({
+    const senadorResource = senadoresResource.addResource('{id}');
+      senadorResource.addMethod('GET', new AwsIntegration({
           service: 's3',
           path: `${MainBucketKey.S3_BUCKET}/${SenadoresBucketKey.json('{id}')}`,
+          integrationHttpMethod: 'GET',
+          options: {
+            credentialsRole: readRole,
+            passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+            requestParameters: {
+              'integration.request.path.id': 'method.request.path.id',
+              'integration.request.header.Accept': 'method.request.header.Accept'
+            },
+            integrationResponses: [{
+              statusCode: '200',
+              responseParameters: {
+                'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+              }
+            }]
+          }
+        }),
+        {
+          authorizationType: AuthorizationType.COGNITO,
+          authorizer: authorizer,
+          requestParameters: {
+            'method.request.path.id': true,
+            'method.request.header.Accept': true
+          },
+          methodResponses: [
+            {
+              statusCode: '200',
+              responseParameters: {
+                'method.response.header.Content-Type': true
+              }
+            }]
+        }
+      );
+
+    senadorResource.addResource('gastos-operacionales')
+      .addMethod('GET', new AwsIntegration({
+          service: 's3',
+          path: `${MainBucketKey.S3_BUCKET}/${GastosOperacionalesBucketKey.parlIdPrefixJsonStructured('{id}')}`,
           integrationHttpMethod: 'GET',
           options: {
             credentialsRole: readRole,

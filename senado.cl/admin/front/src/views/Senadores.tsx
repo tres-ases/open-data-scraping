@@ -189,7 +189,7 @@ export default function Senadores() {
           </PopoverGroup>
         </div>
       </section>
-      <div className="mt-6 grid grid-cols-3 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-0 lg:gap-x-8">
+      <div className="mt-6 grid grid-cols-3 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-5 lg:gap-x-8">
         {senadoresFiltrados
           .map(s => (
             <div key={s.id} className="group relative" onClick={() => toDetails(s.id)}>
@@ -201,16 +201,22 @@ export default function Senadores() {
                   className="h-full w-full object-cover object-center"
                 />
               </div>
-              <h3 className="mt-4 text-sm text-gray-700">
+              <h3 className="mt-4 text-sm font-semibold text-gray-700">
                 <a href={`/senadores/${s.id}`}>
                   <span className="absolute inset-0"/>
                   {s.nombre}
                 </a>
               </h3>
               <p
-                className="mt-1 text-sm text-indigo-600 font-light">{s.periodos.length} período{s.periodos.length > 1 ? 's' : ''}</p>
-              <p
-                className="mt-1 text-sm font-medium text-gray-700">{s.periodos.map((p: any) => `${p.rango.inicio}-${p.rango.fin}`).join(' | ')}</p>
+                className="my-1 text-sm text-gray-500 font-light">{s.periodos.length} período{s.periodos.length > 1 ? 's' : ''}</p>
+              {s.periodos
+                .sort((a, b) => a.rango.inicio - b.rango.inicio)
+                .map(p =>
+                    <span
+                      className="inline-flex items-center rounded-md bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-600 ring-1 ring-inset ring-indigo-500/10 mr-2">
+                  {p.rango.inicio}-{p.rango.fin}
+                </span>
+                )}
             </div>
           ))}
       </div>

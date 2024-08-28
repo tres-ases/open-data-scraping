@@ -28,7 +28,7 @@ export default function Senador() {
               <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{senador.nombre}</h1>
             </div>
 
-            <section aria-labelledby="information-heading" className="mt-4">
+            <section aria-labelledby="information-heading" className="mt-1">
               <h2 id="information-heading" className="sr-only">
                 Información Senador
               </h2>
@@ -37,20 +37,20 @@ export default function Senador() {
                 <p className="text-lg text-gray-900 sm:text-xl">{senador.partido}</p>
               </div>
 
-              <div className="mt-4 space-y-6">
+              <div>
                 <p className="text-base text-gray-500">{senador.region}</p>
               </div>
 
-              <div className="mt-6 flex items-center">
+              <div className="mt-4 flex items-center">
                 <PhoneIcon aria-hidden="true" className="h-5 w-5 flex-shrink-0 text-indigo-500"/>
                 <p
-                  className="ml-2 text-sm text-gray-500">{senador.telefono && senador.telefono.length > 0 ? senador.telefono : 'sin información'}</p>
+                  className="ml-2 text-sm text-gray-500">{senador.telefono && senador.telefono.length > 0 ? senador.telefono : 'Sin información'}</p>
               </div>
 
-              <div className="mt-6 flex items-center">
+              <div className="mt-2 flex items-center">
                 <EnvelopeIcon aria-hidden="true" className="h-5 w-5 flex-shrink-0 text-indigo-500"/>
                 <p
-                  className="ml-2 text-sm text-gray-500">{senador.correo && senador.correo.length > 0 ? senador.correo : 'sin información'}</p>
+                  className="ml-2 text-sm text-gray-500">{senador.correo && senador.correo.length > 0 ? senador.correo : 'Sin información'}</p>
               </div>
             </section>
           </div>
