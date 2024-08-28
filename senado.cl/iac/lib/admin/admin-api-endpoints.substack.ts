@@ -29,7 +29,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     });
     readRole.addToPolicy(new PolicyStatement({
       resources: [`arn:aws:s3:::${MainBucketKey.S3_BUCKET}/*`],
-      actions: ['s3:GetObject']
+      actions: ['s3:GetObject', 's3:ListBucket']
     }))
 
     const senadoresResource = api.root.addResource('senadores');
