@@ -151,8 +151,8 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
           requestParameters: {
             'integration.request.path.id': 'method.request.path.id',
-            'integration.request.querystring.ano': 'method.request.path.ano',
-            'integration.request.querystring.mes': 'method.request.path.mes',
+            'integration.request.path.ano': 'method.request.querystring.ano',
+            'integration.request.path.mes': 'method.request.querystring.mes',
             'integration.request.header.Accept': 'method.request.header.Accept'
           },
           integrationResponses: [{
