@@ -1,11 +1,13 @@
 import {useEffect, useState} from "react";
-import SenadoresService from "../services/senadores.service";
-import {ParlamentarioDetalle} from "@senado-cl/global/senadores";
 import {useParams} from "react-router-dom";
 import {EnvelopeIcon, PhoneIcon} from "@heroicons/react/24/outline";
+import {ParlamentarioDetalle} from "@senado-cl/global/senadores";
+import SenadoresService from "../services/senadores.service";
+import SenadorGastosOperacionales from "../components/SenadorGastosOperacionales.tsx";
 
 export default function Senador() {
   const [senador, setSenador] = useState<ParlamentarioDetalle>();
+
   let params = useParams();
   console.log(params)
   let { id } = params;
@@ -14,8 +16,6 @@ export default function Senador() {
     id && SenadoresService.getOne(id)
       .then(senador => setSenador(senador));
   }, [id])
-
-  console.log(id, senador);
 
   return senador ? (
     <>
@@ -57,10 +57,11 @@ export default function Senador() {
 
           <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
             <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
-              <img alt={senador.nombre} src={`/Senadores/Detalle/Foto/parlId=${id}/1.jpeg`} className="h-full w-full object-cover object-center"/>
+              <img alt={senador.nombre} src={`/Senadores/Detalle/Foto/parlId=${id}/1.jpeg`} className="h-1/2 w-1/2 object-cover object-center"/>
             </div>
           </div>
         </div>
+        {id && <SenadorGastosOperacionales id={id}/>}
       </div>
     </>
   ) : <></>;

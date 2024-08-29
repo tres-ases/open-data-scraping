@@ -102,7 +102,9 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
         }
       );
 
-    senadorResource.addResource('gastos-operacionales')
+    const senadorGastosOperacionalesResource = senadorResource.addResource('gastos-operacionales');
+    senadorGastosOperacionalesResource
+      .addResource('archivos')
       .addMethod('GET', new AwsIntegration({
           service: 's3',
           path: `${MainBucketKey.S3_BUCKET}?list-type=2&prefix=${GastosOperacionalesBucketKey.parlIdPrefixJsonStructured('{id}')}`,
@@ -139,6 +141,46 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
             }]
         }
       );
+
+    senadorGastosOperacionalesResource.addMethod('GET', new AwsIntegration({
+        service: 's3',
+        path: `${MainBucketKey.S3_BUCKET}/${GastosOperacionalesBucketKey.parlIdAnoMesJsonStructured('{id}', '{ano}', '{mes}')}`,
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsRole: readRole,
+          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+          requestParameters: {
+            'integration.request.path.id': 'method.request.path.id',
+            'integration.request.querystring.ano': 'method.request.path.ano',
+            'integration.request.querystring.mes': 'method.request.path.mes',
+            'integration.request.header.Accept': 'method.request.header.Accept'
+          },
+          integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            }
+          }]
+        }
+      }),
+      {
+        authorizationType: AuthorizationType.COGNITO,
+        authorizer: authorizer,
+        requestParameters: {
+          'method.request.path.id': true,
+          'method.request.querystring.ano': true,
+          'method.request.querystring.mes': true,
+          'method.request.header.Accept': true
+        },
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true
+            }
+          }]
+      }
+    );
   }
 
   getLogicalId(element: CfnElement): string {

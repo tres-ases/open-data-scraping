@@ -4,6 +4,6 @@ const parlIdPrefixJsonLines = (parlId: number | string) => `GastosOperacionales/
 export const GastosOperacionalesBucketKey = {
   parlIdPrefixJsonStructured,
   parlIdPrefixJsonLines,
-  parlIdAnoMesJsonStructured: (parlId: number, ano: number, mes: number) => `${parlIdPrefixJsonStructured(parlId)}/ano=${ano}/mes=${mes}/data.json`,
-  parlIdAnoMesJsonLines: (parlId: number, ano: number, mes: number) => `${parlIdPrefixJsonLines(parlId)}/ano=${ano}/mes=${mes}/data.jsonl`,
+  parlIdAnoMesJsonStructured: (parlId: number | string, ano: number | string, mes: number | string) => `${parlIdPrefixJsonStructured(parlId)}/ano=${ano}/mes=${mes}/data.json`,
+  parlIdAnoMesJsonLines: (parlId: number | string, ano: number | string, mes: number | string) => `${parlIdPrefixJsonLines(parlId)}/ano=${ano}/mes=${mes}/data.jsonl`,
 }
