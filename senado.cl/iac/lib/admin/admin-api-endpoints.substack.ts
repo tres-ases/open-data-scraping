@@ -3,7 +3,7 @@ import {CfnElement, NestedStack,} from 'aws-cdk-lib';
 import {
   AuthorizationType,
   AwsIntegration,
-  CognitoUserPoolsAuthorizer, LambdaIntegration,
+  CognitoUserPoolsAuthorizer,
   PassthroughBehavior,
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
@@ -26,13 +26,13 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
   constructor(scope: Construct, {api, authorizer, layers}: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
-    const readRole = new Role(this, `${prefix}-readRole`, {
+    const role = new Role(this, `${prefix}-readRole`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
-    readRole.addToPolicy(new PolicyStatement({
+    role.addToPolicy(new PolicyStatement({
       resources: [`arn:aws:s3:::${MainBucketKey.S3_BUCKET}`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}/*`],
       actions: ['s3:GetObject', 's3:ListBucket']
-    }))
+    }));
 
     const legislaturasResource = api.root.addResource('legislaturas');
 
@@ -41,7 +41,51 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
         path: `${MainBucketKey.S3_BUCKET}/${LegislaturasBucketKey.json}`,
         integrationHttpMethod: 'GET',
         options: {
-          credentialsRole: readRole,
+          credentialsRole: role,
+        }
+      }),
+      {
+        authorizationType: AuthorizationType.COGNITO,
+        authorizer: authorizer,
+      }
+    );
+
+    const legislaturasGetSaveFunction = new ScraperFunction(this, `${prefix}-legislaturas-getSave`, {
+      pckName: 'Legislaturas',
+      handler: 'legislaturas.getSaveLegislaturasHandler',
+      layers
+    });
+
+    legislaturasResource.addMethod("POST", new AwsIntegration({
+      service: 'lambda',
+      path: `2015-03-31/functions/${legislaturasGetSaveFunction.functionArn}/invocations`,
+      integrationHttpMethod: 'POST',
+      options: {
+        credentialsRole: role,
+        passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+        integrationResponses: [{
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+          }
+        }]
+      }
+    }));
+
+    const legislaturasGetFunction = new ScraperFunction(this, `${prefix}-legislaturas-get`, {
+      pckName: 'Legislaturas',
+      handler: 'legislaturas.getLegislaturasHandler',
+      layers
+    });
+
+    legislaturasResource
+      .addResource('scraper')
+      .addMethod('GET', new AwsIntegration({
+        service: 'lambda',
+        path: `2015-03-31/functions/${legislaturasGetFunction.functionArn}/invocations`,
+        integrationHttpMethod: 'POST',
+        options: {
+          credentialsRole: role,
           passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
           integrationResponses: [{
             statusCode: '200',
@@ -50,40 +94,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
             }
           }]
         }
-      }),
-      {
-        authorizationType: AuthorizationType.COGNITO,
-        authorizer: authorizer,
-        requestParameters: {
-          'method.request.header.Accept': true
-        },
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true
-            }
-          }]
-      }
-    );
-
-    legislaturasResource.addMethod("POST", new LambdaIntegration(
-      new ScraperFunction(this, `${prefix}-legislaturas-getSave`, {
-        pckName: 'Legislaturas',
-        handler: 'legislaturas.getSaveLegislaturasHandler',
-        layers
-      })
-    ));
-
-    legislaturasResource
-      .addResource('scraper')
-      .addMethod('GET', new LambdaIntegration(
-        new ScraperFunction(this, `${prefix}-legislaturas-get`, {
-          pckName: 'Legislaturas',
-          handler: 'legislaturas.getLegislaturasHandler',
-          layers
-        })
-  ));
+      }));
   }
 
   getLogicalId(element: CfnElement): string {
