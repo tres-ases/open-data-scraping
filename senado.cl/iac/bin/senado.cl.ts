@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { ScraperStack } from '../lib/scraper-stack';
-import AdminStack from "../lib/admin/admin.stack";
+import AdminStack from "../lib/admin.stack";
 
 const app = new cdk.App();
 new ScraperStack(app, 'odata-scraping-senado-cl', {
