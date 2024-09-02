@@ -31,10 +31,6 @@ export default class AdminStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const openDataBucket = new Bucket(this, 'openDataBucket', {
-      bucketName: MainBucketKey.S3_BUCKET
-    });
-
     const globalLy = new LayerVersion(this, 'global-ly', {
       layerVersionName: 'global-layer',
       compatibleRuntimes: [
