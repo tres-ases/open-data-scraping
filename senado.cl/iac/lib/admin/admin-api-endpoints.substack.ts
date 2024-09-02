@@ -4,6 +4,7 @@ import {
   AuthorizationType,
   AwsIntegration,
   CognitoUserPoolsAuthorizer,
+  LambdaIntegration,
   PassthroughBehavior,
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
@@ -56,20 +57,12 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       layers
     });
 
-    legislaturasResource.addMethod("POST", new AwsIntegration({
-      service: 'lambda',
-      path: `2015-03-31/functions/${legislaturasGetSaveFunction.functionArn}/invocations`,
-      integrationHttpMethod: 'POST',
-      options: {
-        credentialsRole: role,
-        passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-        integrationResponses: [{
-          statusCode: '200',
-          responseParameters: {
-            'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-          }
-        }]
-      }
+    legislaturasResource.addMethod("POST", new LambdaIntegration(legislaturasGetSaveFunction, {
+      proxy: false,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      integrationResponses: [{
+        statusCode: '200'
+      }]
     }));
 
     const legislaturasGetFunction = new ScraperFunction(this, `${prefix}-legislaturas-get`, {
@@ -80,20 +73,12 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
 
     legislaturasResource
       .addResource('scraper')
-      .addMethod('GET', new AwsIntegration({
-        service: 'lambda',
-        path: `2015-03-31/functions/${legislaturasGetFunction.functionArn}/invocations`,
-        integrationHttpMethod: 'POST',
-        options: {
-          credentialsRole: role,
-          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-          integrationResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            }
-          }]
-        }
+      .addMethod('GET', new LambdaIntegration(legislaturasGetFunction, {
+        proxy: false,
+        passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+        integrationResponses: [{
+          statusCode: '200'
+        }]
       }));
   }
 
