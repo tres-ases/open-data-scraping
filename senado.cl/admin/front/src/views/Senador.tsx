@@ -1,6 +1,5 @@
 import {useParams} from "react-router-dom";
 import {BuildingLibraryIcon, EnvelopeIcon, PhoneIcon} from "@heroicons/react/24/outline";
-import SenadorGastosOperacionales from "../components/SenadorGastosOperacionales.tsx";
 
 export default function Senador() {
   let params = useParams();
@@ -55,7 +54,6 @@ export default function Senador() {
           </div>
         </div>
       </div>
-      {id && <SenadorGastosOperacionales id={id}/>}
     </>
   );
 }
