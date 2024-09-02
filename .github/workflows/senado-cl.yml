@@ -89,8 +89,8 @@ jobs:
         run: |
           pnpm @senado.cl/global:build
           pnpm @senado.cl/global:package
-          pnpm @senado.cl/packages:build
-          pnpm @senado.cl/packages:package
+          pnpm @senado.cl/scraper:build
+          pnpm @senado.cl/scraper:package
           pnpm @senado.cl/admin-front:build
           pnpm @senado.cl/admin-api:build
 
