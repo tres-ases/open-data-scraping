@@ -29,7 +29,7 @@ export class ScraperStack extends Stack {
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
-      code: Code.fromAsset('../packages/Commons/layer'),
+      code: Code.fromAsset('../scraper/Commons/layer'),
       compatibleArchitectures: [
         Architecture.X86_64
       ]

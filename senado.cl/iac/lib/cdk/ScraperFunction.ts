@@ -10,7 +10,7 @@ interface SenadoNodejsFunctionProps {
 }
 
 function codeFromPackage(name: string) {
-  return Code.fromAsset(`../packages/${name}/dist`);
+  return Code.fromAsset(`../scraper/${name}/dist`);
 }
 
 export default class ScraperFunction extends nodejs.NodejsFunction {
