@@ -61,7 +61,10 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       proxy: false,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
       integrationResponses: [{
-        statusCode: '200'
+        statusCode: '200',
+        responseTemplates: {
+          "application/json": "$input.json('$.body')"
+        }
       }]
     }));
 
@@ -77,7 +80,10 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
         proxy: false,
         passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
         integrationResponses: [{
-          statusCode: '200'
+          statusCode: '200',
+          responseTemplates: {
+            "application/json": "$input.json('$.body')"
+          }
         }]
       }));
   }
