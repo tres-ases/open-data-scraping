@@ -5,7 +5,7 @@ const LegislaturaService = {
   getAll: async () => {
     const response = await get({
       apiName: 'admin',
-      path: '/legislaturas/scraper'
+      path: '/legislaturas'
     }).response;
     return JSON.parse(await response.body.text()) as Legislatura[];
   },

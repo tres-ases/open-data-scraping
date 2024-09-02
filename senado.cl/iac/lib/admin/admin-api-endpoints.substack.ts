@@ -34,7 +34,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
     role.addToPolicy(new PolicyStatement({
-      resources: [`arn:aws:s3:::${MainBucketKey.S3_BUCKET}`, `arn:aws:s3:::${MainBucketKey.S3_BUCKET}/*`],
+      resources: [dataBucket.bucketArn, `${dataBucket.bucketArn}/*`],
       actions: ['s3:GetObject', 's3:ListBucket']
     }));
 
@@ -46,11 +46,28 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
         integrationHttpMethod: 'GET',
         options: {
           credentialsRole: role,
+          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+          integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            }
+          }]
         }
       }),
       {
         authorizationType: AuthorizationType.COGNITO,
         authorizer: authorizer,
+        requestParameters: {
+          'method.request.header.Accept': true
+        },
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true
+            }
+          }]
       }
     );
 
