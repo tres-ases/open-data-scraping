@@ -209,7 +209,8 @@ export default class AdminStack extends Stack {
 
     const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {
       api, authorizer,
-      layers: [commonsLy, globalLy, scraperLy]
+      layers: [commonsLy, globalLy, scraperLy],
+      dataBucket
     });
   }
 

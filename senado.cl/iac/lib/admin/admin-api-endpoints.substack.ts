@@ -14,6 +14,7 @@ import {MainBucketKey} from "@senado-cl/global";
 import {LegislaturasBucketKey} from "@senado-cl/global/legislaturas";
 import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
+import {Bucket} from "aws-cdk-lib/aws-s3";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
@@ -21,11 +22,12 @@ interface AdminApiEndpointsSubstackProps {
   api: RestApi
   authorizer: CognitoUserPoolsAuthorizer
   layers: LayerVersion[]
+  dataBucket: Bucket
 }
 
 export default class AdminApiEndpointsSubstack extends NestedStack {
 
-  constructor(scope: Construct, {api, authorizer, layers}: AdminApiEndpointsSubstackProps) {
+  constructor(scope: Construct, {api, authorizer, layers, dataBucket}: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
     const role = new Role(this, `${prefix}-readRole`, {
@@ -57,6 +59,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       handler: 'legislaturas.getSaveLegislaturasHandler',
       layers
     });
+    dataBucket.grantWrite(legislaturasGetSaveFunction);
 
     legislaturasResource.addMethod("POST", new LambdaIntegration(legislaturasGetSaveFunction, {
       proxy: false,
@@ -85,6 +88,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       handler: 'legislaturas.getLegislaturasHandler',
       layers
     });
+    dataBucket.grantRead(legislaturasGetFunction);
 
     legislaturasResource
       .addResource('scraper')
