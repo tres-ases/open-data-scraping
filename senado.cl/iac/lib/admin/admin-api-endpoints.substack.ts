@@ -14,7 +14,7 @@ import {MainBucketKey} from "@senado-cl/global";
 import {LegislaturasBucketKey} from "@senado-cl/global/legislaturas";
 import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
-import {Bucket} from "aws-cdk-lib/aws-s3";
+import {IBucket} from "aws-cdk-lib/aws-s3";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
@@ -22,7 +22,7 @@ interface AdminApiEndpointsSubstackProps {
   api: RestApi
   authorizer: CognitoUserPoolsAuthorizer
   layers: LayerVersion[]
-  dataBucket: Bucket
+  dataBucket: IBucket
 }
 
 export default class AdminApiEndpointsSubstack extends NestedStack {
