@@ -3,10 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./dieta": "./dist/Dieta/index.js",
-    "./gastos-operacionales": "./dist/GastosOperacionales/index.js",
-    "./senadores": "./dist/Senadores/index.js",
-    "./votaciones": "./dist/Votaciones/index.js",
+    "./legislaturas": "./dist/Legislaturas/index.js",
+    "./boletin": "./dist/Boletin/index.js",
     ".": "./dist/Main/index.js"
   },
   "scripts": {

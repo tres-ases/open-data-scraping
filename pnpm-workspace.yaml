@@ -1,6 +1,6 @@
 packages:
   - "senado.cl/global"
-  - "senado.cl/packages/*"
+  - "senado.cl/scraper/*"
   - "senado.cl/admin/front"
   - "senado.cl/admin/api/*"
   - "senado.cl/iac"

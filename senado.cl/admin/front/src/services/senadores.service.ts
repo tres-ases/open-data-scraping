@@ -1,6 +1,7 @@
 import {get} from 'aws-amplify/api';
 import * as cheerio from 'cheerio';
 import {ParlamentarioDetalle, PeriodoSenador} from "@senado-cl/global/senadores";
+import {GastosOperacionales} from "@senado-cl/global/gastos-operacionales";
 
 export interface AnoMeses {
   ano: number
@@ -41,7 +42,7 @@ const SenadoresService = {
       })
       .reduce((acc, curr) => {
         let value = acc.find(v => v.ano === curr.ano);
-        if(value === undefined) {
+        if (value === undefined) {
           value = {ano: curr.ano, meses: []};
           acc.push(value);
         }
@@ -49,6 +50,17 @@ const SenadoresService = {
         return acc;
       }, [] as AnoMeses[])
 
+  },
+
+  getGastosOperacionales: async (id: string, ano: string, mes: string) => {
+    const response = await get({
+      apiName: 'admin',
+      path: `/senadores/${id}/gastos-operacionales`,
+      options: {
+        queryParams: {ano, mes}
+      }
+    }).response;
+    return JSON.parse(await response.body.text()) as GastosOperacionales[];
   },
 }
 

@@ -3,25 +3,27 @@ import {CfnElement, NestedStack,} from 'aws-cdk-lib';
 import {
   AuthorizationType,
   AwsIntegration,
-  CognitoUserPoolsAuthorizer,
+  CognitoUserPoolsAuthorizer, LambdaIntegration,
   PassthroughBehavior,
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {SenadoresBucketKey, SenadorFotoTipo} from "@senado-cl/global/senadores";
 import {MainBucketKey} from "@senado-cl/global";
-import {GastosOperacionalesBucketKey} from "@senado-cl/global/gastos-operacionales";
+import {LegislaturasBucketKey} from "@senado-cl/global/legislaturas";
+import ScraperFunction from "../cdk/ScraperFunction";
+import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
 interface AdminApiEndpointsSubstackProps {
   api: RestApi
   authorizer: CognitoUserPoolsAuthorizer
+  layers: LayerVersion[]
 }
 
 export default class AdminApiEndpointsSubstack extends NestedStack {
 
-  constructor(scope: Construct, {api, authorizer}: AdminApiEndpointsSubstackProps) {
+  constructor(scope: Construct, {api, authorizer, layers}: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
     const readRole = new Role(this, `${prefix}-readRole`, {
@@ -32,11 +34,11 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       actions: ['s3:GetObject', 's3:ListBucket']
     }))
 
-    const senadoresResource = api.root.addResource('senadores');
+    const legislaturasResource = api.root.addResource('legislaturas');
 
-    senadoresResource.addMethod('GET', new AwsIntegration({
+    legislaturasResource.addMethod('GET', new AwsIntegration({
         service: 's3',
-        path: `${MainBucketKey.S3_BUCKET}/${SenadoresBucketKey.periodoJsonStructured}`,
+        path: `${MainBucketKey.S3_BUCKET}/${LegislaturasBucketKey.json}`,
         integrationHttpMethod: 'GET',
         options: {
           credentialsRole: readRole,
@@ -65,122 +67,23 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       }
     );
 
-    const senadorResource = senadoresResource.addResource('{id}');
-      senadorResource.addMethod('GET', new AwsIntegration({
-          service: 's3',
-          path: `${MainBucketKey.S3_BUCKET}/${SenadoresBucketKey.json('{id}')}`,
-          integrationHttpMethod: 'GET',
-          options: {
-            credentialsRole: readRole,
-            passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-            requestParameters: {
-              'integration.request.path.id': 'method.request.path.id',
-              'integration.request.header.Accept': 'method.request.header.Accept'
-            },
-            integrationResponses: [{
-              statusCode: '200',
-              responseParameters: {
-                'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-              }
-            }]
-          }
-        }),
-        {
-          authorizationType: AuthorizationType.COGNITO,
-          authorizer: authorizer,
-          requestParameters: {
-            'method.request.path.id': true,
-            'method.request.header.Accept': true
-          },
-          methodResponses: [
-            {
-              statusCode: '200',
-              responseParameters: {
-                'method.response.header.Content-Type': true
-              }
-            }]
-        }
-      );
+    legislaturasResource.addMethod("POST", new LambdaIntegration(
+      new ScraperFunction(this, `${prefix}-legislaturas-getSave`, {
+        pckName: 'Legislaturas',
+        handler: 'legislaturas.getSaveLegislaturasHandler',
+        layers
+      })
+    ));
 
-    const senadorGastosOperacionalesResource = senadorResource.addResource('gastos-operacionales');
-    senadorGastosOperacionalesResource
-      .addResource('archivos')
-      .addMethod('GET', new AwsIntegration({
-          service: 's3',
-          path: `${MainBucketKey.S3_BUCKET}?list-type=2&prefix=${GastosOperacionalesBucketKey.parlIdPrefixJsonStructured('{id}')}`,
-          integrationHttpMethod: 'GET',
-
-          options: {
-            credentialsRole: readRole,
-            passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-            requestParameters: {
-              'integration.request.path.id': 'method.request.path.id',
-              'integration.request.header.Accept': 'method.request.header.Accept'
-            },
-            integrationResponses: [{
-              statusCode: '200',
-              responseParameters: {
-                'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-              }
-            }]
-          }
-        }),
-        {
-          authorizationType: AuthorizationType.COGNITO,
-          authorizer: authorizer,
-          requestParameters: {
-            'method.request.path.id': true,
-            'method.request.header.Accept': true
-          },
-          methodResponses: [
-            {
-              statusCode: '200',
-              responseParameters: {
-                'method.response.header.Content-Type': true
-              }
-            }]
-        }
-      );
-
-    senadorGastosOperacionalesResource.addMethod('GET', new AwsIntegration({
-        service: 's3',
-        path: `${MainBucketKey.S3_BUCKET}/${GastosOperacionalesBucketKey.parlIdAnoMesJsonStructured('{id}', '{ano}', '{mes}')}`,
-        integrationHttpMethod: 'GET',
-        options: {
-          credentialsRole: readRole,
-          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-          requestParameters: {
-            'integration.request.path.id': 'method.request.path.id',
-            'integration.request.path.ano': 'method.request.querystring.ano',
-            'integration.request.path.mes': 'method.request.querystring.mes',
-            'integration.request.header.Accept': 'method.request.header.Accept'
-          },
-          integrationResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            }
-          }]
-        }
-      }),
-      {
-        authorizationType: AuthorizationType.COGNITO,
-        authorizer: authorizer,
-        requestParameters: {
-          'method.request.path.id': true,
-          'method.request.querystring.ano': true,
-          'method.request.querystring.mes': true,
-          'method.request.header.Accept': true
-        },
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true
-            }
-          }]
-      }
-    );
+    legislaturasResource
+      .addResource('scraper')
+      .addMethod('GET', new LambdaIntegration(
+        new ScraperFunction(this, `${prefix}-legislaturas-get`, {
+          pckName: 'Legislaturas',
+          handler: 'legislaturas.getLegislaturasHandler',
+          layers
+        })
+  ));
   }
 
   getLogicalId(element: CfnElement): string {

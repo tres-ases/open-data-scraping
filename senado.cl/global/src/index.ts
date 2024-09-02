@@ -1,4 +1,3 @@
-export * from './Dieta';
-export * from './GastosOperacionales';
+export * from './Boletin';
+export * from './Legislaturas';
 export * from './Main';
-export * from './Senadores';

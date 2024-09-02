@@ -6,6 +6,8 @@
     "@senado.cl/global:build": "turbo build --filter=@senado-cl/global",
     "@senado.cl/global:package": "turbo package --filter=@senado-cl/global",
     "@senado.cl/iac:build": "turbo build --filter=@senado.cl/iac",
+    "@senado.cl/scraper:build": "turbo build --filter=\"./senado.cl/scraper/*\"",
+    "@senado.cl/scraper:package": "turbo package --filter=@senado-cl/scraper-commons",
     "@senado.cl/packages:build": "turbo build --filter=\"./senado.cl/packages/*\"",
     "@senado.cl/packages:package": "turbo package --filter=@senado-cl/commons",
     "@senado.cl/packages:check-dist": "turbo check-dist --filter=\"./senado.cl/packages/*\"",
