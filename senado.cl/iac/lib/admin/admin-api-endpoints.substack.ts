@@ -5,6 +5,7 @@ import {
   AwsIntegration,
   CognitoUserPoolsAuthorizer,
   LambdaIntegration,
+  Model,
   PassthroughBehavior,
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
@@ -66,7 +67,18 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           "application/json": "$input.json('$.body')"
         }
       }]
-    }));
+    }), {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: authorizer,
+      methodResponses: [
+        {
+          statusCode: "200",
+          responseModels: {
+            'application/json': Model.EMPTY_MODEL,
+          },
+        },
+      ]
+    });
 
     const legislaturasGetFunction = new ScraperFunction(this, `${prefix}-legislaturas-get`, {
       pckName: 'Legislaturas',
@@ -80,12 +92,20 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
         proxy: false,
         passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
         integrationResponses: [{
-          statusCode: '200',
-          responseTemplates: {
-            "application/json": "$input.json('$.body')"
-          }
+          statusCode: '200'
         }]
-      }));
+      }), {
+        authorizationType: AuthorizationType.COGNITO,
+        authorizer: authorizer,
+        methodResponses: [
+          {
+            statusCode: "200",
+            responseModels: {
+              'application/json': Model.EMPTY_MODEL,
+            },
+          },
+        ]
+      });
   }
 
   getLogicalId(element: CfnElement): string {
