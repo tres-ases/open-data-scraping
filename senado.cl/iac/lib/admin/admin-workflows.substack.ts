@@ -37,7 +37,6 @@ export default class AdminWorkflowsSubstack extends NestedStack {
         })
       ),
       stateMachineType: StateMachineType.STANDARD,
-      timeout: Duration.seconds(190),
       stateMachineName: `${prefix}-sesiones-getSaveWf`,
     })
   }
