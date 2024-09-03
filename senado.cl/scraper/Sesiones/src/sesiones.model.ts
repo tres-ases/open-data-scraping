@@ -23,7 +23,7 @@ export interface SesionesResponse {
 }
 
 export interface AsistenciaDetalleSc {
-  ASISTENCIA: 'Asiste' | ''
+  ASISTENCIA: 'Asiste' | 'Ausente'
   ID_PARLAMENTARIO: number
   NOMBRE: string
   APELLIDO_PATERNO: string
