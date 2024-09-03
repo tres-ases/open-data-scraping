@@ -44,7 +44,10 @@ export default class AdminWorkflowsSubstack extends NestedStack {
 
   getLogicalId(element: CfnElement): string {
     if (element.node.id.includes('NestedStackResource')) {
-      return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1]
+      try {
+        return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1]
+      } catch (e) {
+      }
     }
     return super.getLogicalId(element)
   }
