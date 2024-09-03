@@ -147,9 +147,12 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     legislaturaSesionesResource.addMethod('POST',
       StepFunctionsIntegration.startExecution(sesionesGetSaveWf, {
         credentialsRole: role,
+        requestTemplates: {
+          legId: "$input.params().path.get('id')"
+        }
       }),
       {
-        methodResponses: [{statusCode: '200'}],
+        methodResponses: [{statusCode: '200'}]
       }
     );
   }
