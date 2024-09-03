@@ -148,7 +148,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       StepFunctionsIntegration.startExecution(sesionesGetSaveWf, {
         credentialsRole: role,
         requestTemplates: {
-          legId: "$input.params().path.get('id')"
+          "application/json": "{ \"input\": \"{\"rut\": $input.params().path.get('rut'), \"dtes\": $util.escapeJavaScript($input.json('$')), \"meses\": 2} }",
         }
       }),
       {
