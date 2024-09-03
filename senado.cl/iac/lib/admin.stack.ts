@@ -208,16 +208,17 @@ export default class AdminStack extends Stack {
       stringValue: userPoolClient.userPoolClientId,
     });
 
-    const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {
-      api, authorizer,
+    const adminWorkflowSubstack = new AdminWorkflowsSubstack(this, {
       layers: [commonsLy, globalLy, scraperLy],
       dataBucket
     });
 
-    const adminWorkflowSubstack = new AdminWorkflowsSubstack(this, {
+    const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {
+      api, authorizer,
       layers: [commonsLy, globalLy, scraperLy],
-      dataBucket
-    })
+      dataBucket,
+      sesionesGetSaveWf: adminWorkflowSubstack.sesionesGetSaveWf
+    });
   }
 
   getLogicalId(element: CfnElement): string {

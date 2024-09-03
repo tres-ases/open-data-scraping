@@ -7,7 +7,7 @@ import {
   LambdaIntegration,
   Model,
   PassthroughBehavior,
-  RestApi
+  RestApi, StepFunctionsIntegration
 } from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {MainBucketKey} from "@senado-cl/global";
@@ -15,6 +15,7 @@ import {LegislaturasBucketKey} from "@senado-cl/global/legislaturas";
 import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {IBucket} from "aws-cdk-lib/aws-s3";
+import {StateMachine} from "aws-cdk-lib/aws-stepfunctions";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
@@ -23,11 +24,18 @@ interface AdminApiEndpointsSubstackProps {
   authorizer: CognitoUserPoolsAuthorizer
   layers: LayerVersion[]
   dataBucket: IBucket
+  sesionesGetSaveWf: StateMachine
 }
 
 export default class AdminApiEndpointsSubstack extends NestedStack {
 
-  constructor(scope: Construct, {api, authorizer, layers, dataBucket}: AdminApiEndpointsSubstackProps) {
+  constructor(scope: Construct, {
+    api,
+    authorizer,
+    layers,
+    dataBucket,
+    sesionesGetSaveWf
+  }: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
     const role = new Role(this, `${prefix}-readRole`, {
@@ -127,6 +135,23 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           },
         ]
       });
+
+    const legislaturaResource = legislaturasResource.addResource('{id}');
+
+    const sesionesGetSaveWfRole = new Role(this, `${prefix}-sesiones-getSave-wf-role`, {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+    sesionesGetSaveWf.grantStartSyncExecution(sesionesGetSaveWfRole);
+
+    const legislaturaSesionesResource = legislaturaResource.addResource('sesiones');
+    legislaturaSesionesResource.addMethod('POST',
+      StepFunctionsIntegration.startExecution(sesionesGetSaveWf, {
+        credentialsRole: role,
+      }),
+      {
+        methodResponses: [{statusCode: '200'}],
+      }
+    );
   }
 
   getLogicalId(element: CfnElement): string {

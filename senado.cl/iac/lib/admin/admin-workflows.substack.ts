@@ -15,6 +15,8 @@ interface AdminApiWorkflowsSubstackProps {
 
 export default class AdminWorkflowsSubstack extends NestedStack {
 
+  readonly sesionesGetSaveWf: StateMachine;
+
   constructor(scope: Construct, {layers, dataBucket}: AdminApiWorkflowsSubstackProps) {
     super(scope, prefix);
 
@@ -22,11 +24,11 @@ export default class AdminWorkflowsSubstack extends NestedStack {
       pckName: 'Sesiones',
       handler: 'sesiones.getSaveSesionesHandler',
       layers,
-      timeout: 180_000
+      timeout: 180
     });
     dataBucket.grantWrite(sesionesGetSaveFunction);
 
-    const sesionesGetSaveWf = new StateMachine(this, `${prefix}-sesiones-getSaveWf`, {
+    this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-sesiones-getSaveWf`, {
       definitionBody: DefinitionBody.fromChainable(
         new LambdaInvoke(this, `${prefix}-sesiones-getSave-step`, {
           lambdaFunction: sesionesGetSaveFunction,
