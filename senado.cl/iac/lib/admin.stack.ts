@@ -22,6 +22,7 @@ import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
 import {MainBucketKey} from "@senado-cl/global";
 import {Architecture, Code, LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda";
+import AdminWorkflowsSubstack from "./admin/admin-workflows.substack";
 
 const prefix = 'senado-cl-admin';
 const domain = 'open-data.cl';
@@ -212,6 +213,11 @@ export default class AdminStack extends Stack {
       layers: [commonsLy, globalLy, scraperLy],
       dataBucket
     });
+
+    const adminWorkflowSubstack = new AdminWorkflowsSubstack(this, {
+      layers: [commonsLy, globalLy, scraperLy],
+      dataBucket
+    })
   }
 
   getLogicalId(element: CfnElement): string {
