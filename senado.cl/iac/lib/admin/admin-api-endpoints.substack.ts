@@ -196,7 +196,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
             ],
             requestTemplates: {
               'application/json': JSON.stringify({
-                "executionArn": `"$input.params().path.get('exeId')"`
+                "executionArn": "$input.params().path.get('exeId')"
               })
             }
           },
