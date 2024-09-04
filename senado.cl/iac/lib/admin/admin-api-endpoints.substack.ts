@@ -7,7 +7,7 @@ import {
   LambdaIntegration,
   Model,
   PassthroughBehavior,
-  RestApi, StepFunctionsIntegration
+  RestApi
 } from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {MainBucketKey} from "@senado-cl/global";
@@ -136,19 +136,16 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
         ]
       });
 
-    const legislaturaResource = legislaturasResource.addResource('{id}');
-
     const sesionesGetSaveWfRole = new Role(this, `${prefix}-sesiones-getSave-wf-role`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
     sesionesGetSaveWf.grantStartExecution(sesionesGetSaveWfRole);
     sesionesGetSaveWf.grantRead(sesionesGetSaveWfRole);
 
-    const legSesResource = legislaturaResource.addResource('sesiones');
+    const ejecucionesResource = api.root.addResource('ejecuciones');
+    const ejeSesionesResource = ejecucionesResource.addResource('sesiones');
 
-    const legSesExeResource = legSesResource.addResource('ejecucion');
-
-    legSesExeResource.addMethod('POST', new AwsIntegration({
+    ejeSesionesResource.addMethod('POST', new AwsIntegration({
         service: 'states',
         action: 'StartExecution',
         options: {
@@ -163,7 +160,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           ],
           requestTemplates: {
             'application/json': JSON.stringify({
-              input: `{ "legId": "$input.params().path.get('id')" }`,
+              input: `{ "legId": "$input.params('legId'))" }`,
               stateMachineArn: sesionesGetSaveWf.stateMachineArn
             }),
           },
@@ -174,7 +171,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       }
     );
 
-    legSesExeResource.addResource('{exeId}')
+    ejeSesionesResource.addResource('{exeId}')
       .addMethod('GET', new AwsIntegration({
           service: 'states',
           action: 'DescribeExecution',
@@ -198,11 +195,10 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
               },
             ],
             requestTemplates: {
-              'application/json': `
-              {
-                "executionArn": "$input.params().path.get('exeId')"
-              }`,
-            },
+              'application/json': JSON.stringify({
+                "executionArn": `"$input.params().path.get('exeId')"`
+              })
+            }
           },
         }),
         {
