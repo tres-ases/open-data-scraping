@@ -36,7 +36,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
           outputPath: JsonPath.stringAt("$.Payload")
         })
       ),
-      stateMachineType: StateMachineType.EXPRESS,
+      stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.seconds(190),
       stateMachineName: `${prefix}-sesiones-getSaveWf`,
     })

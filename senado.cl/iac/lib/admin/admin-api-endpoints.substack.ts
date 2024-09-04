@@ -142,19 +142,75 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
     sesionesGetSaveWf.grantStartSyncExecution(sesionesGetSaveWfRole);
+    sesionesGetSaveWf.grantRead(sesionesGetSaveWfRole);
 
-    const legislaturaSesionesResource = legislaturaResource.addResource('sesiones');
-    legislaturaSesionesResource.addMethod('POST',
-      StepFunctionsIntegration.startExecution(sesionesGetSaveWf, {
-        credentialsRole: role,
-        requestTemplates: {
-          "application/json": "{ \"input\": \"{\"rut\": $input.params().path.get('rut'), \"dtes\": $util.escapeJavaScript($input.json('$')), \"meses\": 2} }",
-        }
+    const legSesResource = legislaturaResource.addResource('sesiones');
+
+    const legSesExeResource = legSesResource.addResource('ejecucion');
+
+    legSesExeResource.addMethod('POST', new AwsIntegration({
+        service: 'states',
+        action: 'StartSyncExecution',
+        integrationHttpMethod: 'POST',
+        options: {
+          credentialsRole: role,
+          integrationResponses: [
+            {
+              statusCode: '200',
+              responseTemplates: {
+                'application/json': `{ "executionId": "$input.json('executionArn').split(':').get(7) }`,
+              },
+            },
+          ],
+          requestTemplates: {
+            'application/json': `
+            {
+                "input": "{ \"legId\": $input.params().path.get('id') }",
+                "stateMachineArn": "${sesionesGetSaveWf.stateMachineArn}"
+            }`,
+          },
+        },
       }),
       {
-        methodResponses: [{statusCode: '200'}]
+        methodResponses: [{statusCode: "200"}],
       }
     );
+
+    legSesExeResource.addResource('{exeId}')
+      .addMethod('GET', new AwsIntegration({
+          service: 'states',
+          action: 'DescribeExecution',
+          integrationHttpMethod: 'POST',
+          options: {
+            credentialsRole: role,
+            integrationResponses: [
+              {
+                statusCode: '200',
+                responseTemplates: {
+                  'application/json': `
+                    #set ($status = $input.json('status'))
+                    {
+                    #if($status == '"SUCCEEDED"')
+                      "output": $util.parseJson($input.json('output')),
+                    #end
+                      "status": $status
+                    }
+                  `,
+                },
+              },
+            ],
+            requestTemplates: {
+              'application/json': `
+              {
+                "executionArn": "arn:aws:states:${this.region}:${this.account}:execution:${sesionesGetSaveWf.stateMachineName}:$input.params().path.get('exeId')"
+              }`,
+            },
+          },
+        }),
+        {
+          methodResponses: [{statusCode: "200"}],
+        }
+      );
   }
 
   getLogicalId(element: CfnElement): string {
