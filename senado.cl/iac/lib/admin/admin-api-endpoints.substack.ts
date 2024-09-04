@@ -160,7 +160,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           ],
           requestTemplates: {
             'application/json': JSON.stringify({
-              input: `{ "legId": "$input.params('legId'))" }`,
+              input: `{ "legId": "$input.params('legId')" }`,
               stateMachineArn: sesionesGetSaveWf.stateMachineArn
             }),
           },
