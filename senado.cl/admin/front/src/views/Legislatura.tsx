@@ -6,7 +6,7 @@ import {useEffect} from "react";
 export default function Legislatura() {
   let params = useParams();
   let { id } = params;
-  const [extracting, extractingToggle] = useToggle(false);
+  const [extracting/*, extractingToggle*/] = useToggle(false);
 
   useEffect(() => {
 

@@ -88,6 +88,83 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       }
     );
 
+    const rawSesResource = rawResource.addResource('sesiones');
+    const rawSesIdResource = rawSesResource.addResource('{sesId}');
+    const rawSesIdAsiResource = rawSesIdResource.addResource('asistencia');
+
+    rawSesIdAsiResource.addMethod('GET', new AwsIntegration({
+        service: 's3',
+        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawAsistenciaJson('{sesId}')}`,
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsRole: role,
+          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+          requestParameters: {
+            'integration.request.path.sesId': 'method.request.path.sesId',
+            'integration.request.header.Accept': 'method.request.header.Accept'
+          },
+          integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            }
+          }]
+        }
+      }),
+      {
+        authorizationType: AuthorizationType.COGNITO,
+        authorizer: authorizer,
+        requestParameters: {
+          'method.request.path.sesId': true,
+          'method.request.header.Accept': true
+        },
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true
+            }
+          }]
+      }
+    );
+
+    const rawSesIdVotResource = rawSesIdResource.addResource('votaciones');
+    rawSesIdVotResource.addMethod('GET', new AwsIntegration({
+        service: 's3',
+        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawVotacionJson('{sesId}')}`,
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsRole: role,
+          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+          requestParameters: {
+            'integration.request.path.sesId': 'method.request.path.sesId',
+            'integration.request.header.Accept': 'method.request.header.Accept'
+          },
+          integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            }
+          }]
+        }
+      }),
+      {
+        authorizationType: AuthorizationType.COGNITO,
+        authorizer: authorizer,
+        requestParameters: {
+          'method.request.path.sesId': true,
+          'method.request.header.Accept': true
+        },
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true
+            }
+          }]
+      }
+    );
+
     const legislaturasResource = api.root.addResource('legislaturas');
 
     legislaturasResource.addMethod('GET', new AwsIntegration({
