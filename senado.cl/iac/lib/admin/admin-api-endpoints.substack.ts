@@ -158,7 +158,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
             {
               statusCode: '200',
               responseTemplates: {
-                'application/json': `{ "executionId": "$input.json('executionArn').split(':').get(7) }`,
+                'application/json': `{ "executionId": "$input.json('executionArn')" }`,
               },
             },
           ],
@@ -202,7 +202,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
             requestTemplates: {
               'application/json': `
               {
-                "executionArn": "arn:aws:states:${this.region}:${this.account}:execution:${sesionesGetSaveWf.stateMachineName}:$input.params().path.get('exeId')"
+                "executionArn": "$input.params().path.get('exeId')"
               }`,
             },
           },
