@@ -68,7 +68,7 @@ const transformVotaciones = (votaciones: VotacionSc[]): Votacion[] => {
 export const saveVotaciones = async (sesId: number, votaciones: Votacion[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.asistenciaJson(sesId),
+    Key: SesionesBucketKey.votacionJson(sesId),
     Body: JSON.stringify(votaciones)
   }))
   return votaciones;
