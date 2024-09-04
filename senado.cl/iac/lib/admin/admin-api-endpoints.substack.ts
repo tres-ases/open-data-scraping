@@ -158,16 +158,17 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
             {
               statusCode: '200',
               responseTemplates: {
-                'application/json': "{ \"executionId\": \"$input.json('executionArn')\" }",
+                'application/json': JSON.stringify({
+                  executionId: "$input.json('executionArn')"
+                })
               },
             },
           ],
           requestTemplates: {
-            'application/json': `
-            {
-                "input": "{ \"legId\": \"$input.params().path.get('id')\" }",
-                "stateMachineArn": "${sesionesGetSaveWf.stateMachineArn}"
-            }`,
+            'application/json': JSON.stringify({
+              input: `{ "legId": "$input.params().path.get('id')" }`,
+              stateMachineArn: sesionesGetSaveWf.stateMachineArn
+            }),
           },
         },
       }),
