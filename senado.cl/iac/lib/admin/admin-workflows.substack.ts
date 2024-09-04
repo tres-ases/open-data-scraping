@@ -32,7 +32,6 @@ export default class AdminWorkflowsSubstack extends NestedStack {
       definitionBody: DefinitionBody.fromChainable(
         new LambdaInvoke(this, `${prefix}-sesiones-getSave-step`, {
           lambdaFunction: sesionesGetSaveFunction,
-          inputPath: JsonPath.stringAt("$.Body"),
           outputPath: JsonPath.stringAt("$.Payload")
         })
       ),

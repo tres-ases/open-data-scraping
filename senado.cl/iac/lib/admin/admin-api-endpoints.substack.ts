@@ -153,19 +153,19 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
         action: 'StartSyncExecution',
         integrationHttpMethod: 'POST',
         options: {
-          credentialsRole: role,
+          credentialsRole: sesionesGetSaveWfRole,
           integrationResponses: [
             {
               statusCode: '200',
               responseTemplates: {
-                'application/json': `{ "executionId": "$input.json('executionArn')" }`,
+                'application/json': "{ \"executionId\": \"$input.json('executionArn')\" }",
               },
             },
           ],
           requestTemplates: {
             'application/json': `
             {
-                "input": "{ \"legId\": $input.params().path.get('id') }",
+                "input": "{ \"legId\": \"$input.params().path.get('id')\" }",
                 "stateMachineArn": "${sesionesGetSaveWf.stateMachineArn}"
             }`,
           },
@@ -182,7 +182,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           action: 'DescribeExecution',
           integrationHttpMethod: 'POST',
           options: {
-            credentialsRole: role,
+            credentialsRole: sesionesGetSaveWfRole,
             integrationResponses: [
               {
                 statusCode: '200',
