@@ -16,6 +16,7 @@ import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {IBucket} from "aws-cdk-lib/aws-s3";
 import {StateMachine} from "aws-cdk-lib/aws-stepfunctions";
+import {SesionesBucketKey} from "@senado-cl/global/sesiones";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
@@ -45,6 +46,47 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       resources: [dataBucket.bucketArn, `${dataBucket.bucketArn}/*`],
       actions: ['s3:GetObject', 's3:ListBucket']
     }));
+
+    const rawResource = api.root.addResource('raw');
+    const rawLegResource = rawResource.addResource('legislaturas');
+    const rawLegIdResource = rawLegResource.addResource('{legId}');
+    const rawLegIdSesResource = rawLegIdResource.addResource('sesiones');
+
+    rawLegIdSesResource.addMethod('GET', new AwsIntegration({
+        service: 's3',
+        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawJson('{legId}')}`,
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsRole: role,
+          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+          requestParameters: {
+            'integration.request.path.legId': 'method.request.path.legId',
+            'integration.request.header.Accept': 'method.request.header.Accept'
+          },
+          integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            }
+          }]
+        }
+      }),
+      {
+        authorizationType: AuthorizationType.COGNITO,
+        authorizer: authorizer,
+        requestParameters: {
+          'method.request.path.legId': true,
+          'method.request.header.Accept': true
+        },
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true
+            }
+          }]
+      }
+    );
 
     const legislaturasResource = api.root.addResource('legislaturas');
 

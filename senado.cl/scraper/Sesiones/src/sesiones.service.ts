@@ -68,7 +68,7 @@ const transformVotaciones = (votaciones: VotacionSc[]): Votacion[] => {
 export const saveVotaciones = async (sesId: number, votaciones: Votacion[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.votacionJson(sesId),
+    Key: SesionesBucketKey.rawVotacionJson(sesId),
     Body: JSON.stringify(votaciones)
   }))
   return votaciones;
@@ -112,7 +112,7 @@ const transformAsistencia = (a: AsistenciaSc): Asistencia => {
 export const saveAsistencia = async (sesId: number, asistencia: Asistencia) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.asistenciaJson(sesId),
+    Key: SesionesBucketKey.rawAsistenciaJson(sesId),
     Body: JSON.stringify(asistencia)
   }))
   return asistencia;
@@ -141,7 +141,7 @@ export const getSesiones = async (legId: string): Promise<Sesion[]> => {
 export const saveSesiones = async (legId: string, sesiones: Sesion[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.json(legId),
+    Key: SesionesBucketKey.rawJson(legId),
     Body: JSON.stringify(sesiones)
   }));
 
