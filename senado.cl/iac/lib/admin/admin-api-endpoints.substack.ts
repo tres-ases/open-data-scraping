@@ -141,7 +141,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     const sesionesGetSaveWfRole = new Role(this, `${prefix}-sesiones-getSave-wf-role`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
-    sesionesGetSaveWf.grantStartSyncExecution(sesionesGetSaveWfRole);
+    sesionesGetSaveWf.grantStartExecution(sesionesGetSaveWfRole);
     sesionesGetSaveWf.grantRead(sesionesGetSaveWfRole);
 
     const legSesResource = legislaturaResource.addResource('sesiones');
@@ -150,7 +150,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
 
     legSesExeResource.addMethod('POST', new AwsIntegration({
         service: 'states',
-        action: 'StartSyncExecution',
+        action: 'StartExecution',
         options: {
           credentialsRole: sesionesGetSaveWfRole,
           integrationResponses: [
