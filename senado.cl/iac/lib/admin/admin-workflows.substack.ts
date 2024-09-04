@@ -28,7 +28,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
     });
     dataBucket.grantWrite(sesionesGetSaveFunction);
 
-    this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-sesiones-getSaveWf`, {
+    this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-sesiones-getSave-Wf`, {
       definitionBody: DefinitionBody.fromChainable(
         new LambdaInvoke(this, `${prefix}-sesiones-getSave-step`, {
           lambdaFunction: sesionesGetSaveFunction,
@@ -38,7 +38,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
       ),
       stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.seconds(190),
-      stateMachineName: `${prefix}-sesiones-getSaveWf`,
+      stateMachineName: `${prefix}-sesiones-getSave-Wf`,
     })
   }
 
