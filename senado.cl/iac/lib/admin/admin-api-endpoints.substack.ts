@@ -151,7 +151,6 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     legSesExeResource.addMethod('POST', new AwsIntegration({
         service: 'states',
         action: 'StartSyncExecution',
-        integrationHttpMethod: 'POST',
         options: {
           credentialsRole: sesionesGetSaveWfRole,
           integrationResponses: [
