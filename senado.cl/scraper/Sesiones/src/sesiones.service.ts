@@ -74,10 +74,6 @@ export const saveVotaciones = async (sesId: number, votaciones: Votacion[]) => {
   return votaciones;
 };
 
-export const getSaveVotaciones = async (sesId: number): Promise<Votacion[]> => {
-  return await saveVotaciones(sesId, await getVotaciones(sesId));
-}
-
 export const getAsistencia = async (sesId: number): Promise<Asistencia> => {
   const response = await axios.get<AsistenciaResponse>(ASISTENCIA_URL, {
     params: {
@@ -118,10 +114,6 @@ export const saveAsistencia = async (sesId: number, asistencia: Asistencia) => {
   return asistencia;
 };
 
-export const getSaveAsistencia = async (sesId: number): Promise<Asistencia> => {
-  return await saveAsistencia(sesId, await getAsistencia(sesId));
-}
-
 export const getSesiones = async (legId: string): Promise<Sesion[]> => {
   const response = await axios.get<SesionesResponse>(SESIONES_URL, {
     params: {
@@ -138,15 +130,24 @@ export const getSesiones = async (legId: string): Promise<Sesion[]> => {
   return sesiones;
 }
 
+export const saveSesion = async (sesion: Sesion) => {
+  await s3Client.send(new PutObjectCommand({
+    Bucket: MainBucketKey.S3_BUCKET,
+    Key: SesionesBucketKey.rawDetalleJson(sesion.id),
+    Body: JSON.stringify(sesion)
+  }));
+}
+
 export const saveSesiones = async (legId: string, sesiones: Sesion[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.rawJson(legId),
+    Key: SesionesBucketKey.rawListJson(legId),
     Body: JSON.stringify(sesiones)
   }));
 
   for(const sesion of sesiones) {
     await Promise.all([
+      saveSesion(sesion),
       sesion.asistencia ? saveAsistencia(sesion.id, sesion.asistencia) : Promise.resolve(),
       sesion.votaciones ? saveVotaciones(sesion.id, sesion.votaciones) : Promise.resolve()
     ]);

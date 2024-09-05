@@ -54,7 +54,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
 
     rawLegIdSesResource.addMethod('GET', new AwsIntegration({
         service: 's3',
-        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawJson('{legId}')}`,
+        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawListJson('{legId}')}`,
         integrationHttpMethod: 'GET',
         options: {
           credentialsRole: role,
