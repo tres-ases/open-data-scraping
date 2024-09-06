@@ -77,7 +77,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     const scraperResource = api.root.addResource('scraper');
     const scrSenadoresResource = scraperResource.addResource('senadores');
     const senadoresGetSaveFunction = new ScraperFunction(this, `${prefix}-senador-getSave`, {
-      pckName: 'SenadoresGetSaveFunction',
+      pckName: 'Senadores',
       handler: 'senadores.getSaveHandler',
       layers
     });
