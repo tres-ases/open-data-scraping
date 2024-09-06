@@ -14,6 +14,8 @@ export interface Sesion {
   votaciones?: Votacion[]
 }
 
+export type AsistenciaTipo = 'Asiste' | 'Ausente';
+
 export interface AsistenciaDetalle {
   sesId: number
   sesNumero: number
@@ -22,7 +24,7 @@ export interface AsistenciaDetalle {
   parApellidoPaterno: string
   parApellidoMaterno: string
   slug: string
-  asistencia: 'Asiste' | 'Ausente'
+  asistencia: AsistenciaTipo
   justificacion: null | string
 }
 

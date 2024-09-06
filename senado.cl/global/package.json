@@ -4,6 +4,7 @@
   "private": true,
   "exports": {
     "./legislaturas": "./dist/Legislaturas/index.js",
+    "./senadores": "./dist/Senadores/index.js",
     "./sesiones": "./dist/Sesiones/index.js",
     "./boletin": "./dist/Boletin/index.js",
     ".": "./dist/Main/index.js"

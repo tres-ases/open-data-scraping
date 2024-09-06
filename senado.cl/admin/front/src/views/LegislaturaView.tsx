@@ -6,7 +6,7 @@ import {Sesion} from "@senado-cl/global/sesiones";
 import SesionesService from "../services/sesiones.service.ts";
 import SesionItem from "../components/SesionItem.tsx";
 
-export default function Legislatura() {
+export default function LegislaturaView() {
   let params = useParams();
   let { legId } = params;
   const [extracting/*, extractingToggle*/] = useToggle(false);
@@ -16,8 +16,6 @@ export default function Legislatura() {
     legId && SesionesService.getAll(legId)
       .then(sesiones => setSesiones(sesiones));
   }, [legId]);
-
-  console.log('sesiones', sesiones)
 
   return (
     <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">

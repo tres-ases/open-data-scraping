@@ -6,7 +6,7 @@ import {
   CognitoUserPoolsAuthorizer,
   LambdaIntegration,
   Model,
-  PassthroughBehavior,
+  PassthroughBehavior, Resource,
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
@@ -17,6 +17,7 @@ import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {IBucket} from "aws-cdk-lib/aws-s3";
 import {StateMachine} from "aws-cdk-lib/aws-stepfunctions";
 import {SesionesBucketKey} from "@senado-cl/global/sesiones";
+import {SenadoresBucketKey} from "@senado-cl/global/senadores";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 
@@ -30,6 +31,9 @@ interface AdminApiEndpointsSubstackProps {
 
 export default class AdminApiEndpointsSubstack extends NestedStack {
 
+  readonly readS3Role: Role;
+  readonly authorizer: CognitoUserPoolsAuthorizer;
+
   constructor(scope: Construct, {
     api,
     authorizer,
@@ -39,202 +43,69 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
   }: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
-    const role = new Role(this, `${prefix}-readRole`, {
+    this.authorizer = authorizer;
+    this.readS3Role = new Role(this, `${prefix}-readRole`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
-    role.addToPolicy(new PolicyStatement({
+    this.readS3Role.addToPolicy(new PolicyStatement({
       resources: [dataBucket.bucketArn, `${dataBucket.bucketArn}/*`],
       actions: ['s3:GetObject', 's3:ListBucket']
     }));
 
     const rawResource = api.root.addResource('raw');
     const rawLegResource = rawResource.addResource('legislaturas');
+    this.addS3Resource(rawLegResource, LegislaturasBucketKey.json);
+
     const rawLegIdResource = rawLegResource.addResource('{legId}');
     const rawLegIdSesResource = rawLegIdResource.addResource('sesiones');
-
-    rawLegIdSesResource.addMethod('GET', new AwsIntegration({
-        service: 's3',
-        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawListJson('{legId}')}`,
-        integrationHttpMethod: 'GET',
-        options: {
-          credentialsRole: role,
-          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-          requestParameters: {
-            'integration.request.path.legId': 'method.request.path.legId',
-            'integration.request.header.Accept': 'method.request.header.Accept'
-          },
-          integrationResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            }
-          }]
-        }
-      }),
-      {
-        authorizationType: AuthorizationType.COGNITO,
-        authorizer: authorizer,
-        requestParameters: {
-          'method.request.path.legId': true,
-          'method.request.header.Accept': true
-        },
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true
-            }
-          }]
-      }
-    );
+    this.addS3Resource(rawLegIdSesResource, SesionesBucketKey.rawListJson('{legId}'), ['legId']);
 
     const rawSesResource = rawResource.addResource('sesiones');
     const rawSesIdResource = rawSesResource.addResource('{sesId}');
-
-    rawSesIdResource.addMethod('GET', new AwsIntegration({
-        service: 's3',
-        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawDetalleJson('{sesId}')}`,
-        integrationHttpMethod: 'GET',
-        options: {
-          credentialsRole: role,
-          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-          requestParameters: {
-            'integration.request.path.sesId': 'method.request.path.sesId',
-            'integration.request.header.Accept': 'method.request.header.Accept'
-          },
-          integrationResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            }
-          }]
-        }
-      }),
-      {
-        authorizationType: AuthorizationType.COGNITO,
-        authorizer: authorizer,
-        requestParameters: {
-          'method.request.path.sesId': true,
-          'method.request.header.Accept': true
-        },
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true
-            }
-          }]
-      }
-    );
+    this.addS3Resource(rawSesIdResource, SesionesBucketKey.rawDetalleJson('{sesId}'), ['sesId']);
 
     const rawSesIdAsiResource = rawSesIdResource.addResource('asistencia');
-
-    rawSesIdAsiResource.addMethod('GET', new AwsIntegration({
-        service: 's3',
-        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawAsistenciaJson('{sesId}')}`,
-        integrationHttpMethod: 'GET',
-        options: {
-          credentialsRole: role,
-          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-          requestParameters: {
-            'integration.request.path.sesId': 'method.request.path.sesId',
-            'integration.request.header.Accept': 'method.request.header.Accept'
-          },
-          integrationResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            }
-          }]
-        }
-      }),
-      {
-        authorizationType: AuthorizationType.COGNITO,
-        authorizer: authorizer,
-        requestParameters: {
-          'method.request.path.sesId': true,
-          'method.request.header.Accept': true
-        },
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true
-            }
-          }]
-      }
-    );
+    this.addS3Resource(rawSesIdAsiResource, SesionesBucketKey.rawAsistenciaJson('{sesId}'), ['sesId']);
 
     const rawSesIdVotResource = rawSesIdResource.addResource('votaciones');
-    rawSesIdVotResource.addMethod('GET', new AwsIntegration({
-        service: 's3',
-        path: `${MainBucketKey.S3_BUCKET}/${SesionesBucketKey.rawVotacionJson('{sesId}')}`,
-        integrationHttpMethod: 'GET',
-        options: {
-          credentialsRole: role,
-          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-          requestParameters: {
-            'integration.request.path.sesId': 'method.request.path.sesId',
-            'integration.request.header.Accept': 'method.request.header.Accept'
+    this.addS3Resource(rawSesIdVotResource, SesionesBucketKey.rawVotacionJson('{sesId}'), ['sesId']);
+
+    const rawSenResource = rawResource.addResource('senadores');
+    const rawSenIdResource = rawSenResource.addResource('{senId}');
+    this.addS3Resource(rawSenIdResource, SenadoresBucketKey.rawJson('{senId}'), ['senId'])
+
+    const scraperResource = api.root.addResource('scraper');
+    const scrSenadoresResource = scraperResource.addResource('senadores');
+    const senadoresGetSaveFunction = new ScraperFunction(this, `${prefix}-senador-getSave`, {
+      pckName: 'SenadoresGetSaveFunction',
+      handler: 'senadores.getSaveHandler',
+      layers
+    });
+    dataBucket.grantWrite(senadoresGetSaveFunction);
+
+    scrSenadoresResource.addMethod("POST", new LambdaIntegration(senadoresGetSaveFunction, {
+      proxy: false,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      integrationResponses: [{
+        statusCode: '200',
+        responseTemplates: {
+          "application/json": "$input.json('$.body')"
+        }
+      }]
+    }), {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: authorizer,
+      methodResponses: [
+        {
+          statusCode: "200",
+          responseModels: {
+            'application/json': Model.EMPTY_MODEL,
           },
-          integrationResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            }
-          }]
-        }
-      }),
-      {
-        authorizationType: AuthorizationType.COGNITO,
-        authorizer: authorizer,
-        requestParameters: {
-          'method.request.path.sesId': true,
-          'method.request.header.Accept': true
         },
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true
-            }
-          }]
-      }
-    );
+      ]
+    });
 
-    const legislaturasResource = api.root.addResource('legislaturas');
-
-    legislaturasResource.addMethod('GET', new AwsIntegration({
-        service: 's3',
-        path: `${MainBucketKey.S3_BUCKET}/${LegislaturasBucketKey.json}`,
-        integrationHttpMethod: 'GET',
-        options: {
-          credentialsRole: role,
-          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-          integrationResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
-            }
-          }]
-        }
-      }),
-      {
-        authorizationType: AuthorizationType.COGNITO,
-        authorizer: authorizer,
-        requestParameters: {
-          'method.request.header.Accept': true
-        },
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true
-            }
-          }]
-      }
-    );
-
+    const scrLegislaturasResource = scraperResource.addResource('legislaturas');
     const legislaturasGetSaveFunction = new ScraperFunction(this, `${prefix}-legislaturas-getSave`, {
       pckName: 'Legislaturas',
       handler: 'legislaturas.getSaveLegislaturasHandler',
@@ -242,7 +113,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     });
     dataBucket.grantWrite(legislaturasGetSaveFunction);
 
-    legislaturasResource.addMethod("POST", new LambdaIntegration(legislaturasGetSaveFunction, {
+    scrLegislaturasResource.addMethod("POST", new LambdaIntegration(legislaturasGetSaveFunction, {
       proxy: false,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
       integrationResponses: [{
@@ -271,9 +142,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     });
     dataBucket.grantRead(legislaturasGetFunction);
 
-    legislaturasResource
-      .addResource('scraper')
-      .addMethod('GET', new LambdaIntegration(legislaturasGetFunction, {
+    scrLegislaturasResource.addMethod('GET', new LambdaIntegration(legislaturasGetFunction, {
         proxy: false,
         passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
         integrationResponses: [{
@@ -298,10 +167,9 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     sesionesGetSaveWf.grantStartExecution(sesionesGetSaveWfRole);
     sesionesGetSaveWf.grantRead(sesionesGetSaveWfRole);
 
-    const ejecucionesResource = api.root.addResource('ejecuciones');
-    const ejeSesionesResource = ejecucionesResource.addResource('sesiones');
+    const scrSesionesResource = scraperResource.addResource('sesiones');
 
-    ejeSesionesResource.addMethod('POST', new AwsIntegration({
+    scrSesionesResource.addMethod('POST', new AwsIntegration({
         service: 'states',
         action: 'StartExecution',
         options: {
@@ -327,7 +195,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       }
     );
 
-    ejeSesionesResource.addResource('{exeId}')
+    scrSesionesResource.addResource('{exeId}')
       .addMethod('GET', new AwsIntegration({
           service: 'states',
           action: 'DescribeExecution',
@@ -361,6 +229,50 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           methodResponses: [{statusCode: "200"}],
         }
       );
+  }
+
+  addS3Resource(resource: Resource, subpath: string, ids: string[] = []) {
+    const propsRequestParameters: {[key: string]: string} = {
+      'integration.request.header.Accept': 'method.request.header.Accept'
+    };
+    const optsRequestParameters: {[key: string]: boolean} = {
+      'method.request.header.Accept': true
+    };
+
+    for(const id of ids) {
+      propsRequestParameters[`integration.request.path.${id}`] = `method.request.path.${id}`;
+      optsRequestParameters[`method.request.path.${id}`] = true;
+    }
+
+    resource.addMethod('GET', new AwsIntegration({
+        service: 's3',
+        path: `${MainBucketKey.S3_BUCKET}/${subpath}`,
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsRole: this.readS3Role,
+          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+          requestParameters: propsRequestParameters,
+          integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': 'integration.response.header.Content-Type'
+            }
+          }]
+        }
+      }),
+      {
+        authorizationType: AuthorizationType.COGNITO,
+        authorizer: this.authorizer,
+        requestParameters: optsRequestParameters,
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true
+            }
+          }]
+      }
+    );
   }
 
   getLogicalId(element: CfnElement): string {

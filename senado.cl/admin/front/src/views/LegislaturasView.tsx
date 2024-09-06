@@ -7,7 +7,7 @@ import {useToggle} from "react-use";
 import Spinner from "../components/Spinner.tsx";
 import LegislaturasService from "../services/legislaturas.service.ts";
 
-export default function Legislaturas() {
+export default function LegislaturasView() {
 
   const [legislaturas, setLegislaturas] = useState<Legislatura[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();

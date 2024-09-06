@@ -10,6 +10,14 @@ const SesionesService = {
     return JSON.parse(await response.body.text()) as Sesion[];
   },
 
+  getOne: async (sesId: string) => {
+    const response = await get({
+      apiName: 'admin',
+      path: `/raw/sesiones/${sesId}`
+    }).response;
+    return JSON.parse(await response.body.text()) as Sesion;
+  },
+
   extract: async (legId: string) => {
     await post({
       apiName: 'admin',

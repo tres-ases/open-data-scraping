@@ -1,9 +1,6 @@
 import * as cheerio from "cheerio";
 
 export const getBoletin = async (id: string) => {
-
-  const $2 = cheerio.load('', {})
-
   const $ = await cheerio.fromURL(`https://tramitacion.senado.cl/wspublico/tramitacion.php?boletin=${id}`, {
     xml: {
       lowerCaseAttributeNames: true,

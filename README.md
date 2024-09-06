@@ -34,14 +34,14 @@ La información de Gastos Operacionales se almacenará en las siguientes carpeta
 
 #### Personal Apoyo
 
-#### Senadores
+#### SenadoresView
 
 La información de los senadores y de los períodos en los que ha participado en las cámaras se puede obtener desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=periodos```
 
 El detalle de nombre, región, partido, teléfono y correo se puede obtener desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=fichasenador&id=985```
 
-* ```Senadores```
-  * ```/Periodos```: listado completo de todos los Senadores, incluyendo detalle de los períodos 
+* ```SenadoresView```
+  * ```/Periodos```: listado completo de todos los SenadoresView, incluyendo detalle de los períodos 
     * ```/JsonStructured/data.json```
     * ```/JsonLines/data.jsonl```
   * ```/Detalle```

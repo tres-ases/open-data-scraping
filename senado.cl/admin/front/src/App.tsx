@@ -1,27 +1,29 @@
 import {Navigate, Route, Routes,} from "react-router-dom";
 import MainLayout from "./layouts/MainLayout.tsx";
-import Inicio from "./views/Inicio.tsx";
-import Senadores from "./views/Senadores.tsx";
-import Senador from "./views/Senador.tsx";
-import Legislaturas from "./views/Legislaturas.tsx";
-import Legislatura from "./views/Legislatura.tsx";
-import Sesion from "./views/Sesion.tsx";
+import InicioView from "./views/InicioView.tsx";
+import SenadoresView from "./views/SenadoresView.tsx";
+import SenadorView from "./views/SenadorView.tsx";
+import LegislaturasView from "./views/LegislaturasView.tsx";
+import LegislaturaView from "./views/LegislaturaView.tsx";
+import SesionView from "./views/SesionView.tsx";
 
 function App() {
   return (
     <Routes>
       <Route element={<MainLayout/>}>
-        <Route path="inicio" element={<Inicio/>} />
-        <Route path="legislaturas" element={<Legislaturas/>} />
+        <Route path="inicio" element={<InicioView/>} />
+        <Route path="legislaturas" element={<LegislaturasView/>} />
         <Route path="legislatura">
-          <Route path=":legId" element={<Legislatura/>}/>
+          <Route path=":legId" element={<LegislaturaView/>}/>
         </Route>
         <Route path="sesion">
-          <Route path=":sesId" element={<Sesion/>}/>
+          <Route path=":sesId" element={<SesionView/>}/>
         </Route>
         <Route path="senadores">
-          <Route index element={<Senadores/>}/>
-          <Route path=":senId" element={<Senador/>}/>
+          <Route index element={<SenadoresView/>}/>
+        </Route>
+        <Route path="senador">
+          <Route path=":senId" element={<SenadorView/>}/>
         </Route>
         <Route path="*" element={<Navigate to="inicio" replace={true}/>}/>
       </Route>

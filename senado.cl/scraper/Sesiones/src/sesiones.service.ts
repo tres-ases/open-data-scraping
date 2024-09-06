@@ -13,9 +13,9 @@ import {Asistencia, Sesion, SesionesBucketKey, Votacion, VotacionDetalle} from "
 import {MainBucketKey} from "@senado-cl/global";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 
-const SESIONES_URL = `${CommonsData.SENADO_WEB_BACK}/sessions`;
-const ASISTENCIA_URL = `${CommonsData.SENADO_WEB_BACK}/sessions/attendance`;
-const VOTACION_URL = `${CommonsData.SENADO_WEB_BACK}/votes`;
+const SESIONES_URL = `${CommonsData.SENADO_WEB_BACK_API}/sessions`;
+const ASISTENCIA_URL = `${CommonsData.SENADO_WEB_BACK_API}/sessions/attendance`;
+const VOTACION_URL = `${CommonsData.SENADO_WEB_BACK_API}/votes`;
 
 const s3Client = new S3Client({});
 

@@ -5,7 +5,7 @@ import {LegislaturasResponse} from "./legislaturas.model";
 import {MainBucketKey} from "@senado-cl/global";
 import {LegislaturasBucketKey, Legislatura, LegislaturaSc} from "@senado-cl/global/legislaturas";
 
-const LEGISLATURAS_URL = `${CommonsData.SENADO_WEB_BACK}/legislatures`;
+const LEGISLATURAS_URL = `${CommonsData.SENADO_WEB_BACK_API}/legislatures`;
 
 const s3Client = new S3Client({});
 

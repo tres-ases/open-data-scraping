@@ -1,20 +1,6 @@
 import {Link} from "react-router-dom";
-import {Sesion, SesionTipo} from "@senado-cl/global/sesiones";
-
-const sesionTipoColor: { [key in SesionTipo]: string } = {
-  'Ordinaria': 'yellow',
-  'Extraordinaria': 'green',
-  'Especial': 'cyan',
-  'Congreso pleno': 'red',
-}
-
-const SesionTipoTag = (tipo: SesionTipo) => {
-  const color = sesionTipoColor[tipo] ? sesionTipoColor[tipo] : 'gray';
-  return <p
-    className={`text-${color}-700 bg-${color}-50 ring-${color}-600/20 mt-0.5 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset`}>
-    {tipo}
-  </p>
-}
+import {Sesion} from "@senado-cl/global/sesiones";
+import SesionTipoTag from "./SesionTipoTag.tsx";
 
 interface Props {
   sesion: Sesion
@@ -27,7 +13,7 @@ export default function SesionItem({sesion}: Props) {
       <div className="min-w-0">
         <div className="flex items-start gap-x-3">
           <p className="text-sm font-semibold leading-6 text-gray-900">N° {numero}</p>
-          {SesionTipoTag(tipo)}
+          <SesionTipoTag tipo={tipo}/>
         </div>
         <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
           <p className="whitespace-nowrap">

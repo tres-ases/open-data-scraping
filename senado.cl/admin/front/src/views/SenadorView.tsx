@@ -1,9 +1,10 @@
 import {useParams} from "react-router-dom";
 import {BuildingLibraryIcon, EnvelopeIcon, PhoneIcon} from "@heroicons/react/24/outline";
 
-export default function Senador() {
+export default function SenadorView() {
   let params = useParams();
-  let { id } = params;
+  let { senId } = params;
+  const slug = 'asd';
 
   return (
     <>
@@ -41,15 +42,17 @@ export default function Senador() {
               </div>
               <div className="mt-2 flex items-center">
                 <BuildingLibraryIcon aria-hidden="true" className="h-5 w-5 flex-shrink-0 text-indigo-500"/>
-                <a href={`https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=fichasenador&id=${id}`}
-                   target="_blank" className="ml-2 text-sm text-gray-500">Ficha Senado</a>
+                <a target="_blank" className="ml-2 text-sm text-gray-500 hover:underline"
+                   href={`https://www.senado.cl/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}`}>
+                  Ver perfil en senado.cl
+                </a>
               </div>
             </section>
           </div>
 
           <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
             <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
-              <img alt="senador.nombre" src={`/Senadores/Detalle/Foto/parlId=${id}/1.jpeg`} className="h-1/2 w-1/2 object-cover object-center"/>
+              <img alt="senador.nombre" src={`/Senadores/Detalle/Foto/parlId=${senId}/1.jpeg`} className="h-1/2 w-1/2 object-cover object-center"/>
             </div>
           </div>
         </div>
