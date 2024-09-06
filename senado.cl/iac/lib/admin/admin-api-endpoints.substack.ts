@@ -76,6 +76,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
 
     const scraperResource = api.root.addResource('scraper');
     const scrSenadoresResource = scraperResource.addResource('senadores');
+    const scrSenSlugResource = scrSenadoresResource.addResource('{slug}');
     const senadoresGetSaveFunction = new ScraperFunction(this, `${prefix}-senador-getSave`, {
       pckName: 'Senadores',
       handler: 'senadores.getSaveHandler',
@@ -83,7 +84,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     });
     dataBucket.grantWrite(senadoresGetSaveFunction);
 
-    scrSenadoresResource.addMethod("POST", new LambdaIntegration(senadoresGetSaveFunction, {
+    scrSenSlugResource.addMethod("POST", new LambdaIntegration(senadoresGetSaveFunction, {
       proxy: false,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
       integrationResponses: [{
@@ -143,23 +144,28 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     dataBucket.grantRead(legislaturasGetFunction);
 
     scrLegislaturasResource.addMethod('GET', new LambdaIntegration(legislaturasGetFunction, {
-        proxy: false,
-        passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
-        integrationResponses: [{
-          statusCode: '200'
-        }]
-      }), {
-        authorizationType: AuthorizationType.COGNITO,
-        authorizer: authorizer,
-        methodResponses: [
-          {
-            statusCode: "200",
-            responseModels: {
-              'application/json': Model.EMPTY_MODEL,
-            },
+      proxy: false,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      integrationResponses: [{
+        statusCode: '200'
+      }],
+      requestTemplates: {
+        'application/json': JSON.stringify({
+          slug: '$input.params("ownerId")'
+        }),
+      }
+    }), {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: authorizer,
+      methodResponses: [
+        {
+          statusCode: "200",
+          responseModels: {
+            'application/json': Model.EMPTY_MODEL,
           },
-        ]
-      });
+        },
+      ]
+    });
 
     const sesionesGetSaveWfRole = new Role(this, `${prefix}-sesiones-getSave-wf-role`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
@@ -232,14 +238,14 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
   }
 
   addS3Resource(resource: Resource, subpath: string, ids: string[] = []) {
-    const propsRequestParameters: {[key: string]: string} = {
+    const propsRequestParameters: { [key: string]: string } = {
       'integration.request.header.Accept': 'method.request.header.Accept'
     };
-    const optsRequestParameters: {[key: string]: boolean} = {
+    const optsRequestParameters: { [key: string]: boolean } = {
       'method.request.header.Accept': true
     };
 
-    for(const id of ids) {
+    for (const id of ids) {
       propsRequestParameters[`integration.request.path.${id}`] = `method.request.path.${id}`;
       optsRequestParameters[`method.request.path.${id}`] = true;
     }
