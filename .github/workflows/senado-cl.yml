@@ -93,7 +93,6 @@ jobs:
           pnpm @senado.cl/scraper:build
           pnpm @senado.cl/scraper:package
           pnpm @senado.cl/admin-front:build
-          pnpm @senado.cl/admin-api:build
 
       - name: Upload admin-front build
         if: ${{ needs.changes.outputs.admin-front == 'true' }}

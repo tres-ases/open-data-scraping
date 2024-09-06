@@ -8,8 +8,7 @@
     "@senado.cl/iac:build": "turbo build --filter=@senado.cl/iac",
     "@senado.cl/scraper:build": "turbo build --filter=\"./senado.cl/scraper/*\"",
     "@senado.cl/scraper:package": "turbo package --filter=@senado-cl/scraper-commons",
-    "@senado.cl/admin-front:build": "turbo build --filter=@senado-cl/admin-front",
-    "@senado.cl/admin-api:build": "turbo build --filter=\"./senado.cl/admin/api/*\""
+    "@senado.cl/admin-front:build": "turbo build --filter=@senado-cl/admin-front"
   },
   "devDependencies": {
     "turbo": "^2.0.5",
