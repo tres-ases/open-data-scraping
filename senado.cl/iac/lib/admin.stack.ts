@@ -89,20 +89,6 @@ export default class AdminStack extends Stack {
       deploy: true,
       deployOptions: {
         stageName: 'api'
-      },
-      defaultCorsPreflightOptions: {
-        allowHeaders: [
-          'Content-Type',
-          'X-Amz-Date',
-          'Authorization',
-          'X-Api-Key',
-          'Access-Control-Allow-Credentials',
-          'Access-Control-Allow-Headers',
-          'Impersonating-User-Sub'
-        ],
-        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        allowCredentials: true,
-        allowOrigins: Cors.ALL_ORIGINS
       }
     });
 

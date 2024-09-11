@@ -76,40 +76,23 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     this.rawS3Api();
     this.dtlS3Api();
     this.scraperApi();
+    this.distillerApi();
+  }
 
-    const dtlrResource = api.root.addResource('distiller');
+  distillerApi(){
+    const dtlrResource = this.api.root.addResource('distiller');
     const dtlrLegResource = dtlrResource.addResource('legislaturas');
     const dtlrLegIdResource = dtlrLegResource.addResource('{legId}');
 
-    const legislaturaDistillFunction = new ScraperFunction(this, `${prefix}-legislaturas-get`, {
+    this.addLambdaToResource(dtlrLegIdResource, 'dstlr-legislaturas-get', {
       pckName: 'Legislaturas',
       handler: 'legislaturas.distillSaveLegislaturaHandler',
-      layers
-    });
-    dataBucket.grantReadWrite(legislaturaDistillFunction);
-
-    dtlrLegIdResource.addMethod('POST', new LambdaIntegration(legislaturaDistillFunction, {
-      proxy: false,
-      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
-      integrationResponses: [{
-        statusCode: '200'
-      }],
-      requestTemplates: {
-        'application/json': JSON.stringify({
-          legId: '$input.params("legId")'
-        }),
-      }
-    }), {
-      authorizationType: AuthorizationType.COGNITO,
-      authorizer: authorizer,
-      methodResponses: [
-        {
-          statusCode: "200",
-          responseModels: {
-            'application/json': Model.EMPTY_MODEL,
-          },
-        },
-      ]
+      grant: 'both'
+    }, {
+      httpMethod: 'POST',
+      requestTemplate: JSON.stringify({
+        legId: '$input.params("legId")'
+      }),
     });
   }
 
