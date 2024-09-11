@@ -9,7 +9,7 @@ import {
   VotacionSc,
   VotoDetalleSc
 } from "./sesiones.model";
-import {Asistencia, Sesion, SesionesBucketKey, Votacion, VotacionDetalle} from "@senado-cl/global/sesiones";
+import {AsistenciaRaw, SesionRaw, SesionesBucketKey, VotacionRaw, VotacionDetalleRaw} from "@senado-cl/global/sesiones";
 import {MainBucketKey} from "@senado-cl/global";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 
@@ -19,7 +19,7 @@ const VOTACION_URL = `${CommonsData.SENADO_WEB_BACK_API}/votes`;
 
 const s3Client = new S3Client({});
 
-export const getVotaciones = async (sesId: number): Promise<Votacion[]> => {
+export const getVotaciones = async (sesId: number): Promise<VotacionRaw[]> => {
   const response = await axios.get<VotacionesResponse>(VOTACION_URL, {
     params: {
       id_sesion: sesId
@@ -29,7 +29,7 @@ export const getVotaciones = async (sesId: number): Promise<Votacion[]> => {
   return transformVotaciones(response.data.data.data);
 };
 
-const transformVotacionDetalles = (detalles: VotoDetalleSc[] | 0): 0 | VotacionDetalle[] => {
+const transformVotacionDetalles = (detalles: VotoDetalleSc[] | 0): 0 | VotacionDetalleRaw[] => {
   return detalles === 0 ? 0 : detalles.map(d => ({
     uuid: d.UUID,
     parlId: d.PARLID,
@@ -40,7 +40,7 @@ const transformVotacionDetalles = (detalles: VotoDetalleSc[] | 0): 0 | VotacionD
   }))
 };
 
-const transformVotaciones = (votaciones: VotacionSc[]): Votacion[] => {
+const transformVotaciones = (votaciones: VotacionSc[]): VotacionRaw[] => {
   return votaciones.map(v => ({
     id: v.ID_VOTACION,
     sesId: v.ID_SESION,
@@ -65,7 +65,7 @@ const transformVotaciones = (votaciones: VotacionSc[]): Votacion[] => {
   }));
 };
 
-export const saveVotaciones = async (sesId: number, votaciones: Votacion[]) => {
+export const saveVotaciones = async (sesId: number, votaciones: VotacionRaw[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
     Key: SesionesBucketKey.rawVotacionJson(sesId),
@@ -74,7 +74,7 @@ export const saveVotaciones = async (sesId: number, votaciones: Votacion[]) => {
   return votaciones;
 };
 
-export const getAsistencia = async (sesId: number): Promise<Asistencia> => {
+export const getAsistencia = async (sesId: number): Promise<AsistenciaRaw> => {
   const response = await axios.get<AsistenciaResponse>(ASISTENCIA_URL, {
     params: {
       id_sesion: sesId
@@ -83,7 +83,7 @@ export const getAsistencia = async (sesId: number): Promise<Asistencia> => {
   return transformAsistencia(response.data.data);
 }
 
-const transformAsistencia = (a: AsistenciaSc): Asistencia => {
+const transformAsistencia = (a: AsistenciaSc): AsistenciaRaw => {
   return {
     sesId: a.ID_SESION,
     sesNumero: a.NUMERO_SESION,
@@ -105,7 +105,7 @@ const transformAsistencia = (a: AsistenciaSc): Asistencia => {
   };
 }
 
-export const saveAsistencia = async (sesId: number, asistencia: Asistencia) => {
+export const saveAsistencia = async (sesId: number, asistencia: AsistenciaRaw) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
     Key: SesionesBucketKey.rawAsistenciaJson(sesId),
@@ -114,7 +114,7 @@ export const saveAsistencia = async (sesId: number, asistencia: Asistencia) => {
   return asistencia;
 };
 
-export const getSesiones = async (legId: string): Promise<Sesion[]> => {
+export const getSesiones = async (legId: string): Promise<SesionRaw[]> => {
   const response = await axios.get<SesionesResponse>(SESIONES_URL, {
     params: {
       limit: 1000,
@@ -130,7 +130,7 @@ export const getSesiones = async (legId: string): Promise<Sesion[]> => {
   return sesiones;
 }
 
-export const saveSesion = async (sesion: Sesion) => {
+export const saveSesion = async (sesion: SesionRaw) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
     Key: SesionesBucketKey.rawDetalleJson(sesion.id),
@@ -138,7 +138,7 @@ export const saveSesion = async (sesion: Sesion) => {
   }));
 }
 
-export const saveSesiones = async (legId: string, sesiones: Sesion[]) => {
+export const saveSesiones = async (legId: string, sesiones: SesionRaw[]) => {
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
     Key: SesionesBucketKey.rawListJson(legId),
@@ -154,7 +154,7 @@ export const saveSesiones = async (legId: string, sesiones: Sesion[]) => {
   }
 };
 
-const transformSesiones = (sesiones: SesionSc[]): Sesion[] => {
+const transformSesiones = (sesiones: SesionSc[]): SesionRaw[] => {
   return sesiones.map(s => ({
     id: s.ID_SESION,
     numero: s.NRO_SESION,

@@ -1,9 +1,9 @@
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {Senador, SenadoresBucketKey} from "@senado-cl/global/senadores";
+import {MainBucketKey} from "@senado-cl/global";
 import {CommonsData} from "@senado-cl/scraper-commons";
 import axios from "axios";
 import {SenadorResponse} from "./senador.model";
-import {MainBucketKey} from "@senado-cl/global";
 
 const token = 'PoRBxBbd0fniUwg-GS0bp';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;

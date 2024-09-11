@@ -1,21 +1,24 @@
 import {useEffect, useState} from "react";
-import {Legislatura} from "@senado-cl/global/legislaturas";
+import {LegislaturaRaw} from "@senado-cl/global/legislaturas";
 import LegislaturaService from "../services/legislaturas.service.ts";
 import LegislaturaItem from "../components/LegislaturaItem.tsx";
 import {useSearchParams} from "react-router-dom";
 import {useToggle} from "react-use";
 import Spinner from "../components/Spinner.tsx";
 import LegislaturasService from "../services/legislaturas.service.ts";
+import LegislaturaItemLoading from "../components/LegislaturaItemLoading.tsx";
+import {Button} from "@headlessui/react";
 
 export default function LegislaturasView() {
 
-  const [legislaturas, setLegislaturas] = useState<Legislatura[]>([]);
+  const [legislaturas, setLegislaturas] = useState<LegislaturaRaw[]>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [extracting, extractingToggle] = useToggle(false);
 
   useEffect(() => {
     LegislaturaService.getAll()
       .then(legislaturas => setLegislaturas(legislaturas))
+      .catch(() => setLegislaturas([]));
   }, []);
 
   useEffect(() => {
@@ -24,15 +27,21 @@ export default function LegislaturasView() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if(extracting) {
+      setLegislaturas(undefined);
+    }
+  }, [extracting]);
+
   const extract = () => {
     extractingToggle(true);
     LegislaturasService.extract()
       .then(() => {
-        setLegislaturas([]);
         LegislaturaService.getAll()
           .then(legislaturas => setLegislaturas(legislaturas))
+          .finally(() => extractingToggle(false))
       })
-      .finally(() => extractingToggle(false));
+      .catch(() => extractingToggle(false));
   };
 
   const tipo = searchParams.get('tipo');
@@ -46,9 +55,10 @@ export default function LegislaturasView() {
               <h3 className="text-base font-semibold leading-7 text-gray-900">Legislaturas</h3>
             </div>
             <div className="flex-none">
-              <a onClick={extract} className="cursor-pointer text-sm text-indigo-600 hover:text-indigo-500">
+              <Button type="button" disabled={extracting} onClick={extract}
+                      className="text-sm text-indigo-600 hover:text-indigo-500 inline-flex items-center px-4 py-2 font-semibold leading-6 shadow rounded-md bg-gray-200 hover:bg-gray-100 transition ease-in-out duration-150">
                 {extracting ? <Spinner/> : 'Extraer'}
-              </a>
+              </Button>
             </div>
           </div>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
@@ -72,10 +82,12 @@ export default function LegislaturasView() {
       </div>
       <div className="py-0">
         <ul role="list" className="divide-y divide-gray-200">
-          {legislaturas.map(l => (
+          {legislaturas ? legislaturas.map(l => (
             <li key={l.id} className="flex items-center justify-between gap-x-6 px-6 py-5 group hover:bg-gray-50">
               <LegislaturaItem legislatura={l}/>
             </li>
+          )) : [1,2,3].map(i => (
+            <LegislaturaItemLoading key={i}/>
           ))}
         </ul>
       </div>

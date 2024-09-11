@@ -1,19 +1,19 @@
 import { get, post } from 'aws-amplify/api';
-import {Legislatura} from "@senado-cl/global/legislaturas";
+import {LegislaturaRaw} from "@senado-cl/global/legislaturas";
 
 const LegislaturaService = {
   getAll: async () => {
     const response = await get({
       apiName: 'admin',
-      path: '/legislaturas'
+      path: '/raw/legislaturas'
     }).response;
-    return JSON.parse(await response.body.text()) as Legislatura[];
+    return JSON.parse(await response.body.text()) as LegislaturaRaw[];
   },
 
   extract: async () => {
     await post({
       apiName: 'admin',
-      path: '/legislaturas'
+      path: '/scraper/legislaturas'
     }).response;
   }
 }

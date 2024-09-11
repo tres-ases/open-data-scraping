@@ -1,3 +1,5 @@
 export const LegislaturasBucketKey = {
-  json: `raw/legislaturas/data.json`
+  rawJson: `raw/legislaturas/data.json`,
+  distilledJson: `distilled/legislaturas/data.json`,
+  distilledDetailJson: (legId: string | number) => `distilled/legislatura/legId=${legId}/data.json`
 }

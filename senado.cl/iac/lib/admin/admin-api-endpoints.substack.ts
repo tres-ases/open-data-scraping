@@ -29,10 +29,26 @@ interface AdminApiEndpointsSubstackProps {
   sesionesGetSaveWf: StateMachine
 }
 
+interface LambdaResurceProps {
+  pckName: string
+  handler: string
+  grant: 'read' | 'write' | 'both'
+}
+
+interface MethodProps {
+  httpMethod: string
+  requestTemplate?: string
+  responseTemplate?: string
+}
+
 export default class AdminApiEndpointsSubstack extends NestedStack {
 
+  readonly api: RestApi;
+  readonly layers: LayerVersion[];
   readonly readS3Role: Role;
   readonly authorizer: CognitoUserPoolsAuthorizer;
+  readonly dataBucket: IBucket;
+  readonly sesionesGetSaveWf: StateMachine;
 
   constructor(scope: Construct, {
     api,
@@ -43,7 +59,12 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
   }: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
+    this.api = api;
+    this.layers = layers;
+    this.dataBucket = dataBucket;
     this.authorizer = authorizer;
+    this.sesionesGetSaveWf = sesionesGetSaveWf;
+
     this.readS3Role = new Role(this, `${prefix}-readRole`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
@@ -52,98 +73,22 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       actions: ['s3:GetObject', 's3:ListBucket']
     }));
 
-    const rawResource = api.root.addResource('raw');
-    const rawLegResource = rawResource.addResource('legislaturas');
-    this.addS3Resource(rawLegResource, LegislaturasBucketKey.json);
+    this.rawS3Api();
+    this.dtlS3Api();
+    this.scraperApi();
 
-    const rawLegIdResource = rawLegResource.addResource('{legId}');
-    const rawLegIdSesResource = rawLegIdResource.addResource('sesiones');
-    this.addS3Resource(rawLegIdSesResource, SesionesBucketKey.rawListJson('{legId}'), ['legId']);
+    const dtlrResource = api.root.addResource('distiller');
+    const dtlrLegResource = dtlrResource.addResource('legislaturas');
+    const dtlrLegIdResource = dtlrLegResource.addResource('{legId}');
 
-    const rawSesResource = rawResource.addResource('sesiones');
-    const rawSesIdResource = rawSesResource.addResource('{sesId}');
-    this.addS3Resource(rawSesIdResource, SesionesBucketKey.rawDetalleJson('{sesId}'), ['sesId']);
-
-    const rawSesIdAsiResource = rawSesIdResource.addResource('asistencia');
-    this.addS3Resource(rawSesIdAsiResource, SesionesBucketKey.rawAsistenciaJson('{sesId}'), ['sesId']);
-
-    const rawSesIdVotResource = rawSesIdResource.addResource('votaciones');
-    this.addS3Resource(rawSesIdVotResource, SesionesBucketKey.rawVotacionJson('{sesId}'), ['sesId']);
-
-    const rawSenResource = rawResource.addResource('senadores');
-    const rawSenIdResource = rawSenResource.addResource('{senId}');
-    this.addS3Resource(rawSenIdResource, SenadoresBucketKey.rawJson('{senId}'), ['senId'])
-
-    const scraperResource = api.root.addResource('scraper');
-    const scrSenadoresResource = scraperResource.addResource('senadores');
-    const scrSenSlugResource = scrSenadoresResource.addResource('{slug}');
-    const senadoresGetSaveFunction = new ScraperFunction(this, `${prefix}-senador-getSave`, {
-      pckName: 'Senadores',
-      handler: 'senadores.getSaveHandler',
-      layers
-    });
-    dataBucket.grantWrite(senadoresGetSaveFunction);
-
-    scrSenSlugResource.addMethod("POST", new LambdaIntegration(senadoresGetSaveFunction, {
-      proxy: false,
-      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
-      integrationResponses: [{
-        statusCode: '200',
-        responseTemplates: {
-          "application/json": "$input.json('$.body')"
-        }
-      }]
-    }), {
-      authorizationType: AuthorizationType.COGNITO,
-      authorizer: authorizer,
-      methodResponses: [
-        {
-          statusCode: "200",
-          responseModels: {
-            'application/json': Model.EMPTY_MODEL,
-          },
-        },
-      ]
-    });
-
-    const scrLegislaturasResource = scraperResource.addResource('legislaturas');
-    const legislaturasGetSaveFunction = new ScraperFunction(this, `${prefix}-legislaturas-getSave`, {
+    const legislaturaDistillFunction = new ScraperFunction(this, `${prefix}-legislaturas-get`, {
       pckName: 'Legislaturas',
-      handler: 'legislaturas.getSaveLegislaturasHandler',
+      handler: 'legislaturas.distillSaveLegislaturaHandler',
       layers
     });
-    dataBucket.grantWrite(legislaturasGetSaveFunction);
+    dataBucket.grantReadWrite(legislaturaDistillFunction);
 
-    scrLegislaturasResource.addMethod("POST", new LambdaIntegration(legislaturasGetSaveFunction, {
-      proxy: false,
-      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
-      integrationResponses: [{
-        statusCode: '200',
-        responseTemplates: {
-          "application/json": "$input.json('$.body')"
-        }
-      }]
-    }), {
-      authorizationType: AuthorizationType.COGNITO,
-      authorizer: authorizer,
-      methodResponses: [
-        {
-          statusCode: "200",
-          responseModels: {
-            'application/json': Model.EMPTY_MODEL,
-          },
-        },
-      ]
-    });
-
-    const legislaturasGetFunction = new ScraperFunction(this, `${prefix}-legislaturas-get`, {
-      pckName: 'Legislaturas',
-      handler: 'legislaturas.getLegislaturasHandler',
-      layers
-    });
-    dataBucket.grantRead(legislaturasGetFunction);
-
-    scrLegislaturasResource.addMethod('GET', new LambdaIntegration(legislaturasGetFunction, {
+    dtlrLegIdResource.addMethod('POST', new LambdaIntegration(legislaturaDistillFunction, {
       proxy: false,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
       integrationResponses: [{
@@ -151,7 +96,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       }],
       requestTemplates: {
         'application/json': JSON.stringify({
-          slug: '$input.params("ownerId")'
+          legId: '$input.params("legId")'
         }),
       }
     }), {
@@ -166,12 +111,82 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
         },
       ]
     });
+  }
+
+  rawS3Api() {
+    const rawResource = this.api.root.addResource('raw');
+    const rawLegResource = rawResource.addResource('legislaturas');
+    this.addS3ToResource(rawLegResource, LegislaturasBucketKey.rawJson);
+
+    const rawLegIdResource = rawLegResource.addResource('{legId}');
+    const rawLegIdSesResource = rawLegIdResource.addResource('sesiones');
+    this.addS3ToResource(rawLegIdSesResource, SesionesBucketKey.rawListJson('{legId}'), ['legId']);
+
+    const rawSesResource = rawResource.addResource('sesiones');
+    const rawSesIdResource = rawSesResource.addResource('{sesId}');
+    this.addS3ToResource(rawSesIdResource, SesionesBucketKey.rawDetalleJson('{sesId}'), ['sesId']);
+
+    const rawSesIdAsiResource = rawSesIdResource.addResource('asistencia');
+    this.addS3ToResource(rawSesIdAsiResource, SesionesBucketKey.rawAsistenciaJson('{sesId}'), ['sesId']);
+
+    const rawSesIdVotResource = rawSesIdResource.addResource('votaciones');
+    this.addS3ToResource(rawSesIdVotResource, SesionesBucketKey.rawVotacionJson('{sesId}'), ['sesId']);
+
+    const rawSenResource = rawResource.addResource('senadores');
+    const rawSenIdResource = rawSenResource.addResource('{senId}');
+    this.addS3ToResource(rawSenIdResource, SenadoresBucketKey.rawJson('{senId}'), ['senId'])
+  }
+
+  dtlS3Api() {
+    const dtlResource = this.api.root.addResource('dtl');
+    const dtlLegResource = dtlResource.addResource('legislaturas');
+    this.addS3ToResource(dtlLegResource, LegislaturasBucketKey.distilledJson);
+    const dtlLegIdResource = dtlLegResource.addResource('{legId}');
+    this.addS3ToResource(dtlLegIdResource, LegislaturasBucketKey.distilledDetailJson('{legId}'), ['legId']);
+  }
+
+  scraperApi() {
+    const layers = this.layers;
+
+    const scraperResource = this.api.root.addResource('scraper');
+    const scrSenadoresResource = scraperResource.addResource('senadores');
+    const scrSenSlugResource = scrSenadoresResource.addResource('{slug}');
+
+    this.addLambdaToResource(scrSenSlugResource, 'senador-getSave', {
+      pckName: 'Senadores',
+      handler: 'senadores.getSaveHandler',
+      grant: 'write'
+    }, {
+      httpMethod: 'POST',
+      responseTemplate: "$input.json('$.body')",
+    });
+
+    const scrLegislaturasResource = scraperResource.addResource('legislaturas');
+    this.addLambdaToResource(scrLegislaturasResource, 'legislaturas-getSave', {
+      pckName: 'Legislaturas',
+      handler: 'legislaturas.getSaveLegislaturasHandler',
+      grant: 'write'
+    }, {
+      httpMethod: 'POST',
+      responseTemplate: "$input.json('$.body')",
+    });
+
+    this.addLambdaToResource(scrLegislaturasResource, 'legislaturas-get', {
+      pckName: 'Legislaturas',
+      handler: 'legislaturas.getLegislaturasHandler',
+      grant: 'read'
+    }, {
+      httpMethod: 'GET',
+      requestTemplate: JSON.stringify({
+        slug: '$input.params("ownerId")'
+      }),
+    });
 
     const sesionesGetSaveWfRole = new Role(this, `${prefix}-sesiones-getSave-wf-role`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
-    sesionesGetSaveWf.grantStartExecution(sesionesGetSaveWfRole);
-    sesionesGetSaveWf.grantRead(sesionesGetSaveWfRole);
+    this.sesionesGetSaveWf.grantStartExecution(sesionesGetSaveWfRole);
+    this.sesionesGetSaveWf.grantRead(sesionesGetSaveWfRole);
 
     const scrSesionesResource = scraperResource.addResource('sesiones');
 
@@ -191,7 +206,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
           requestTemplates: {
             'application/json': JSON.stringify({
               input: `{ "legId": "$input.params('legId')" }`,
-              stateMachineArn: sesionesGetSaveWf.stateMachineArn
+              stateMachineArn: this.sesionesGetSaveWf.stateMachineArn
             }),
           },
         },
@@ -237,7 +252,44 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       );
   }
 
-  addS3Resource(resource: Resource, subpath: string, ids: string[] = []) {
+  addLambdaToResource(resource: Resource, suffix: string, {pckName, handler, grant}: LambdaResurceProps, {httpMethod, requestTemplate, responseTemplate}: MethodProps) {
+    const lambda = new ScraperFunction(this, `${prefix}-${suffix}-lambda`, {
+      pckName, handler, layers: this.layers
+    });
+    if(grant === 'read')
+      this.dataBucket.grantRead(lambda);
+    else if(grant === 'write')
+      this.dataBucket.grantWrite(lambda);
+    else
+      this.dataBucket.grantReadWrite(lambda);
+
+    resource.addMethod(httpMethod, new LambdaIntegration(lambda, {
+      proxy: false,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      integrationResponses: [{
+        statusCode: '200',
+        responseTemplates: responseTemplate ? {
+          'application/json': responseTemplate
+        } : undefined
+      }],
+      requestTemplates: requestTemplate ? {
+        'application/json': requestTemplate,
+      } : undefined
+    }), {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: this.authorizer,
+      methodResponses: [
+        {
+          statusCode: "200",
+          responseModels: {
+            'application/json': Model.EMPTY_MODEL,
+          },
+        },
+      ]
+    });
+  }
+
+  addS3ToResource(resource: Resource, subpath: string, ids: string[] = []) {
     const propsRequestParameters: { [key: string]: string } = {
       'integration.request.header.Accept': 'method.request.header.Accept'
     };

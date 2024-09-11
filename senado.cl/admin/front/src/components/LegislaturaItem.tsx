@@ -1,4 +1,4 @@
-import {Legislatura, TipoLegislatura} from "@senado-cl/global/legislaturas";
+import {LegislaturaRaw, TipoLegislatura} from "@senado-cl/global/legislaturas";
 import {Link} from "react-router-dom";
 
 const tipoLegislatura = (tipo: TipoLegislatura) => {
@@ -19,7 +19,7 @@ const tipoLegislatura = (tipo: TipoLegislatura) => {
 }
 
 interface Props {
-  legislatura: Legislatura
+  legislatura: LegislaturaRaw
 }
 
 export default function LegislaturaItem({legislatura}: Props) {

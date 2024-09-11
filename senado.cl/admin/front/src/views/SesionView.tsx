@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useParams, useSearchParams} from "react-router-dom";
-import {Sesion} from "@senado-cl/global/sesiones";
+import {SesionRaw} from "@senado-cl/global/sesiones";
 import SesionesService from "../services/sesiones.service.ts";
 import SesionDetalle from "../components/SesionDetalle.tsx";
 import SesionAsistencia from "../components/SesionAsistencia.tsx";
@@ -9,7 +9,7 @@ import SesionVotaciones from "../components/SesionVotaciones.tsx";
 export default function SesionView() {
   let params = useParams();
   let { sesId } = params;
-  const [sesion, setSesion] = useState<Sesion>();
+  const [sesion, setSesion] = useState<SesionRaw>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {

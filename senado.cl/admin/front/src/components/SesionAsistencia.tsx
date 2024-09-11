@@ -1,8 +1,8 @@
-import {Asistencia} from "@senado-cl/global/sesiones";
+import {AsistenciaRaw} from "@senado-cl/global/sesiones";
 import SesionAsistenciaItem from "./SesionAsistenciaItem.tsx";
 
 interface Props {
-  asistencia?: Asistencia
+  asistencia?: AsistenciaRaw
 }
 
 export default function SesionAsistencia({asistencia}: Props) {

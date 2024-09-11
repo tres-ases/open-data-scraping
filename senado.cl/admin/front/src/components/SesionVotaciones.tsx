@@ -1,7 +1,7 @@
-import {Votacion} from "@senado-cl/global/sesiones";
+import {VotacionRaw} from "@senado-cl/global/sesiones";
 
 interface Props {
-  votaciones?: Votacion[]
+  votaciones?: VotacionRaw[]
 }
 
 export default function SesionVotaciones({votaciones = []}: Props) {

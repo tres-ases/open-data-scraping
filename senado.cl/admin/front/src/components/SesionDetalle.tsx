@@ -1,9 +1,9 @@
-import {Sesion} from "@senado-cl/global/sesiones";
+import {SesionRaw} from "@senado-cl/global/sesiones";
 import SesionTipoTag from "./SesionTipoTag.tsx";
 import {Link} from "react-router-dom";
 
 interface Props {
-  sesion: Sesion
+  sesion: SesionRaw
 }
 
 export default function SesionDetalle({sesion}: Props) {

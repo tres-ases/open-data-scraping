@@ -2,7 +2,7 @@ import {useParams} from "react-router-dom";
 import Spinner from "../components/Spinner.tsx";
 import {useToggle} from "react-use";
 import {useEffect, useState} from "react";
-import {Sesion} from "@senado-cl/global/sesiones";
+import {SesionRaw} from "@senado-cl/global/sesiones";
 import SesionesService from "../services/sesiones.service.ts";
 import SesionItem from "../components/SesionItem.tsx";
 
@@ -10,7 +10,7 @@ export default function LegislaturaView() {
   let params = useParams();
   let { legId } = params;
   const [extracting/*, extractingToggle*/] = useToggle(false);
-  const [sesiones, setSesiones] = useState<Sesion[]>([]);
+  const [sesiones, setSesiones] = useState<SesionRaw[]>([]);
 
   useEffect(() => {
     legId && SesionesService.getAll(legId)

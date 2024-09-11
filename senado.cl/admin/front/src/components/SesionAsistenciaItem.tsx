@@ -1,10 +1,10 @@
-import {AsistenciaDetalle} from "@senado-cl/global/sesiones";
+import {AsistenciaDetalleRaw} from "@senado-cl/global/sesiones";
 import {ChevronRightIcon} from "@heroicons/react/24/outline";
 import {Link} from "react-router-dom";
 import AsistenciaTipoTag from "./AsistenciaTipoTag.tsx";
 
 interface Props {
-  detalle: AsistenciaDetalle
+  detalle: AsistenciaDetalleRaw
 }
 
 export default function SesionAsistenciaItem({detalle}: Props) {
