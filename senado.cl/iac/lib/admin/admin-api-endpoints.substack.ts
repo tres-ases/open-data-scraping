@@ -91,7 +91,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     }, {
       httpMethod: 'POST',
       requestTemplate: JSON.stringify({
-        legId: '$input.params("legId")'
+        legId: "$input.params('legId')"
       }),
     });
   }

@@ -19,10 +19,10 @@ export default function LegislaturasView() {
 
   useEffect(() => {
     LegislaturaService.getRawList()
-      .then(legislaturaList => setRawData(legislaturaList))
+      .then(data => setRawData(data))
       .catch(() => setRawData([]));
     LegislaturaService.getDtlList()
-      .then(legislaturaList => setDtlData(legislaturaList))
+      .then(data => setDtlData(Object.values(data)))
       .catch(() => setDtlData([]));
   }, []);
 
@@ -44,7 +44,7 @@ export default function LegislaturasView() {
     LegislaturasService.scrape()
       .then(() => {
         LegislaturaService.getDtlList()
-          .then(data => setDtlData(data))
+          .then(data => setDtlData(Object.values(data)))
           .finally(() => extractingToggle(false))
       })
       .catch(() => extractingToggle(false));
@@ -58,7 +58,7 @@ export default function LegislaturasView() {
           .then(data => setRawData(data))
           .finally(() => extractingToggle(false))
         LegislaturaService.getDtlList()
-          .then(data => setDtlData(data))
+          .then(data => setDtlData(Object.values(data)))
           .finally(() => extractingToggle(false))
       })
       .catch(() => extractingToggle(false));

@@ -33,12 +33,26 @@ export default function LegislaturaDtlItem({data}: Props) {
         </div>
         <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
           <p className="whitespace-nowrap">
-            <time dateTime={inicio}>{inicio}</time> - <time dateTime={termino}>{termino}</time>
+            <time dateTime={inicio}>{inicio}</time>
+            - <time dateTime={termino}>{termino}</time>
           </p>
           <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
             <circle r={1} cx={1} cy={1}/>
           </svg>
           <p className="truncate">(Id: {id})</p>
+        </div>
+        <div className="flex items-center gap-x-2 text-xs leading-5 text-blue-500">
+          <p className="whitespace-nowrap">
+            {data.sesiones.length} sesiones
+          </p>
+          <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
+            <circle r={1} cx={1} cy={1}/>
+          </svg>
+          <p className="truncate">
+            {data.sesiones.reduce(
+              (acc, curr) => acc + (curr.votaciones ? curr.votaciones.length : 0)
+              , 0)} votaciones
+          </p>
         </div>
       </div>
       <div className="flex flex-none items-center gap-x-4">
