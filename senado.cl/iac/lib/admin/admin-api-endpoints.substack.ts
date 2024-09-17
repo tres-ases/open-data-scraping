@@ -129,8 +129,6 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
   }
 
   scraperApi() {
-    const layers = this.layers;
-
     const scraperResource = this.api.root.addResource('scraper');
     const scrSenadoresResource = scraperResource.addResource('senadores');
     const scrSenSlugResource = scrSenadoresResource.addResource('{slug}');

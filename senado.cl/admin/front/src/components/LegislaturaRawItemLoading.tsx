@@ -1,4 +1,4 @@
-export default function LegislaturaItemLoading() {
+export default function LegislaturaRawItemLoading() {
   return (
     <>
       <div className="animate-pulse min-w-0 m-4">

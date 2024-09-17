@@ -18,12 +18,12 @@ const SesionesService = {
     return JSON.parse(await response.body.text()) as SesionRaw;
   },
 
-  extract: async (legId: string) => {
+  extract: async (legId: string | number) => {
     await post({
       apiName: 'admin',
-      path: '/ejecuciones/sesiones',
+      path: '/scraper/sesiones',
       options: {
-        queryParams: {legId}
+        queryParams: {legId: `${legId}`}
       }
     }).response;
   },
@@ -31,7 +31,7 @@ const SesionesService = {
   extractStatus: async (exeId: string) => {
     await get({
       apiName: 'admin',
-      path: `/ejecuciones/sesiones/${exeId}`,
+      path: `/scraper/sesiones/${exeId}`,
     }).response;
   },
 }

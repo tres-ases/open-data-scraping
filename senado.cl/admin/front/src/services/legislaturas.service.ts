@@ -1,8 +1,8 @@
 import { get, post } from 'aws-amplify/api';
-import {LegislaturaRaw} from "@senado-cl/global/legislaturas";
+import {LegislaturaDtl, LegislaturaRaw} from "@senado-cl/global/legislaturas";
 
 const LegislaturaService = {
-  getAll: async () => {
+  getRawList: async () => {
     const response = await get({
       apiName: 'admin',
       path: '/raw/legislaturas'
@@ -10,10 +10,33 @@ const LegislaturaService = {
     return JSON.parse(await response.body.text()) as LegislaturaRaw[];
   },
 
-  extract: async () => {
+  getDtlList: async () => {
+    const response = await get({
+      apiName: 'admin',
+      path: '/dtl/legislaturas'
+    }).response;
+    return JSON.parse(await response.body.text()) as LegislaturaDtl[];
+  },
+
+  getDtl: async (legId: string | number) => {
+    const response = await get({
+      apiName: 'admin',
+      path: `/dtl/legislaturas/${legId}`
+    }).response;
+    return JSON.parse(await response.body.text()) as LegislaturaDtl;
+  },
+
+  scrape: async () => {
     await post({
       apiName: 'admin',
       path: '/scraper/legislaturas'
+    }).response;
+  },
+
+  distill: async (legId: string | number) => {
+    await post({
+      apiName: 'admin',
+      path: `/distiller/legislaturas/${legId}`
     }).response;
   }
 }

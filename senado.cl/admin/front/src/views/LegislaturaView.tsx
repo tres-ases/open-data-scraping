@@ -4,7 +4,7 @@ import {useToggle} from "react-use";
 import {useEffect, useState} from "react";
 import {SesionRaw} from "@senado-cl/global/sesiones";
 import SesionesService from "../services/sesiones.service.ts";
-import SesionItem from "../components/SesionItem.tsx";
+import SesionRawList from "../components/SesionRawList.tsx";
 
 export default function LegislaturaView() {
   let params = useParams();
@@ -37,13 +37,7 @@ export default function LegislaturaView() {
         </div>
       </div>
       <div className="py-0">
-        <ul role="list" className="divide-y divide-gray-200">
-          {sesiones.map(s => (
-            <li key={s.id} className="flex items-center justify-between gap-x-6 px-6 py-5 group hover:bg-gray-50">
-              <SesionItem sesion={s}/>
-            </li>
-          ))}
-        </ul>
+        <SesionRawList sesiones={sesiones}/>
       </div>
     </div>
   );
