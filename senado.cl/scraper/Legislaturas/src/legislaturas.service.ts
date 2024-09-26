@@ -10,8 +10,12 @@ import {
   LegislaturaSc,
   LegislaturasMapper
 } from "@senado-cl/global/legislaturas";
-import {LegislaturasResponse} from "./legislaturas.model";
 import {SesionesBucketKey, SesionRaw} from "@senado-cl/global/sesiones";
+import {Logger} from '@aws-lambda-powertools/logger';
+import sha1 from 'crypto-js/sha1';
+import {LegislaturasResponse} from "./legislaturas.model";
+
+const logger = new Logger();
 
 const LEGISLATURAS_URL = `${CommonsData.SENADO_WEB_BACK_API}/legislatures`;
 
@@ -60,7 +64,7 @@ const readRawLegislatura = async (legId: string): Promise<LegislaturaRaw> => {
     ) as LegislaturaRaw[])
       .filter(l => l.id === +legId)[0];
   } catch (error) {
-    console.error(error);
+    logger.error('readRawLegislatura', error);
     throw new Error(`RawLegislatura not found for legId: ${legId} (${LegislaturasBucketKey.rawJson})`);
   }
 };
@@ -74,7 +78,7 @@ const readRawSesionList = async (legId: string) => {
 
     return JSON.parse(await response.Body!.transformToString()) as SesionRaw[];
   } catch (error) {
-    console.error(error);
+    logger.error('readRawSesionList', error);
     throw new Error(`RawSesionList not found for legId: ${legId} (${SesionesBucketKey.rawListJson(legId)})`);
   }
 };
@@ -93,22 +97,27 @@ const readDistilledLegislaturasMap = async () => {
 }
 
 const saveDistilledLegislaturaMap = async (map: LegislaturaMapDtl) => {
+  const Key = LegislaturasBucketKey.distilledJson;
+  logger.info(`Almacenando mapa de legislaturas en '${Key}'`);
   return await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
-    Key: LegislaturasBucketKey.distilledJson,
+    Key,
     Body: JSON.stringify(map)
   }));
 }
 
 const saveDistilledLegislatura = async (legislatura: LegislaturaDtl) => {
+  const Key = LegislaturasBucketKey.distilledDetailJson(legislatura.id);
+  logger.info(`Almacenando legislatura en '${Key}'`);
   await s3Client.send(new PutObjectCommand({
     Bucket: MainBucketKey.S3_BUCKET,
-    Key: LegislaturasBucketKey.distilledDetailJson(legislatura.id),
+    Key,
     Body: JSON.stringify(legislatura)
   }))
 };
 
 export const distillSaveLegislatura = async (legId: string) => {
+  logger.info(`Destilando legislatura id:${legId}`)
   const [rawLeg, rawSesList] = await Promise.all([
     readRawLegislatura(legId),
     readRawSesionList(legId)
@@ -116,6 +125,14 @@ export const distillSaveLegislatura = async (legId: string) => {
 
   const legislatura = LegislaturasMapper.legislaturaRaw2LegislaturaDtl(rawLeg, rawSesList);
   const legislaturaMap = await readDistilledLegislaturasMap();
+
+  if (legislaturaMap[legislatura.id]) {
+    const hashActual = sha1(JSON.stringify(legislaturaMap[legislatura.id]));
+    const hashNuevo = sha1(JSON.stringify(legislatura));
+
+    logger.debug(`Hash valor actual legislatura : ${hashActual}`);
+    logger.debug(`Hash valor nuevo legislatura  : ${hashNuevo}`);
+  }
   legislaturaMap[legislatura.id] = legislatura;
 
   return await Promise.all([
