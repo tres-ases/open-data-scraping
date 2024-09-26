@@ -13,6 +13,7 @@ import clsx from "clsx";
 export default function LegislaturasView() {
 
   const [rawData, setRawData] = useState<LegislaturaRaw[]>();
+  const [distilledIds, setDistilledIds] = useState<number[]>([]);
   const [dtlData, setDtlData] = useState<LegislaturaDtl[]>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [extracting, extractingToggle] = useToggle(false);
@@ -22,7 +23,10 @@ export default function LegislaturasView() {
       .then(data => setRawData(data))
       .catch(() => setRawData([]));
     LegislaturaService.getDtlList()
-      .then(data => setDtlData(Object.values(data)))
+      .then(data => {
+        setDtlData(Object.values(data));
+        setDistilledIds(Object.keys(data).map(k => +k))
+      })
       .catch(() => setDtlData([]));
   }, []);
 
@@ -44,7 +48,10 @@ export default function LegislaturasView() {
     LegislaturasService.scrape()
       .then(() => {
         LegislaturaService.getDtlList()
-          .then(data => setDtlData(Object.values(data)))
+          .then(data => {
+            setDtlData(Object.values(data));
+            setDistilledIds(Object.keys(data).map(k => +k));
+          })
           .finally(() => extractingToggle(false))
       })
       .catch(() => extractingToggle(false));
@@ -58,7 +65,10 @@ export default function LegislaturasView() {
           .then(data => setRawData(data))
           .finally(() => extractingToggle(false))
         LegislaturaService.getDtlList()
-          .then(data => setDtlData(Object.values(data)))
+          .then(data => {
+            setDtlData(Object.values(data));
+            setDistilledIds(Object.keys(data).map(k => +k));
+          })
           .finally(() => extractingToggle(false))
       })
       .catch(() => extractingToggle(false));
@@ -109,7 +119,7 @@ export default function LegislaturasView() {
               className="data-[selected]:bg-indigo-100 data-[selected]:text-indigo-700 data-[selected]:outline-indigo-300 outline outline-1 outline-gray-200 bg-gray-50 text-gray-400 rounded-md px-3 py-2 text-sm font-medium">
               {({selected}) => (
                 <>
-                  Procesado
+                  Destilado
                   {dtlData && (
                     <span className={clsx(
                       selected ? 'bg-gray-100 text-gray-900' : 'bg-indigo-50 text-indigo-400',
@@ -124,7 +134,7 @@ export default function LegislaturasView() {
           </TabList>
           <TabPanels className="p-0 m-0 bla">
             <TabPanel className="p-0 m-0">
-              <LegislaturaRawList data={rawData} distillationEnd={() => extractDtl()}/>
+              <LegislaturaRawList data={rawData} distilledIds={distilledIds} distillationEnd={() => extractDtl()}/>
             </TabPanel>
             <TabPanel>
               <LegislaturaDtlList data={dtlData}/>

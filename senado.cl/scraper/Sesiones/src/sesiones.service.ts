@@ -91,7 +91,7 @@ const transformAsistencia = (a: AsistenciaSc): AsistenciaRaw => {
     totalSesiones: a.TOTAL_SESIONES,
     inicio: a.FECHA_HORA_INICIO,
     termino: a.FECHA_HORA_TERMINO,
-    detalle: a.DATA.map(d => ({
+    detalle: a.DATA ? a.DATA.map(d => ({
       sesId: d.ID_SESION,
       sesNumero: d.NUMERO_SESION,
       parId: d.ID_PARLAMENTARIO,
@@ -101,7 +101,7 @@ const transformAsistencia = (a: AsistenciaSc): AsistenciaRaw => {
       slug: d.SLUG,
       asistencia: d.ASISTENCIA,
       justificacion: d.JUSTIFICACION,
-    })),
+    })) : [],
   };
 }
 

@@ -41,7 +41,7 @@ export interface AsistenciaSc {
   NUMERO_SESION: number
   FECHA_HORA_INICIO: string
   FECHA_HORA_TERMINO: string
-  DATA: AsistenciaDetalleSc[]
+  DATA?: AsistenciaDetalleSc[]
 }
 
 export interface AsistenciaResponse {

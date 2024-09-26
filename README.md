@@ -7,6 +7,30 @@ Toda la información descargada desde distintos orígenes y organizada para que 
 ### senado.cl
 Corresponde a la información obtenida desde el sitio ```https://www.senado.cl/``` la cual es almacenada en el bucket ```open-data-senado-cl```
 
+#### Legislaturas
+La extracción de **legislaturas** se realiza a través de un servicio que se expone en la página donde se listan las Sesiones de Sala que se puede visitar en ```https://www.senado.cl/actividad-legislativa/sala/sesiones-de-sala``` cuya URL es ```https://web-back.senado.cl/api/legislatures```.
+
+La información cruda se almacena en el bucket indicado cuya key es ```raw/legislaturas/data.json```.
+
+La estructura de la información está dada por la interfaz ```LegislaturaRaw``` ubicada en la librería ```@senado-cl/global/legislaturas```.
+
+A partir de la información cruda de una Legislatura en particular se obtienen las **sesiones** que pertenecen a cada Legislatura, así como la información de **asistencia** y **votaciones**. Dicha información cruda es almacenada en:
+
+* **Sesiones**
+  * Listado: ```raw/sesiones/legId=${legId}/data.json``` estructurado según la interfaz ```SesionRaw``` (```@senado-cl/global/sesiones```)
+  * Detalle: ```raw/sesion/detalle/sesId=${sesId}/data.json``` estructurado según la interfaz ```SesionRaw``` (```@senado-cl/global/sesiones```)
+* **Asistencia**: ```raw/sesion/asistencia/sesId=${sesId}/data.json``` estructurado según la interfaz ```AsistenciaRaw``` (```@senado-cl/global/sesiones```)
+* **Votaciones**: ```raw/sesion/votacion/sesId=${sesId}/data.json``` estructurado según la interfaz ```VotacionRaw``` (```@senado-cl/global/sesiones```)
+
+Luego, dicha información es destilada para construir estructuras de información conjunta detallada de la siguiente manera:
+
+* **Legislatura**
+  * Listado: ```distilled/legislaturas/data.json``` estructurado según la interfaz ```LegislaturaMapDtl``` (```@senado-cl/global/legislaturas```)
+  * Detalle: ```distilled/legislatura/legId=${legId}/data.json``` estructurado según la interfaz ```LegislaturaDtl``` (```@senado-cl/global/legislaturas```)
+    * Aunando en una sola estructura la información de sesiones con sus correspondientes sesiones, asistencias y votaciones 
+
+---
+
 #### Dieta
 La dieta es la remuneración mensual que percibe el Senador durante el periodo para el cual ha sido elegido y, de acuerdo al artículo 62 de la Constitución Política de la República, equivale a la de un Ministro de Estado.
 

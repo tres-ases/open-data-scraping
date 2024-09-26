@@ -27,9 +27,10 @@ const tipoLegislatura = (tipo: TipoLegislatura) => {
 interface Props {
   legislatura: LegislaturaRaw
   distillationEnd: (legId: number) => void
+  distilled: boolean
 }
 
-export default function LegislaturaRawItem({legislatura}: Props) {
+export default function LegislaturaRawItem({legislatura, distilled}: Props) {
   const {id, numero, tipo, inicio, termino} = legislatura;
 
   const [extracting, setExtracting] = useToggle(false);
@@ -57,11 +58,17 @@ export default function LegislaturaRawItem({legislatura}: Props) {
             N° {numero}
           </Link>
           {tipoLegislatura(tipo)}
+          {distilled && (
+            <p
+              className="text-blue-800 bg-blue-50 ring-blue-600/20 mt-0.5 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset">
+              Destilado
+            </p>
+          )}
         </div>
         <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
           <p className="whitespace-nowrap">
             <time dateTime={inicio}>{inicio}</time>
-            - <time dateTime={termino}>{termino}</time>
+            {' - '}<time dateTime={termino}>{termino}</time>
           </p>
           <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
             <circle r={1} cx={1} cy={1}/>
@@ -73,15 +80,15 @@ export default function LegislaturaRawItem({legislatura}: Props) {
         <span className="isolate inline-flex rounded-md shadow-sm">
           <Button type="button" disabled={extracting} onClick={extract}
                   className={clsx(
-                    'transition ease-in-out duration-300',
-                    'relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10'
+                    'transition ease-in-out duration-300 ring-1 ring-inset ring-gray-50 hover:bg-gray-50 text-gray-200 group-hover:text-gray-900 group-hover:ring-gray-300',
+                    'relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-50 focus:z-10'
                   )}>
             {extracting ? <Spinner/> : 'Extraer'}
           </Button>
           <Button type="button" disabled={distilling} onClick={distill}
                   className={clsx(
-                    'transition ease-in-out duration-300',
-                    'relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10'
+                    'transition ease-in-out duration-300 ring-1 ring-inset ring-gray-50 hover:bg-gray-50 text-gray-200 group-hover:text-gray-900 group-hover:ring-gray-300',
+                    'relative inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-50 focus:z-10'
                   )}>
             {distilling ? <Spinner/> : 'Destilar'}
           </Button>
