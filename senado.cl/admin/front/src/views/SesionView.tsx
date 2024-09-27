@@ -29,6 +29,7 @@ export default function SesionView() {
   }, [searchParams]);
 
   const pestana = searchParams.get('pestana');
+  console.log(sesionDtl);
 
   return (
     <>
