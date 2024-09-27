@@ -6,7 +6,7 @@ import {IBucket} from "aws-cdk-lib/aws-s3";
 import {DefinitionBody, JsonPath, StateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks";
 
-const prefix = 'senado-cl-admin-workflows';
+const prefix = 'senado-cl-workflows';
 
 interface AdminApiWorkflowsSubstackProps {
   layers: LayerVersion[]
@@ -28,16 +28,30 @@ export default class AdminWorkflowsSubstack extends NestedStack {
     });
     dataBucket.grantWrite(sesionesGetSaveFunction);
 
+    const distillSaveLegislatura = new ScraperFunction(this, `${prefix}-legislatura-distill`, {
+      pckName: 'Legislaturas',
+      handler: 'legislaturas.distillSaveLegislaturaHandler',
+      layers,
+      timeout: 180
+    });
+    dataBucket.grantReadWrite(sesionesGetSaveFunction);
+
     this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-sesiones-getSave-Wf`, {
       definitionBody: DefinitionBody.fromChainable(
         new LambdaInvoke(this, `${prefix}-sesiones-getSave-step`, {
           lambdaFunction: sesionesGetSaveFunction,
           outputPath: JsonPath.stringAt("$.Payload")
         })
+          .next(
+            new LambdaInvoke(this, `${prefix}-legislatura-distill-step`, {
+              lambdaFunction: distillSaveLegislatura,
+              outputPath: JsonPath.stringAt("$.Payload")
+            })
+          )
       ),
       stateMachineType: StateMachineType.STANDARD,
-      timeout: Duration.seconds(190),
-      stateMachineName: `${prefix}-sesiones-getSave-Wf`,
+      timeout: Duration.seconds(370),
+      stateMachineName: `${prefix}-legislatura-sesiones-getSaveDistill-Wf`,
     })
   }
 
