@@ -1,8 +1,8 @@
 import {get, post} from 'aws-amplify/api';
-import {SesionRaw} from "@senado-cl/global/sesiones";
+import {LegislaturaSesionDtl, SesionRaw} from "@senado-cl/global/sesiones";
 
 const SesionesService = {
-  getAll: async (legId: string) => {
+  getRawList: async (legId: string) => {
     const response = await get({
       apiName: 'admin',
       path: `/raw/legislaturas/${legId}/sesiones`
@@ -10,12 +10,20 @@ const SesionesService = {
     return JSON.parse(await response.body.text()) as SesionRaw[];
   },
 
-  getOne: async (sesId: string) => {
+  getRaw: async (sesId: string) => {
     const response = await get({
       apiName: 'admin',
       path: `/raw/sesiones/${sesId}`
     }).response;
     return JSON.parse(await response.body.text()) as SesionRaw;
+  },
+
+  getDtl: async (sesId: string) => {
+    const response = await get({
+      apiName: 'admin',
+      path: `/dtl/sesiones/${sesId}`
+    }).response;
+    return JSON.parse(await response.body.text()) as LegislaturaSesionDtl;
   },
 
   extract: async (legId: string | number) => {

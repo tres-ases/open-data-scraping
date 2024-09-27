@@ -113,7 +113,20 @@ const saveDistilledLegislatura = async (legislatura: LegislaturaDtl) => {
     Bucket: MainBucketKey.S3_BUCKET,
     Key,
     Body: JSON.stringify(legislatura)
-  }))
+  }));
+
+  const promises = [];
+  for(const ses of legislatura.sesiones) {
+    promises.push(
+      s3Client.send(new PutObjectCommand({
+        Bucket: MainBucketKey.S3_BUCKET,
+        Key: SesionesBucketKey.dtlJson(ses.id),
+        Body: JSON.stringify(legislatura)
+      }))
+    )
+  }
+
+  await Promise.all(promises);
 };
 
 export const distillSaveLegislatura = async (legId: string) => {

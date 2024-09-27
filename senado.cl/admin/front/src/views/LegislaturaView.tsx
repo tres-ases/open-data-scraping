@@ -13,7 +13,7 @@ export default function LegislaturaView() {
   const [sesiones, setSesiones] = useState<SesionRaw[]>([]);
 
   useEffect(() => {
-    legId && SesionesService.getAll(legId)
+    legId && SesionesService.getRawList(legId)
       .then(sesiones => setSesiones(sesiones));
   }, [legId]);
 
