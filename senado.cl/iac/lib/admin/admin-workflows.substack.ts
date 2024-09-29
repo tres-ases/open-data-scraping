@@ -1,5 +1,5 @@
 import {Construct} from "constructs";
-import {CfnElement, Duration, NestedStack,} from 'aws-cdk-lib';
+import {CfnElement, Duration, NestedStack, Stack,} from 'aws-cdk-lib';
 import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {IBucket} from "aws-cdk-lib/aws-s3";
@@ -60,7 +60,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
               parameters: {
                 DistributionId: distributionId,
                 InvalidationBatch: {
-                  CallerReference: JsonPath.stringAt('$$.Execution.Id'),
+                  CallerReference: JsonPath.stringAt('$$.State.EnteredTime'),
                   Paths: {
                     Quantity: 1,
                     Items: [
@@ -70,8 +70,10 @@ export default class AdminWorkflowsSubstack extends NestedStack {
                   }
                 }
               },
-              iamResources: ['*'], // Puedes restringir este permiso a recursos específicos
-              resultPath: '$.invalidationResult' // Dónde almacenar el resultado
+              iamResources: [
+                `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${distributionId}`,
+              ],
+              resultPath: '$.CfInvalidateResult',
             })
           )
       ),
