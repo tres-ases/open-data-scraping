@@ -7,6 +7,7 @@ interface SenadoNodejsFunctionProps {
   handler: string,
   layers?: LayerVersion[],
   timeout?: number,
+  memorySize?: number
 }
 
 function codeFromPackage(name: string) {
@@ -15,14 +16,15 @@ function codeFromPackage(name: string) {
 
 export default class ScraperFunction extends nodejs.NodejsFunction {
 
-  constructor(scope: Construct, id: string, {pckName, handler, layers = [], timeout = 30}: SenadoNodejsFunctionProps) {
+  constructor(scope: Construct, id: string, {pckName, handler, layers = [], timeout = 30, memorySize}: SenadoNodejsFunctionProps) {
     super(scope, id, {
       functionName: id,
       code: codeFromPackage(pckName),
       handler,
       runtime: Runtime.NODEJS_20_X,
       layers,
-      timeout: Duration.seconds(timeout)
+      timeout: Duration.seconds(timeout),
+      memorySize
     });
   }
 }

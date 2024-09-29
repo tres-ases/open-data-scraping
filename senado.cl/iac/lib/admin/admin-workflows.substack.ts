@@ -33,7 +33,8 @@ export default class AdminWorkflowsSubstack extends NestedStack {
       pckName: 'Legislaturas',
       handler: 'legislaturas.distillSaveLegislaturaHandler',
       layers,
-      timeout: 180
+      timeout: 180,
+      memorySize: 512
     });
     dataBucket.grantReadWrite(distillSaveLegislatura);
 
