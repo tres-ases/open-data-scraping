@@ -21,7 +21,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
   constructor(scope: Construct, {distributionId, layers, dataBucket}: AdminApiWorkflowsSubstackProps) {
     super(scope, prefix);
 
-    const sesionesGetSaveFunction = new ScraperFunction(this, `${prefix}-sesiones-getSave`, {
+    const sesionesGetSaveFunction = new ScraperFunction(this, `${prefix}-sesiones-getSave2`, {
       pckName: 'Sesiones',
       handler: 'sesiones.getSaveSesionesHandler',
       layers,
@@ -29,7 +29,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
     });
     dataBucket.grantWrite(sesionesGetSaveFunction);
 
-    const distillSaveLegislatura = new ScraperFunction(this, `${prefix}-legislatura-distill`, {
+    const distillSaveLegislatura = new ScraperFunction(this, `${prefix}-legislatura-distill2`, {
       pckName: 'Legislaturas',
       handler: 'legislaturas.distillSaveLegislaturaHandler',
       layers,
@@ -37,14 +37,14 @@ export default class AdminWorkflowsSubstack extends NestedStack {
     });
     dataBucket.grantReadWrite(distillSaveLegislatura);
 
-    this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-legislatura-getSaveDistill-Wf`, {
+    this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-legislatura-getSaveDistill-Wf2`, {
       definitionBody: DefinitionBody.fromChainable(
-        new LambdaInvoke(this, `${prefix}-sesiones-getSave-step`, {
+        new LambdaInvoke(this, `${prefix}-sesiones-getSave-step2`, {
           lambdaFunction: sesionesGetSaveFunction,
           outputPath: JsonPath.stringAt("$.Payload")
         })
           .next(
-            new LambdaInvoke(this, `${prefix}-legislatura-distill-step`, {
+            new LambdaInvoke(this, `${prefix}-legislatura-distill-step2`, {
               lambdaFunction: distillSaveLegislatura,
               payload: TaskInput.fromObject({
                 "legId.$": "$$.Execution.Input.legId"
@@ -53,7 +53,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
             })
           )
           .next(
-            new CallAwsService(this, `${prefix}-legislatura-getSaveDistill-invCache-step`, {
+            new CallAwsService(this, `${prefix}-legislatura-getSaveDistill-invCache-step2`, {
               service: 'cloudfront',
               action: 'createInvalidation',
               parameters: {
