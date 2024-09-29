@@ -3,12 +3,13 @@ import {CfnElement, Duration, NestedStack,} from 'aws-cdk-lib';
 import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {IBucket} from "aws-cdk-lib/aws-s3";
-import {DefinitionBody, JsonPath, StateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
-import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks";
+import {DefinitionBody, JsonPath, StateMachine, StateMachineType, TaskInput} from "aws-cdk-lib/aws-stepfunctions";
+import {CallAwsService, LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks";
 
 const prefix = 'senado-cl-workflows';
 
 interface AdminApiWorkflowsSubstackProps {
+  distributionId: string
   layers: LayerVersion[]
   dataBucket: IBucket
 }
@@ -17,7 +18,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
 
   readonly sesionesGetSaveWf: StateMachine;
 
-  constructor(scope: Construct, {layers, dataBucket}: AdminApiWorkflowsSubstackProps) {
+  constructor(scope: Construct, {distributionId, layers, dataBucket}: AdminApiWorkflowsSubstackProps) {
     super(scope, prefix);
 
     const sesionesGetSaveFunction = new ScraperFunction(this, `${prefix}-sesiones-getSave`, {
@@ -34,9 +35,9 @@ export default class AdminWorkflowsSubstack extends NestedStack {
       layers,
       timeout: 180
     });
-    dataBucket.grantReadWrite(sesionesGetSaveFunction);
+    dataBucket.grantReadWrite(distillSaveLegislatura);
 
-    this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-sesiones-getSave-Wf`, {
+    this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-legislatura-getSaveDistill-Wf`, {
       definitionBody: DefinitionBody.fromChainable(
         new LambdaInvoke(this, `${prefix}-sesiones-getSave-step`, {
           lambdaFunction: sesionesGetSaveFunction,
@@ -45,7 +46,31 @@ export default class AdminWorkflowsSubstack extends NestedStack {
           .next(
             new LambdaInvoke(this, `${prefix}-legislatura-distill-step`, {
               lambdaFunction: distillSaveLegislatura,
+              payload: TaskInput.fromObject({
+                "legId.$": "$$.Execution.Input.legId"
+              }),
               outputPath: JsonPath.stringAt("$.Payload")
+            })
+          )
+          .next(
+            new CallAwsService(this, `${prefix}-legislatura-getSaveDistill-invCache-step`, {
+              service: 'cloudfront',
+              action: 'createInvalidation',
+              parameters: {
+                DistributionId: distributionId,
+                InvalidationBatch: {
+                  CallerReference: JsonPath.stringAt('$$.Execution.Id'),
+                  Paths: {
+                    Quantity: 1,
+                    Items: [
+                      '/api/dtl/*'
+                      // JsonPath.format('legislatura/{}', sfn.JsonPath.stringAt('$.legId'))
+                    ]
+                  }
+                }
+              },
+              iamResources: ['*'], // Puedes restringir este permiso a recursos específicos
+              resultPath: '$.invalidationResult' // Dónde almacenar el resultado
             })
           )
       ),

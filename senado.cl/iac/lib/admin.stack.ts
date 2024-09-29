@@ -195,6 +195,7 @@ export default class AdminStack extends Stack {
     });
 
     const adminWorkflowSubstack = new AdminWorkflowsSubstack(this, {
+      distributionId: distribution.distributionId,
       layers: [commonsLy, globalLy, scraperLy],
       dataBucket
     });
