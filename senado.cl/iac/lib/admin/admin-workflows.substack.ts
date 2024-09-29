@@ -72,8 +72,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
               },
               iamResources: [
                 `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${distributionId}`,
-              ],
-              resultPath: '$.CfInvalidateResult',
+              ]
             })
           )
       ),
