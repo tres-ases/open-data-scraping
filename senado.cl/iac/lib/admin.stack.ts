@@ -194,17 +194,17 @@ export default class AdminStack extends Stack {
       stringValue: userPoolClient.userPoolClientId,
     });
 
-    const adminWorkflowSubstack = new AdminWorkflowsSubstack(this, {
-      distributionId: distribution.distributionId,
-      layers: [commonsLy, globalLy, scraperLy],
-      dataBucket
-    });
+    //const adminWorkflowSubstack = new AdminWorkflowsSubstack(this, {
+    //  distributionId: distribution.distributionId,
+    //  layers: [commonsLy, globalLy, scraperLy],
+    //  dataBucket
+    //});
 
     const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {
       api, authorizer,
       layers: [commonsLy, globalLy, scraperLy],
       dataBucket,
-      sesionesGetSaveWf: adminWorkflowSubstack.sesionesGetSaveWf
+      //sesionesGetSaveWf: adminWorkflowSubstack.sesionesGetSaveWf
     });
   }
 

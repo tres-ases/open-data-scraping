@@ -26,7 +26,7 @@ interface AdminApiEndpointsSubstackProps {
   authorizer: CognitoUserPoolsAuthorizer
   layers: LayerVersion[]
   dataBucket: IBucket
-  sesionesGetSaveWf: StateMachine
+  //sesionesGetSaveWf: StateMachine
 }
 
 interface LambdaResurceProps {
@@ -48,14 +48,14 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
   readonly readS3Role: Role;
   readonly authorizer: CognitoUserPoolsAuthorizer;
   readonly dataBucket: IBucket;
-  readonly sesionesGetSaveWf: StateMachine;
+  //readonly sesionesGetSaveWf: StateMachine;
 
   constructor(scope: Construct, {
     api,
     authorizer,
     layers,
     dataBucket,
-    sesionesGetSaveWf
+    //sesionesGetSaveWf
   }: AdminApiEndpointsSubstackProps) {
     super(scope, prefix);
 
@@ -63,7 +63,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     this.layers = layers;
     this.dataBucket = dataBucket;
     this.authorizer = authorizer;
-    this.sesionesGetSaveWf = sesionesGetSaveWf;
+    //this.sesionesGetSaveWf = sesionesGetSaveWf;
 
     this.readS3Role = new Role(this, `${prefix}-readRole`, {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
@@ -168,74 +168,74 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       }),
     });
 
-    const sesionesGetSaveWfRole = new Role(this, `${prefix}-sesiones-getSave-wf-role`, {
-      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
-    });
-    this.sesionesGetSaveWf.grantStartExecution(sesionesGetSaveWfRole);
-    this.sesionesGetSaveWf.grantRead(sesionesGetSaveWfRole);
+    //const sesionesGetSaveWfRole = new Role(this, `${prefix}-sesiones-getSave-wf-role`, {
+    //  assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    //});
+    //this.sesionesGetSaveWf.grantStartExecution(sesionesGetSaveWfRole);
+    //this.sesionesGetSaveWf.grantRead(sesionesGetSaveWfRole);
 
-    const scrSesionesResource = scraperResource.addResource('sesiones');
+    //const scrSesionesResource = scraperResource.addResource('sesiones');
+//
+    //scrSesionesResource.addMethod('POST', new AwsIntegration({
+    //    service: 'states',
+    //    action: 'StartExecution',
+    //    options: {
+    //      credentialsRole: sesionesGetSaveWfRole,
+    //      integrationResponses: [
+    //        {
+    //          statusCode: '200',
+    //          responseTemplates: {
+    //            'application/json': `{ "executionId": $input.json('executionArn') }`
+    //          },
+    //        },
+    //      ],
+    //      requestTemplates: {
+    //        'application/json': JSON.stringify({
+    //          input: `{ "legId": "$input.params('legId')" }`,
+    //          stateMachineArn: this.sesionesGetSaveWf.stateMachineArn
+    //        }),
+    //      },
+    //    },
+    //  }),
+    //  {
+    //    methodResponses: [{statusCode: "200"}],
+    //  }
+    //);
 
-    scrSesionesResource.addMethod('POST', new AwsIntegration({
-        service: 'states',
-        action: 'StartExecution',
-        options: {
-          credentialsRole: sesionesGetSaveWfRole,
-          integrationResponses: [
-            {
-              statusCode: '200',
-              responseTemplates: {
-                'application/json': `{ "executionId": $input.json('executionArn') }`
-              },
-            },
-          ],
-          requestTemplates: {
-            'application/json': JSON.stringify({
-              input: `{ "legId": "$input.params('legId')" }`,
-              stateMachineArn: this.sesionesGetSaveWf.stateMachineArn
-            }),
-          },
-        },
-      }),
-      {
-        methodResponses: [{statusCode: "200"}],
-      }
-    );
-
-    scrSesionesResource.addResource('{exeId}')
-      .addMethod('GET', new AwsIntegration({
-          service: 'states',
-          action: 'DescribeExecution',
-          integrationHttpMethod: 'POST',
-          options: {
-            credentialsRole: sesionesGetSaveWfRole,
-            integrationResponses: [
-              {
-                statusCode: '200',
-                responseTemplates: {
-                  'application/json': `
-                    #set ($status = $input.json('status'))
-                    {
-                    #if($status == '"SUCCEEDED"')
-                      "output": $util.parseJson($input.json('output')),
-                    #end
-                      "status": $status
-                    }
-                  `,
-                },
-              },
-            ],
-            requestTemplates: {
-              'application/json': JSON.stringify({
-                "executionArn": "$input.params().path.get('exeId')"
-              })
-            }
-          },
-        }),
-        {
-          methodResponses: [{statusCode: "200"}],
-        }
-      );
+    //scrSesionesResource.addResource('{exeId}')
+    //  .addMethod('GET', new AwsIntegration({
+    //      service: 'states',
+    //      action: 'DescribeExecution',
+    //      integrationHttpMethod: 'POST',
+    //      options: {
+    //        credentialsRole: sesionesGetSaveWfRole,
+    //        integrationResponses: [
+    //          {
+    //            statusCode: '200',
+    //            responseTemplates: {
+    //              'application/json': `
+    //                #set ($status = $input.json('status'))
+    //                {
+    //                #if($status == '"SUCCEEDED"')
+    //                  "output": $util.parseJson($input.json('output')),
+    //                #end
+    //                  "status": $status
+    //                }
+    //              `,
+    //            },
+    //          },
+    //        ],
+    //        requestTemplates: {
+    //          'application/json': JSON.stringify({
+    //            "executionArn": "$input.params().path.get('exeId')"
+    //          })
+    //        }
+    //      },
+    //    }),
+    //    {
+    //      methodResponses: [{statusCode: "200"}],
+    //    }
+    //  );
   }
 
   addLambdaToResource(resource: Resource, suffix: string, {pckName, handler, grant}: LambdaResurceProps, {httpMethod, requestTemplate, responseTemplate}: MethodProps) {
