@@ -27,20 +27,22 @@ const SesionesService = {
   },
 
   extract: async (legId: string | number) => {
-    await post({
+    const response = await post({
       apiName: 'admin',
       path: '/scraper/sesiones',
       options: {
         queryParams: {legId: `${legId}`}
       }
     }).response;
+    return JSON.parse(await response.body.text()) as { executionId: string };
   },
 
   extractStatus: async (exeId: string) => {
-    await get({
+    const response = await get({
       apiName: 'admin',
       path: `/scraper/sesiones/${exeId}`,
     }).response;
+    return JSON.parse(await response.body.text()) as { status: 'RUNNING' };
   },
 }
 

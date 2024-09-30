@@ -144,11 +144,7 @@ export default class AdminStack extends Stack {
             originId: `${prefix}-dist-origin-apigw`
           }),
           allowedMethods: AllowedMethods.ALLOW_ALL,
-          cachePolicy: new CachePolicy(this, `${prefix}-dist-origin-apigw-cacheplcy`, {
-            headerBehavior: CacheHeaderBehavior.allowList('Accept', 'Content-Type', 'Authorization'),
-            queryStringBehavior: CacheQueryStringBehavior.all(),
-            cookieBehavior: CacheCookieBehavior.all(),
-          }),
+          cachePolicy: CachePolicy.CACHING_DISABLED,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
         '/Senadores/Detalle/Foto/*': {

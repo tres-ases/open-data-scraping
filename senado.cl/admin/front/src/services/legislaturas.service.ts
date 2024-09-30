@@ -1,9 +1,5 @@
 import { get, post } from 'aws-amplify/api';
-import {LegislaturaDtl, LegislaturaRaw} from "@senado-cl/global/legislaturas";
-
-interface GetDTlList {
-  [id: number]: LegislaturaDtl
-}
+import {LegislaturaDtl, LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/legislaturas";
 
 const LegislaturaService = {
   getRawList: async () => {
@@ -19,7 +15,7 @@ const LegislaturaService = {
       apiName: 'admin',
       path: '/dtl/legislaturas'
     }).response;
-    return JSON.parse(await response.body.text()) as GetDTlList;
+    return JSON.parse(await response.body.text()) as LegislaturaMapDtl;
   },
 
   getDtl: async (legId: string | number) => {

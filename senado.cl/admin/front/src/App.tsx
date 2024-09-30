@@ -6,13 +6,18 @@ import SenadorView from "./views/SenadorView.tsx";
 import LegislaturasView from "./views/LegislaturasView.tsx";
 import LegislaturaView from "./views/LegislaturaView.tsx";
 import SesionView from "./views/SesionView.tsx";
+import {LegislaturasViewProvider} from "./context/LegislaturasViewContext.tsx";
 
 function App() {
   return (
     <Routes>
       <Route element={<MainLayout/>}>
         <Route path="inicio" element={<InicioView/>} />
-        <Route path="legislaturas" element={<LegislaturasView/>} />
+        <Route path="legislaturas" element={
+          <LegislaturasViewProvider>
+            <LegislaturasView/>
+          </LegislaturasViewProvider>
+        } />
         <Route path="legislatura">
           <Route path=":legId" element={<LegislaturaView/>}/>
         </Route>
