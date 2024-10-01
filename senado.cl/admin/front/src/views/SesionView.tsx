@@ -7,6 +7,7 @@ import SesionAsistencia from "../components/SesionAsistencia.tsx";
 import SesionVotaciones from "../components/SesionVotaciones.tsx";
 import {Tab, TabGroup, TabList, TabPanel, TabPanels} from "@headlessui/react";
 import clsx from "clsx";
+import SesionDetalleLoading from "../components/SesionDetalleLoading.tsx";
 
 export default function SesionView() {
   let params = useParams();
@@ -31,7 +32,7 @@ export default function SesionView() {
 
   return (
     <>
-      {data && <SesionDetalle sesion={data}/>}
+      {data ? <SesionDetalle sesion={data}/> : <SesionDetalleLoading/>}
       <TabGroup defaultIndex={pestana === 'votaciones' ? 1 : 0} onChange={idx => setSearchParams({pestana: idx === 0 ? 'asistencia' : 'votaciones'})}>
         <TabList className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 mx-4 mt-6 mb-3">
           <Tab className={clsx(

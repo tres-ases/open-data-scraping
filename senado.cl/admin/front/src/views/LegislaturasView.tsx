@@ -13,13 +13,14 @@ interface Data {
 }
 
 export default function LegislaturasView() {
-  const [data, setData] = useState<Data>({});
+  const [data, setData] = useState<Data>();
 
   const {ids} = useContext(LegislaturasViewContext);
 
   useEffect(() => {
+    console.log(ids);
     if(ids.size === 0) extract();
-  }, [ids]);
+  }, [ids.size]);
 
   const extract = () => {
     setData({});
@@ -36,7 +37,7 @@ export default function LegislaturasView() {
       });
   }
 
-  const extracting = ids.size > 0 || (data.raw === undefined && data.dtl === undefined);
+  const extracting = ids.size > 0 || (data?.raw === undefined && data?.dtl === undefined);
 
   return (
     <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
@@ -61,7 +62,7 @@ export default function LegislaturasView() {
             11 de marzo de cada año y el 10 de marzo del año siguiente
           </p>
         </div>
-        <LegislaturaList rawList={data.raw} dtlMap={data.dtl}/>
+        <LegislaturaList rawList={data?.raw} dtlMap={data?.dtl}/>
       </div>
       <div className="py-0">
       </div>

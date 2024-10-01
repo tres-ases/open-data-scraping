@@ -9,6 +9,11 @@ interface Props {
 
 export default function SesionDetalle({sesion}: Props) {
   const {numero, tipo, fecha, horaInicio, horaTermino, legId, legNumero, asistencia, votaciones} = sesion;
+  const boletines = votaciones ? votaciones.reduce(
+    (curr, acc) => {
+      acc.boletin && curr.add(acc.boletin.indexOf('-') > 0 ? acc.boletin.split('-')[0] : acc.boletin);
+      return curr;
+    }, new Set()).size : 0;
   return (
     <div className="overflow-hidden bg-white shadow sm:rounded-lg">
       <div className="px-4 py-6 sm:px-6">
@@ -78,8 +83,8 @@ export default function SesionDetalle({sesion}: Props) {
               {asistencia ? (
                 <>
                   {asistencia.resumen.asistentes} asistentes<br/>
-                  {asistencia.resumen.inasistentes.justificados} inasistentes justificados<br/>
-                  {asistencia.resumen.inasistentes.injustificados} inasistentes injustificados
+                  {asistencia.resumen.inasistentes.justificados} {asistencia.resumen.inasistentes.justificados === 1 ? 'inasistente justificado' : 'inasistentes justificados'}<br/>
+                  {asistencia.resumen.inasistentes.injustificados} {asistencia.resumen.inasistentes.injustificados === 1 ? 'inasistente injustificado' : 'inasistentes injustificados'}
                 </>
               ) : 'Sin información'}
             </dd>
@@ -89,12 +94,8 @@ export default function SesionDetalle({sesion}: Props) {
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
               {votaciones ? (
                 <>
-                  {votaciones.length} votaciones<br/>
-                  {votaciones.reduce(
-                    (curr, acc) => {
-                      acc.boletin && curr.add(acc.boletin.indexOf('-') > 0 ? acc.boletin.split('-')[0] : acc.boletin);
-                      return curr;
-                    }, new Set()).size} boletines
+                  {votaciones.length} {votaciones.length === 1 ? 'votación' : 'votaciones'}<br/>
+                  {boletines} {boletines === 1 ? 'boletín' : 'boletines'}
                 </>
               ) : 'Sin información'}
             </dd>

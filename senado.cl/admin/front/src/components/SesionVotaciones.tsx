@@ -1,6 +1,8 @@
 import {VotacionRaw} from "@senado-cl/global/sesiones";
 import {useEffect, useState} from "react";
 import VotacionesService from "../services/votaciones.service.ts";
+import SesionVotacionItem from "./SesionVotacionItem.tsx";
+import SesionVotacionItemLoading from "./SesionVotacionItemLoading.tsx";
 
 interface Props {
   sesId: string
@@ -15,14 +17,19 @@ export default function SesionVotaciones({sesId}: Props) {
       .then(data => setVotaciones(data));
   }, [sesId]);
 
-  console.log(votaciones)
-  return (
-    <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-      <div className="px-4 py-6 sm:px-6">
-        <div className="flex flex-wrap">
-          <h3 className="flex-auto text-base font-semibold leading-7 text-gray-900">Votaciones</h3>
-        </div>
-      </div>
-    </div>
+  return votaciones ? (
+    <ul role="list"
+        className="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      {votaciones.map((d, idx) => (
+        <SesionVotacionItem key={idx} votacion={d}/>
+      ))}
+    </ul>
+  ) : (
+    <ul role="list"
+        className="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      {[1, 2, 3].map((d) => (
+        <SesionVotacionItemLoading key={d}/>
+      ))}
+    </ul>
   );
 }
