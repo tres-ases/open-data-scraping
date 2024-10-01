@@ -34,9 +34,9 @@ export default function SesionAsistenciaItem({detalle}: Props) {
       </div>
       <div className="flex shrink-0 items-center gap-x-4">
         <div className="hidden sm:flex sm:flex-col sm:items-end">
-          <p className="text-sm leading-6 text-gray-900">
+          <span className="text-sm leading-6 text-gray-900">
             <AsistenciaTipoTag tipo={asistencia} justificacion={justificacion}/>
-          </p>
+          </span>
           <p className="mt-1 text-xs leading-5 text-gray-500">
             {justificacion}
           </p>

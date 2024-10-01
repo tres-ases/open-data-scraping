@@ -121,7 +121,7 @@ const saveDistilledLegislatura = async (legislatura: LegislaturaDtl) => {
       s3Client.send(new PutObjectCommand({
         Bucket: MainBucketKey.S3_BUCKET,
         Key: SesionesBucketKey.dtlJson(ses.id),
-        Body: JSON.stringify(legislatura)
+        Body: JSON.stringify(ses)
       }))
     )
   }

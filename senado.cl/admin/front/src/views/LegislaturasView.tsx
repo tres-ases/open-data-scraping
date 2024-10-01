@@ -5,6 +5,7 @@ import Spinner from "../components/Spinner.tsx";
 import {Button} from "@headlessui/react";
 import LegislaturaList from "../components/LegislaturaList.tsx";
 import {LegislaturasViewContext} from "../context/LegislaturasViewContext.tsx";
+import clsx from "clsx";
 
 interface Data {
   raw?: LegislaturaRaw[]
@@ -47,8 +48,11 @@ export default function LegislaturasView() {
             </div>
             <div className="flex-none">
               <Button type="button" disabled={extracting} onClick={extract}
-                      className="text-sm text-indigo-600 hover:text-indigo-500 inline-flex items-center px-4 py-2 font-semibold leading-6 shadow rounded-md bg-gray-200 hover:bg-gray-100 transition ease-in-out duration-150">
-                {extracting ? <Spinner/> : 'Extraer'}
+                      className={clsx(
+                        'transition ease-in-out duration-300 ring-1 ring-inset ring-gray-250 hover:bg-gray-50 text-gray-800 hover:text-gray-900 hover:ring-gray-300',
+                        'relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-50 focus:z-10'
+                      )}>
+                {extracting ? <Spinner/> : 'Extraer Listado'}
               </Button>
             </div>
           </div>

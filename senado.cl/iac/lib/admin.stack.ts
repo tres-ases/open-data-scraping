@@ -8,7 +8,7 @@ import {
   CachePolicy,
   CacheQueryStringBehavior,
   Distribution,
-  OriginAccessIdentity,
+  OriginAccessIdentity, OriginRequestPolicy,
   PriceClass,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
@@ -145,6 +145,7 @@ export default class AdminStack extends Stack {
           }),
           allowedMethods: AllowedMethods.ALLOW_ALL,
           cachePolicy: CachePolicy.CACHING_DISABLED,
+          originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
         '/Senadores/Detalle/Foto/*': {

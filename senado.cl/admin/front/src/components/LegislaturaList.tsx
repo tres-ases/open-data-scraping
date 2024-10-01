@@ -1,6 +1,6 @@
 import {LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/legislaturas";
 import LegislaturaItem from "./LegislaturaItem.tsx";
-import LegislaturaItemLoading from "./LegislaturaRawItemLoading.tsx";
+import LegislaturaItemLoading from "./LegislaturaItemLoading.tsx";
 
 interface Props {
   rawList?: LegislaturaRaw[]

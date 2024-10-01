@@ -37,16 +37,7 @@ export default function LegislaturaItem({raw, dtl}: Props) {
   const process = () => {
     add(id);
     SesionesService.extract(id)
-      .then((result) => {
-        console.log(result);
-        SesionesService.extractStatus(result.executionId)
-          .then(result => {
-            console.log(result);
-            remove(id);
-          })
-          .catch(() => remove(id));
-      })
-      .catch(() => remove(id));
+      .finally(() => remove(id));
   }
 
   const isProcessing = ids.has(id);
@@ -55,9 +46,16 @@ export default function LegislaturaItem({raw, dtl}: Props) {
     <>
       <div className="min-w-0">
         <div className="flex items-start gap-x-3">
-          <Link to={`/legislatura/${id}`} className="text-sm font-semibold leading-6 text-gray-900">
-            N° {numero}
-          </Link>
+          {dtl ? (
+            <Link to={`/legislatura/${id}`} className="text-sm font-semibold leading-6 text-gray-900">
+              N° {numero}
+            </Link>
+          ) : (
+            <div className="text-sm font-semibold leading-6 text-gray-900">
+              N° {numero}
+            </div>
+          )}
+
           {tipoLegislatura(tipo)}
           {dtl && (
             <p
@@ -98,7 +96,7 @@ export default function LegislaturaItem({raw, dtl}: Props) {
       <span className="isolate inline-flex shadow-sm">
         <Button type="button" disabled={isProcessing} onClick={process}
                 className={clsx(
-                  'transition ease-in-out duration-300 ring-1 ring-inset ring-gray-50 hover:bg-gray-50 text-gray-200 group-hover:text-gray-900 group-hover:ring-gray-300',
+                  'transition ease-in-out duration-300 ring-1 ring-inset ring-gray-50 hover:bg-gray-50 text-gray-200 hover:text-gray-900 hover:ring-gray-300',
                   'relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-50 focus:z-10'
                 )}>
           {isProcessing ? <Spinner/> : 'Procesar'}

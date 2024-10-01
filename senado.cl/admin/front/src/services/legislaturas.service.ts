@@ -1,21 +1,29 @@
-import { get, post } from 'aws-amplify/api';
+import {get, post} from 'aws-amplify/api';
 import {LegislaturaDtl, LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/legislaturas";
 
 const LegislaturaService = {
   getRawList: async () => {
-    const response = await get({
-      apiName: 'admin',
-      path: '/raw/legislaturas'
-    }).response;
-    return JSON.parse(await response.body.text()) as LegislaturaRaw[];
+    try {
+      const response = await get({
+        apiName: 'admin',
+        path: '/raw/legislaturas'
+      }).response;
+      return JSON.parse(await response.body.text()) as LegislaturaRaw[];
+    } catch (error) {
+      return [] as LegislaturaRaw[];
+    }
   },
 
   getDtlList: async () => {
-    const response = await get({
-      apiName: 'admin',
-      path: '/dtl/legislaturas'
-    }).response;
-    return JSON.parse(await response.body.text()) as LegislaturaMapDtl;
+    try {
+      const response = await get({
+        apiName: 'admin',
+        path: '/dtl/legislaturas'
+      }).response;
+      return JSON.parse(await response.body.text()) as LegislaturaMapDtl;
+    } catch (error) {
+      return {} as LegislaturaMapDtl;
+    }
   },
 
   getDtl: async (legId: string | number) => {

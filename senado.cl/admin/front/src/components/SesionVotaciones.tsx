@@ -1,10 +1,20 @@
 import {VotacionRaw} from "@senado-cl/global/sesiones";
+import {useEffect, useState} from "react";
+import VotacionesService from "../services/votaciones.service.ts";
 
 interface Props {
-  votaciones?: VotacionRaw[]
+  sesId: string
 }
 
-export default function SesionVotaciones({votaciones = []}: Props) {
+export default function SesionVotaciones({sesId}: Props) {
+  const [votaciones, setVotaciones] = useState<VotacionRaw[]>();
+
+  useEffect(() => {
+    setVotaciones(undefined);
+    VotacionesService.getRawList(sesId)
+      .then(data => setVotaciones(data));
+  }, [sesId]);
+
   console.log(votaciones)
   return (
     <div className="overflow-hidden bg-white shadow sm:rounded-lg">
