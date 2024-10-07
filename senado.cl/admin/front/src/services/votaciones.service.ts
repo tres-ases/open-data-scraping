@@ -1,5 +1,5 @@
 import {get} from 'aws-amplify/api';
-import {VotacionRaw} from "@senado-cl/global/sesiones";
+import {VotacionRaw} from "@senado-cl/global/model";
 
 const VotacionService = {
   getRawList: async (sesId: string) => {

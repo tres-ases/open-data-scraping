@@ -1,4 +1,4 @@
-import {LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/legislaturas";
+import {LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/model";
 import LegislaturaItem from "./LegislaturaItem.tsx";
 import LegislaturaItemLoading from "./LegislaturaItemLoading.tsx";
 

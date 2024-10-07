@@ -1,4 +1,4 @@
-import {VotacionRaw} from "@senado-cl/global/sesiones";
+import {VotacionRaw} from "@senado-cl/global/model";
 import clsx from "clsx";
 
 interface Props {

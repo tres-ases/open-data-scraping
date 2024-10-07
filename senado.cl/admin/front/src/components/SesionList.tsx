@@ -1,5 +1,5 @@
 import SesionItem from "./SesionItem.tsx";
-import {LegislaturaSesionDtl} from "@senado-cl/global/sesiones";
+import {LegislaturaSesionDtl} from "@senado-cl/global/model";
 
 interface Props {
   sesiones: LegislaturaSesionDtl[]

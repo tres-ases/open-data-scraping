@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/legislaturas";
+import {LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/model";
 import LegislaturaService from "../services/legislaturas.service.ts";
 import Spinner from "../components/Spinner.tsx";
 import {Button} from "@headlessui/react";

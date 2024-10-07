@@ -1,4 +1,4 @@
-import {AsistenciaTipo} from "@senado-cl/global/sesiones";
+import {AsistenciaTipo} from "@senado-cl/global/model";
 
 const asistenciaTipoClazz: { [key in AsistenciaTipo]: string } = {
   'Asiste': 'text-blue bg-blue-50 ring-blue-600/20',

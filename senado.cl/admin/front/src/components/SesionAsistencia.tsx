@@ -1,4 +1,4 @@
-import {AsistenciaRaw} from "@senado-cl/global/sesiones";
+import {AsistenciaRaw} from "@senado-cl/global/model";
 import SesionAsistenciaItem from "./SesionAsistenciaItem.tsx";
 import {useEffect, useState} from "react";
 import AsistenciaService from "../services/asistencia.service.ts";

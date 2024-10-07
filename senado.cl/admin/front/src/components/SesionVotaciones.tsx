@@ -1,4 +1,4 @@
-import {VotacionRaw} from "@senado-cl/global/sesiones";
+import {VotacionRaw} from "@senado-cl/global/model";
 import {useEffect, useState} from "react";
 import VotacionesService from "../services/votaciones.service.ts";
 import SesionVotacionItem from "./SesionVotacionItem.tsx";

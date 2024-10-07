@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useParams, useSearchParams} from "react-router-dom";
-import {LegislaturaSesionDtl} from "@senado-cl/global/sesiones";
+import {LegislaturaSesionDtl} from "@senado-cl/global/model";
 import SesionesService from "../services/sesiones.service.ts";
 import SesionDetalle from "../components/SesionDetalle.tsx";
 import SesionAsistencia from "../components/SesionAsistencia.tsx";

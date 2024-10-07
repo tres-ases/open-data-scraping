@@ -1,5 +1,5 @@
 import {get, post} from 'aws-amplify/api';
-import {LegislaturaSesionDtl, SesionRaw} from "@senado-cl/global/sesiones";
+import {LegislaturaSesionDtl, SesionRaw} from "@senado-cl/global/model";
 
 const startExtraction = async (legId: string | number) => {
   const response = await post({

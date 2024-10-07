@@ -1,4 +1,4 @@
-import {LegislaturaDtl, LegislaturaRaw, TipoLegislatura} from "@senado-cl/global/legislaturas";
+import {LegislaturaDtl, LegislaturaRaw, TipoLegislatura} from "@senado-cl/global/model";
 import {Link} from "react-router-dom";
 import {Button} from "@headlessui/react";
 import Spinner from "./Spinner.tsx";

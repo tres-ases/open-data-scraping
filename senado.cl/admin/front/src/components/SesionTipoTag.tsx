@@ -1,4 +1,4 @@
-import {SesionTipo} from "@senado-cl/global/sesiones";
+import {SesionTipo} from "@senado-cl/global/model";
 
 const sesionTipoColor: { [key in SesionTipo]: string } = {
   'Ordinaria': 'text-yellow bg-yellow-50 ring-yellow-600/20',

@@ -1,13 +1,13 @@
-import {Link, useParams} from "react-router-dom";
-import Spinner from "../components/Spinner.tsx";
-import {useToggle} from "react-use";
 import {useEffect, useState} from "react";
-import SesionList from "../components/SesionList.tsx";
-import clsx from "clsx";
 import {Button} from "@headlessui/react";
 import {ChevronRightIcon} from "@heroicons/react/24/outline";
+import {LegislaturaDtl} from "@senado-cl/global/model";
+import clsx from "clsx";
+import {Link, useParams} from "react-router-dom";
+import {useToggle} from "react-use";
+import Spinner from "../components/Spinner.tsx";
+import SesionList from "../components/SesionList.tsx";
 import LegislaturaService from "../services/legislaturas.service.ts";
-import {LegislaturaDtl} from "@senado-cl/global/legislaturas";
 import SesionesService from "../services/sesiones.service.ts";
 
 export default function LegislaturaView() {

@@ -1,5 +1,5 @@
 import {get, post} from 'aws-amplify/api';
-import {LegislaturaDtl, LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/legislaturas";
+import {LegislaturaDtl, LegislaturaMapDtl, LegislaturaRaw} from "@senado-cl/global/model";
 
 const LegislaturaService = {
   getRawList: async () => {

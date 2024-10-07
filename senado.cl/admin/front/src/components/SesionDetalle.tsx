@@ -1,4 +1,4 @@
-import {LegislaturaSesionDtl} from "@senado-cl/global/sesiones";
+import {LegislaturaSesionDtl} from "@senado-cl/global/model";
 import SesionTipoTag from "./SesionTipoTag.tsx";
 import {Link} from "react-router-dom";
 import {ChevronRightIcon} from "@heroicons/react/24/outline";
