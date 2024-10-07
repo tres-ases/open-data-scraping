@@ -24,7 +24,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
     super(scope, prefix);
 
     this.legSesGetSaveWf = this.createLegSesGetSaveDistillStateMachine(dataBucket, layers, distributionId);
-    this.createSenListWf(dataBucket, layers);
+    //this.createSenListWf(dataBucket, layers);
   }
 
   createSenListWf(dataBucket: IBucket, layers: LayerVersion[]) {
