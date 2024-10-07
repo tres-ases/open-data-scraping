@@ -89,11 +89,8 @@ jobs:
 
       - name: Build SRC
         run: |
-          pnpm @senado.cl/commons:build
-          pnpm @senado.cl/commons:package
-          pnpm @senado.cl/global:build
+          pnpm commons:package
           pnpm @senado.cl/global:package
-          pnpm @senado.cl/scraper:build
           pnpm @senado.cl/scraper:package
           pnpm @senado.cl/admin-front:build
 
