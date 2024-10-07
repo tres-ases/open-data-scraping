@@ -9,15 +9,17 @@ import {
   VotacionSc,
   VotoDetalleSc
 } from "./sesiones.model";
-import {AsistenciaRaw, SesionRaw, SesionesBucketKey, VotacionRaw, VotacionDetalleRaw} from "@senado-cl/global/sesiones";
-import {MainBucketKey} from "@senado-cl/global";
-import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {AsistenciaRaw, SesionRaw, VotacionDetalleRaw, VotacionRaw} from "@senado-cl/global/model";
+import {AsistenciaRawRepo, SesionRawListRepo, SesionRawRepo, VotacionRawListRepo} from "@senado-cl/global/repo";
 
 const SESIONES_URL = `${CommonsData.SENADO_WEB_BACK_API}/sessions`;
 const ASISTENCIA_URL = `${CommonsData.SENADO_WEB_BACK_API}/sessions/attendance`;
 const VOTACION_URL = `${CommonsData.SENADO_WEB_BACK_API}/votes`;
 
-const s3Client = new S3Client({});
+const votacionRawListRepo = new VotacionRawListRepo();
+const asistenciaRawRepo = new AsistenciaRawRepo();
+const sesionRawRepo = new SesionRawRepo();
+const sesionRawListRepo = new SesionRawListRepo();
 
 export const getVotaciones = async (sesId: number): Promise<VotacionRaw[]> => {
   const response = await axios.get<VotacionesResponse>(VOTACION_URL, {
@@ -65,15 +67,6 @@ const transformVotaciones = (votaciones: VotacionSc[]): VotacionRaw[] => {
   }));
 };
 
-export const saveVotaciones = async (sesId: number, votaciones: VotacionRaw[]) => {
-  await s3Client.send(new PutObjectCommand({
-    Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.rawVotacionJson(sesId),
-    Body: JSON.stringify(votaciones)
-  }))
-  return votaciones;
-};
-
 export const getAsistencia = async (sesId: number): Promise<AsistenciaRaw> => {
   const response = await axios.get<AsistenciaResponse>(ASISTENCIA_URL, {
     params: {
@@ -105,15 +98,6 @@ const transformAsistencia = (a: AsistenciaSc): AsistenciaRaw => {
   };
 }
 
-export const saveAsistencia = async (sesId: number, asistencia: AsistenciaRaw) => {
-  await s3Client.send(new PutObjectCommand({
-    Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.rawAsistenciaJson(sesId),
-    Body: JSON.stringify(asistencia)
-  }))
-  return asistencia;
-};
-
 export const getSesiones = async (legId: string): Promise<SesionRaw[]> => {
   const response = await axios.get<SesionesResponse>(SESIONES_URL, {
     params: {
@@ -130,26 +114,15 @@ export const getSesiones = async (legId: string): Promise<SesionRaw[]> => {
   return sesiones;
 }
 
-export const saveSesion = async (sesion: SesionRaw) => {
-  await s3Client.send(new PutObjectCommand({
-    Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.rawDetalleJson(sesion.id),
-    Body: JSON.stringify(sesion)
-  }));
-}
-
 export const saveSesiones = async (legId: string, sesiones: SesionRaw[]) => {
-  await s3Client.send(new PutObjectCommand({
-    Bucket: MainBucketKey.S3_BUCKET,
-    Key: SesionesBucketKey.rawListJson(legId),
-    Body: JSON.stringify(sesiones)
-  }));
+  await sesionRawListRepo.save(sesiones, {legId});
 
   for(const sesion of sesiones) {
+    const sesId = sesion.id;
     await Promise.all([
-      saveSesion(sesion),
-      sesion.asistencia ? saveAsistencia(sesion.id, sesion.asistencia) : Promise.resolve(),
-      sesion.votaciones ? saveVotaciones(sesion.id, sesion.votaciones) : Promise.resolve()
+      sesionRawRepo.save(sesion, {sesId}),
+      sesion.asistencia ? asistenciaRawRepo.save(sesion.asistencia, {sesId}) : Promise.resolve(),
+      sesion.votaciones ? votacionRawListRepo.save(sesion.votaciones, {sesId}) : Promise.resolve()
     ]);
   }
 };

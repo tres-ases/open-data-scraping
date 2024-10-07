@@ -1,5 +1,5 @@
 import {Handler} from "aws-lambda";
-import {getSaveSenador} from "./senador.service";
+import {detectNewSlugs, getSaveSenador} from "./senador.service";
 
 interface GetSaveHandlerProps {
   slug: string
@@ -7,4 +7,12 @@ interface GetSaveHandlerProps {
 
 export const getSaveHandler: Handler<GetSaveHandlerProps> = async ({slug}) => {
   return await getSaveSenador(slug);
+}
+
+interface DetectNewSlugsHandlerProps {
+  legId: string
+}
+
+export const detectNewSlugsHandler: Handler<DetectNewSlugsHandlerProps> = async ({legId}) => {
+  return await detectNewSlugs(legId);
 }

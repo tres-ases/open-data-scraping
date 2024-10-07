@@ -2,6 +2,8 @@
   "name": "open-data-scraping",
   "private": true,
   "scripts": {
+    "commons:build": "turbo build --filter=@open-data-scraping/commons",
+    "commons:package": "turbo package --filter=@open-data-scraping/commons",
     "layers:build": "cd ./layers/scraper/nodejs && npm install --production",
     "@senado.cl/global:build": "turbo build --filter=@senado-cl/global",
     "@senado.cl/global:package": "turbo package --filter=@senado-cl/global",

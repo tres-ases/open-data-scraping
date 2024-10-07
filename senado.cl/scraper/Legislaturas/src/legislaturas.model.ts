@@ -1,4 +1,4 @@
-import {LegislaturaSc} from "@senado-cl/global/legislaturas";
+import {LegislaturaSc} from "@senado-cl/global/model";
 
 export interface LegislaturasResponse {
   data: LegislaturaSc[]

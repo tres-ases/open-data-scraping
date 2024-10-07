@@ -1,6 +1,5 @@
-import {LegislaturaRaw} from "./legislaturas.model.raw";
-import {LegislaturaDtl} from "./legislaturas.model.dtl";
-import {SesionesMapper, SesionRaw} from "../Sesiones";
+import {LegislaturaRaw, LegislaturaDtl, SesionRaw} from "../model";
+import {SesionesMapper} from "../mapper";
 
 export const LegislaturasMapper = {
   legislaturaRaw2LegislaturaDtl: (raw: LegislaturaRaw, rawSesList: SesionRaw[]): LegislaturaDtl => ({

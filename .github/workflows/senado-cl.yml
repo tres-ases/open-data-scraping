@@ -32,6 +32,7 @@ jobs:
               - 'senado.cl/admin/front/**'
             infra:
               - '.github/workflows/senado-cl.yml'
+              - 'commons/**'
               - 'senado.cl/**'
               - 'layers/**'
 
@@ -88,6 +89,8 @@ jobs:
 
       - name: Build SRC
         run: |
+          pnpm @senado.cl/commons:build
+          pnpm @senado.cl/commons:package
           pnpm @senado.cl/global:build
           pnpm @senado.cl/global:package
           pnpm @senado.cl/scraper:build

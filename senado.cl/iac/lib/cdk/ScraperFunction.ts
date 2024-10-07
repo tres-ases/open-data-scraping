@@ -7,7 +7,10 @@ interface SenadoNodejsFunctionProps {
   handler: string,
   layers?: LayerVersion[],
   timeout?: number,
-  memorySize?: number
+  memorySize?: number,
+  environment?: {
+    [key: string]: string;
+  }
 }
 
 function codeFromPackage(name: string) {

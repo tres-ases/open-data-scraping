@@ -1,5 +1,4 @@
-import {AsistenciaRaw, SesionRaw, VotacionRaw} from "./sesiones.model.raw";
-import {LegislaturaAsistenciaDtl, LegislaturaSesionDtl, LegislaturaVotacionDtl} from "./sesiones.model.dtl";
+import {AsistenciaRaw, LegislaturaAsistenciaDtl, LegislaturaSesionDtl, LegislaturaVotacionDtl, SesionRaw, VotacionRaw} from "../model";
 
 const asistenciaRaw2LegislaturaAsistenciaDtl = (raw?: AsistenciaRaw): LegislaturaAsistenciaDtl | undefined => raw ? ({
   totalSenadores: raw.totalSenadores,

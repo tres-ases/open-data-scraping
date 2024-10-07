@@ -1,16 +1,9 @@
 import axios from "axios";
 import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {CommonsData} from "@senado-cl/scraper-commons";
-import {MainBucketKey} from "@senado-cl/global";
-import {
-  LegislaturaDtl,
-  LegislaturaMapDtl,
-  LegislaturaRaw,
-  LegislaturasBucketKey,
-  LegislaturaSc,
-  LegislaturasMapper
-} from "@senado-cl/global/legislaturas";
-import {SesionesBucketKey, SesionRaw} from "@senado-cl/global/sesiones";
+import {LegislaturasBucketKey, MainBucketKey, SesionesBucketKey} from "@senado-cl/global/config";
+import {LegislaturaDtl, LegislaturaMapDtl, LegislaturaRaw, LegislaturaSc, SesionRaw} from "@senado-cl/global/model";
+import {LegislaturasMapper} from "@senado-cl/global/mapper";
 import {Logger} from '@aws-lambda-powertools/logger';
 import sha1 from 'crypto-js/sha1';
 import {LegislaturasResponse} from "./legislaturas.model";
@@ -116,7 +109,7 @@ const saveDistilledLegislatura = async (legislatura: LegislaturaDtl) => {
   }));
 
   const promises = [];
-  for(const ses of legislatura.sesiones) {
+  for (const ses of legislatura.sesiones) {
     promises.push(
       s3Client.send(new PutObjectCommand({
         Bucket: MainBucketKey.S3_BUCKET,

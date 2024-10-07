@@ -1,6 +1,8 @@
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import {Senador, SenadoresBucketKey} from "@senado-cl/global/senadores";
-import {MainBucketKey} from "@senado-cl/global";
+import {Logger} from '@aws-lambda-powertools/logger';
+import {MainBucketKey, SenadoresBucketKey} from "@senado-cl/global/config";
+import {LegislaturaMapDtl, SenadorRaw, SenadorMapRaw} from "@senado-cl/global/model";
+import {LegislaturaDtlRepo, SenadorMapRawRepo, SenadorRawRepo} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
 import axios from "axios";
 import {SenadorResponse} from "./senador.model";
@@ -9,13 +11,18 @@ const token = 'PoRBxBbd0fniUwg-GS0bp';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
 const s3Client = new S3Client({});
 
+const logger = new Logger();
+
+const legislaturaDtlRepo = new LegislaturaDtlRepo();
+const senadorMapRawRepo = new SenadorMapRawRepo();
+const senadorRawRepo = new SenadorRawRepo();
+
 export const getSenador = async (slug: string) => {
-  console.log('url', SENADOR_URL(slug))
   const response = await axios.get<SenadorResponse>(SENADOR_URL(slug));
   return transform(response.data);
 };
 
-export const transform = (response: SenadorResponse): Senador => {
+export const transform = (response: SenadorResponse): SenadorRaw => {
   const senData = response.pageProps.resource.data.parliamentarianSenadoData;
   return {
     id: senData.data[0].ID_PARLAMENTARIO,
@@ -75,13 +82,9 @@ export const transform = (response: SenadorResponse): Senador => {
   }
 };
 
-export const saveSenador = async (senador: Senador) => {
+export const saveSenador = async (senador: SenadorRaw) => {
   await Promise.all([
-    await s3Client.send(new PutObjectCommand({
-      Bucket: MainBucketKey.S3_BUCKET,
-      Key: SenadoresBucketKey.rawJson(senador.id),
-      Body: JSON.stringify(senador)
-    })),
+    senadorRawRepo.save(senador, {senId: senador.id}),
     getSaveSenImg(senador.id, senador.imagen.path),
     getSaveSenImg(senador.id, senador.imagen.path120, '120'),
     getSaveSenImg(senador.id, senador.imagen.path450, '450'),
@@ -104,5 +107,27 @@ const getSaveSenImg = async (senId: string | number, imageUrl: string, tipo?: st
     }));
   } catch (error) {
     throw error; // Puedes manejar el error aquí o dejar que se propague
+  }
+}
+
+export const detectNewSlugs = async (legId: string) => {
+  try {
+    const [legislatura, senadores] = await Promise.all([
+      legislaturaDtlRepo.getBy({legId}),
+      senadorMapRawRepo.get()
+    ]);
+
+    if(legislatura) {
+      const senadoresSet: SenadorMapRaw = {};
+      for (const sesion of legislatura.sesiones) {
+        if(sesion.votaciones) {
+          for (const votacion of sesion.votaciones) {
+            //for (const senador of votacion.)
+          }
+        }
+      }
+    }
+  } catch (error) {
+    return {} as LegislaturaMapDtl;
   }
 }

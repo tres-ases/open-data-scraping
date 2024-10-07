@@ -1,3 +1,4 @@
-export * from './Boletin';
-export * from './Legislaturas';
-export * from './Main';
+export * from "./config";
+export * from "./mapper";
+export * from "./model";
+export * from "./repo";

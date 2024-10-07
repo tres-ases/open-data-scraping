@@ -1,4 +1,5 @@
 packages:
+  - "commons"
   - "senado.cl/global"
   - "senado.cl/scraper/*"
   - "senado.cl/admin/front"

@@ -1,4 +1,4 @@
-export interface SenadorPeriodo {
+export interface SenadorPeriodoRaw {
   id: number
   uuid: number
   camara: 'S'
@@ -7,7 +7,7 @@ export interface SenadorPeriodo {
   vigente: 1 | 0
 }
 
-export interface Senador {
+export interface SenadorRaw {
   id: number
   uuid: string
   slug: string
@@ -38,7 +38,7 @@ export interface Senador {
     etiqueta: string
     etiquetaAbreviatura: string
   }
-  periodos: SenadorPeriodo[]
+  periodos: SenadorPeriodoRaw[]
   imagen: {
     path: string
     path120: string

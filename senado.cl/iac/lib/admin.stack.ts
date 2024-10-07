@@ -3,16 +3,14 @@ import {CfnElement, Duration, RemovalPolicy, Stack, StackProps,} from 'aws-cdk-l
 import {BlockPublicAccess, Bucket} from 'aws-cdk-lib/aws-s3';
 import {
   AllowedMethods,
-  CacheCookieBehavior,
-  CacheHeaderBehavior,
   CachePolicy,
-  CacheQueryStringBehavior,
   Distribution,
-  OriginAccessIdentity, OriginRequestPolicy,
+  OriginAccessIdentity,
+  OriginRequestPolicy,
   PriceClass,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront';
-import {CognitoUserPoolsAuthorizer, Cors, RestApi} from "aws-cdk-lib/aws-apigateway";
+import {CognitoUserPoolsAuthorizer, RestApi} from "aws-cdk-lib/aws-apigateway";
 import {UserPool, UserPoolEmail} from "aws-cdk-lib/aws-cognito";
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
@@ -20,7 +18,7 @@ import {HttpOrigin, S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
 import AdminApiEndpointsSubstack from "./admin/admin-api-endpoints.substack";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
-import {MainBucketKey} from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global/config";
 import {Architecture, Code, LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda";
 import AdminWorkflowsSubstack from "./admin/admin-workflows.substack";
 
@@ -201,7 +199,7 @@ export default class AdminStack extends Stack {
       api, authorizer,
       layers: [commonsLy, globalLy, scraperLy],
       dataBucket,
-      sesionesGetSaveWf: adminWorkflowSubstack.sesionesGetSaveWf
+      sesionesGetSaveWf: adminWorkflowSubstack.legSesGetSaveWf
     });
   }
 

@@ -1,5 +1,3 @@
-import {LegislaturaSc} from "@senado-cl/global/legislaturas";
-
 export type SesionTipoSc = 'Especial' | 'Ordinaria' | 'Extraordinaria'
 
 export interface SesionSc {

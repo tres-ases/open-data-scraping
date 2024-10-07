@@ -1,10 +1,12 @@
 import {Construct} from "constructs";
-import {CfnElement, Duration, NestedStack, Stack,} from 'aws-cdk-lib';
+import {CfnElement, Duration, NestedStack,} from 'aws-cdk-lib';
 import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {IBucket} from "aws-cdk-lib/aws-s3";
 import {DefinitionBody, JsonPath, StateMachine, StateMachineType, TaskInput} from "aws-cdk-lib/aws-stepfunctions";
-import {CallAwsService, LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks";
+import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks";
+import {Queue} from "aws-cdk-lib/aws-sqs";
+import {SqsEventSource} from "aws-cdk-lib/aws-lambda-event-sources";
 
 const prefix = 'senado-cl-workflows';
 
@@ -16,11 +18,37 @@ interface AdminApiWorkflowsSubstackProps {
 
 export default class AdminWorkflowsSubstack extends NestedStack {
 
-  readonly sesionesGetSaveWf: StateMachine;
+  readonly legSesGetSaveWf: StateMachine;
 
   constructor(scope: Construct, {distributionId, layers, dataBucket}: AdminApiWorkflowsSubstackProps) {
     super(scope, prefix);
 
+    this.legSesGetSaveWf = this.createLegSesGetSaveDistillStateMachine(dataBucket, layers, distributionId);
+    this.createSenListWf(dataBucket, layers);
+  }
+
+  createSenListWf(dataBucket: IBucket, layers: LayerVersion[]) {
+    const nuevosSenadoresQueue = new Queue(this, `${prefix}-senadores-saveNew-queue`, {
+      visibilityTimeout: Duration.seconds(30),
+      retentionPeriod: Duration.days(1),
+    });
+
+    const saveNuevosSenadoresFn = new ScraperFunction(this, `${prefix}-senadores-saveNew`, {
+      pckName: 'ASD',
+      handler: 'ASD.ASD',
+      layers,
+      timeout: 180,
+      environment: {
+        QUEUE_URL: nuevosSenadoresQueue.queueUrl
+      },
+    });
+
+    dataBucket.grantReadWrite(saveNuevosSenadoresFn);
+    saveNuevosSenadoresFn.addEventSource(new SqsEventSource(nuevosSenadoresQueue));
+    nuevosSenadoresQueue.grantConsumeMessages(saveNuevosSenadoresFn);
+  }
+
+  createLegSesGetSaveDistillStateMachine(dataBucket: IBucket, layers: LayerVersion[], distributionId: string): StateMachine {
     const sesionesGetSaveFunction = new ScraperFunction(this, `${prefix}-sesiones-getSave`, {
       pckName: 'Sesiones',
       handler: 'sesiones.getSaveSesionesHandler',
@@ -38,7 +66,7 @@ export default class AdminWorkflowsSubstack extends NestedStack {
     });
     dataBucket.grantReadWrite(distillSaveLegislatura);
 
-    this.sesionesGetSaveWf = new StateMachine(this, `${prefix}-legislatura-getSaveDistill-Wf`, {
+    return new StateMachine(this, `${prefix}-legislatura-getSaveDistill-Wf`, {
       definitionBody: DefinitionBody.fromChainable(
         new LambdaInvoke(this, `${prefix}-sesiones-getSave-step`, {
           lambdaFunction: sesionesGetSaveFunction,
@@ -53,33 +81,11 @@ export default class AdminWorkflowsSubstack extends NestedStack {
               outputPath: JsonPath.stringAt("$.Payload")
             })
           )
-          .next(
-            new CallAwsService(this, `${prefix}-legislatura-getSaveDistill-invCache-step`, {
-              service: 'cloudfront',
-              action: 'createInvalidation',
-              parameters: {
-                DistributionId: distributionId,
-                InvalidationBatch: {
-                  CallerReference: JsonPath.stringAt('$$.State.EnteredTime'),
-                  Paths: {
-                    Quantity: 1,
-                    Items: [
-                      '/api/dtl/*'
-                      // JsonPath.format('legislatura/{}', sfn.JsonPath.stringAt('$.legId'))
-                    ]
-                  }
-                }
-              },
-              iamResources: [
-                `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${distributionId}`,
-              ]
-            })
-          )
       ),
       stateMachineType: StateMachineType.STANDARD,
       timeout: Duration.seconds(370),
       stateMachineName: `${prefix}-legislatura-sesiones-getSaveDistill-Wf`,
-    })
+    });
   }
 
   getLogicalId(element: CfnElement): string {

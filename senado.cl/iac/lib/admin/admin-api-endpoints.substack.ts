@@ -10,14 +10,11 @@ import {
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {MainBucketKey} from "@senado-cl/global";
-import {LegislaturasBucketKey} from "@senado-cl/global/legislaturas";
+import {LegislaturasBucketKey, MainBucketKey, SenadoresBucketKey, SesionesBucketKey} from "@senado-cl/global/config";
 import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {IBucket} from "aws-cdk-lib/aws-s3";
 import {StateMachine} from "aws-cdk-lib/aws-stepfunctions";
-import {SesionesBucketKey} from "@senado-cl/global/sesiones";
-import {SenadoresBucketKey} from "@senado-cl/global/senadores";
 
 const prefix = 'senado-cl-admin-api-endpoints';
 

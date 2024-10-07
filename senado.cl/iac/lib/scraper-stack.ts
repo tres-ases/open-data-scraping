@@ -2,7 +2,7 @@ import {CfnElement, Stack, StackProps,} from 'aws-cdk-lib';
 import {Architecture, Code, LayerVersion, Runtime} from 'aws-cdk-lib/aws-lambda';
 import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
-import {MainBucketKey} from "@senado-cl/global";
+import {MainBucketKey} from "@senado-cl/global/config";
 import LegislaturasSubstack from "./substacks/legislaturas.substack";
 
 export class ScraperStack extends Stack {
@@ -11,6 +11,17 @@ export class ScraperStack extends Stack {
 
     const openDataBucket = new Bucket(this, 'openDataBucket', {
       bucketName: MainBucketKey.S3_BUCKET
+    });
+
+    const commonsLy = new LayerVersion(this, 'commons-ly', {
+      layerVersionName: 'commons-ly',
+      compatibleRuntimes: [
+        Runtime.NODEJS_20_X
+      ],
+      code: Code.fromAsset('../../commons/layer'),
+      compatibleArchitectures: [
+        Architecture.X86_64
+      ]
     });
 
     const globalLy = new LayerVersion(this, 'global-ly', {
@@ -24,8 +35,8 @@ export class ScraperStack extends Stack {
       ]
     });
 
-    const commonsLy = new LayerVersion(this, 'commons-ly', {
-      layerVersionName: 'commons-layer',
+    const scraperCommonsLy = new LayerVersion(this, 'senado-scraper-commons-ly', {
+      layerVersionName: 'senado-scraper-commons-ly',
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
@@ -48,7 +59,7 @@ export class ScraperStack extends Stack {
 
     const legislaturasStack = new LegislaturasSubstack(this, {
       bucket: openDataBucket,
-      layers: [commonsLy, scraperLy, globalLy]
+      layers: [scraperCommonsLy, scraperLy, globalLy, commonsLy]
     });
   }
 
