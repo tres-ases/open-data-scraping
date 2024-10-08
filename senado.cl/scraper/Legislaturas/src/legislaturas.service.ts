@@ -1,18 +1,27 @@
 import axios from "axios";
-import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {CommonsData} from "@senado-cl/scraper-commons";
-import {LegislaturasBucketKey, MainBucketKey, SesionesBucketKey} from "@senado-cl/global/config";
-import {LegislaturaDtl, LegislaturaMapDtl, LegislaturaRaw, LegislaturaSc, SesionRaw} from "@senado-cl/global/model";
+import {LegislaturaDtl, LegislaturaRaw, LegislaturaSc} from "@senado-cl/global/model";
 import {LegislaturasMapper} from "@senado-cl/global/mapper";
 import {Logger} from '@aws-lambda-powertools/logger';
 import sha1 from 'crypto-js/sha1';
 import {LegislaturasResponse} from "./legislaturas.model";
+import {
+  LegislaturaDtlRepo,
+  LegislaturaMapDtlRepo,
+  LegislaturaRawListRepo,
+  LegislaturaSesionDtlRepo,
+  SesionRawListRepo
+} from "@senado-cl/global/repo";
 
 const logger = new Logger();
 
 const LEGISLATURAS_URL = `${CommonsData.SENADO_WEB_BACK_API}/legislatures`;
 
-const s3Client = new S3Client({});
+const legislaturaRawListRepo = new LegislaturaRawListRepo();
+const sesionRawListRepo = new SesionRawListRepo();
+const legislaturaMapDtlRepo = new LegislaturaMapDtlRepo();
+const legislaturaDtlRepo = new LegislaturaDtlRepo();
+const legislaturaSesionDtlRepo = new LegislaturaSesionDtlRepo();
 
 export const getLegislaturas = async (): Promise<LegislaturaRaw[]> => {
   const legislaturas = await axios.get<LegislaturasResponse>(LEGISLATURAS_URL, {
@@ -22,14 +31,6 @@ export const getLegislaturas = async (): Promise<LegislaturaRaw[]> => {
   });
   return transform(legislaturas.data.data);
 }
-
-export const saveLegislaturas = async (legislaturas: LegislaturaRaw[]) => {
-  await s3Client.send(new PutObjectCommand({
-    Bucket: MainBucketKey.S3_BUCKET,
-    Key: LegislaturasBucketKey.rawJson,
-    Body: JSON.stringify(legislaturas)
-  }))
-};
 
 const transform = (legislaturas: LegislaturaSc[]): LegislaturaRaw[] => {
   return legislaturas.map<LegislaturaRaw>(l => ({
@@ -42,81 +43,27 @@ const transform = (legislaturas: LegislaturaSc[]): LegislaturaRaw[] => {
 }
 
 export const getSaveLegislaturas = async () => {
-  await saveLegislaturas(await getLegislaturas());
+  await legislaturaRawListRepo.save(await getLegislaturas());
 }
 
 const readRawLegislatura = async (legId: string): Promise<LegislaturaRaw> => {
-  try {
-    const response = await s3Client.send(new GetObjectCommand({
-      Bucket: MainBucketKey.S3_BUCKET,
-      Key: LegislaturasBucketKey.rawJson
-    }));
-
-    return (JSON.parse(
-      await response.Body!.transformToString()
-    ) as LegislaturaRaw[])
-      .filter(l => l.id === +legId)[0];
-  } catch (error) {
-    logger.error('readRawLegislatura', error);
-    throw new Error(`RawLegislatura not found for legId: ${legId} (${LegislaturasBucketKey.rawJson})`);
+  const list = await legislaturaRawListRepo.get();
+  if (list) {
+    const filtered = list.filter(l => l.id === +legId);
+    if(filtered.length > 0) {
+      return filtered[0];
+    }
   }
+  logger.error('readRawLegislatura', "List doesn't exist");
+  throw new Error(`RawLegislatura not found for legId: ${legId}`);
 };
-
-const readRawSesionList = async (legId: string) => {
-  try {
-    const response = await s3Client.send(new GetObjectCommand({
-      Bucket: MainBucketKey.S3_BUCKET,
-      Key: SesionesBucketKey.rawListJson(legId)
-    }));
-
-    return JSON.parse(await response.Body!.transformToString()) as SesionRaw[];
-  } catch (error) {
-    logger.error('readRawSesionList', error);
-    throw new Error(`RawSesionList not found for legId: ${legId} (${SesionesBucketKey.rawListJson(legId)})`);
-  }
-};
-
-const readDistilledLegislaturasMap = async () => {
-  try {
-    const response = await s3Client.send(new GetObjectCommand({
-      Bucket: MainBucketKey.S3_BUCKET,
-      Key: LegislaturasBucketKey.distilledJson
-    }));
-
-    return JSON.parse(await response.Body!.transformToString()) as LegislaturaMapDtl;
-  } catch (error) {
-    return {} as LegislaturaMapDtl;
-  }
-}
-
-const saveDistilledLegislaturaMap = async (map: LegislaturaMapDtl) => {
-  const Key = LegislaturasBucketKey.distilledJson;
-  logger.info(`Almacenando mapa de legislaturas en '${Key}'`);
-  return await s3Client.send(new PutObjectCommand({
-    Bucket: MainBucketKey.S3_BUCKET,
-    Key,
-    Body: JSON.stringify(map)
-  }));
-}
 
 const saveDistilledLegislatura = async (legislatura: LegislaturaDtl) => {
-  const Key = LegislaturasBucketKey.distilledDetailJson(legislatura.id);
-  logger.info(`Almacenando legislatura en '${Key}'`);
-  await s3Client.send(new PutObjectCommand({
-    Bucket: MainBucketKey.S3_BUCKET,
-    Key,
-    Body: JSON.stringify(legislatura)
-  }));
+  await legislaturaDtlRepo.save(legislatura, {legId: legislatura.id});
 
   const promises = [];
   for (const ses of legislatura.sesiones) {
-    promises.push(
-      s3Client.send(new PutObjectCommand({
-        Bucket: MainBucketKey.S3_BUCKET,
-        Key: SesionesBucketKey.dtlJson(ses.id),
-        Body: JSON.stringify(ses)
-      }))
-    )
+    promises.push(legislaturaSesionDtlRepo.save(ses, {sesId: ses.id}));
   }
 
   await Promise.all(promises);
@@ -124,13 +71,17 @@ const saveDistilledLegislatura = async (legislatura: LegislaturaDtl) => {
 
 export const distillSaveLegislatura = async (legId: string) => {
   logger.info(`Destilando legislatura id:${legId}`)
-  const [rawLeg, rawSesList] = await Promise.all([
+  let [rawLeg, rawSesList] = await Promise.all([
     readRawLegislatura(legId),
-    readRawSesionList(legId)
+    sesionRawListRepo.getBy({legId})
   ])
+  if(rawSesList === null) rawSesList = [];
 
   const legislatura = LegislaturasMapper.legislaturaRaw2LegislaturaDtl(rawLeg, rawSesList);
-  const legislaturaMap = await readDistilledLegislaturasMap();
+  let legislaturaMap = await legislaturaMapDtlRepo.get();
+  if(legislaturaMap === null) {
+    legislaturaMap = {};
+  }
 
   if (legislaturaMap[legislatura.id]) {
     const hashActual = sha1(JSON.stringify(legislaturaMap[legislatura.id]));
@@ -141,8 +92,9 @@ export const distillSaveLegislatura = async (legId: string) => {
   }
   legislaturaMap[legislatura.id] = legislatura;
 
-  return await Promise.all([
-    saveDistilledLegislatura(legislatura),
-    saveDistilledLegislaturaMap(legislaturaMap)
-  ])
+  const promises: Promise<any>[] = [];
+  promises.push(saveDistilledLegislatura(legislatura));
+  if(legislaturaMap) promises.push(legislaturaMapDtlRepo.save(legislaturaMap));
+
+  return await Promise.all(promises)
 };

@@ -17,7 +17,7 @@ export function S3Location(params: S3LocationParams) {
   };
 }
 
-abstract class S3Repo<T> {
+abstract class S3Repo {
   protected bucket: string;
   protected keyTemplate: string;
 
@@ -27,7 +27,11 @@ abstract class S3Repo<T> {
   }
 }
 
-export class S3SimpleRepo<T> extends S3Repo<T> {
+abstract class S3ObjectRepo<T> extends S3Repo {
+
+}
+
+export class S3SimpleRepo<T> extends S3ObjectRepo<T> {
   constructor() {
     super()
   }
@@ -60,7 +64,7 @@ export class S3SimpleRepo<T> extends S3Repo<T> {
   }
 }
 
-export class S3ParamsRepo<T, P extends Record<string, string | number>> extends S3Repo<T> {
+export class S3ParamsRepo<T, P extends Record<string, string | number>> extends S3ObjectRepo<T> {
   constructor() {
     super()
   }
@@ -96,6 +100,52 @@ export class S3ParamsRepo<T, P extends Record<string, string | number>> extends 
       logger.error(`Error getting data from S3 at ${key}`, error);
       return null;
     }
+  }
+
+  private buildS3Key(params: P): string {
+    let key = this.keyTemplate;
+    for (const [param, value] of Object.entries(params)) {
+      key = key.replace(`{${param}}`, `${value}`);
+    }
+    return key;
+  }
+}
+
+export class S3FileRepo extends S3Repo {
+  constructor() {
+    super()
+  }
+
+  // Guardar un archivo en S3
+  async save(data: any): Promise<void> {
+    const putCommand = new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: this.keyTemplate,
+      Body: data,
+    });
+
+    await s3Client.send(putCommand);
+    console.log(`File saved to S3 at ${this.keyTemplate}`);
+  }
+}
+
+export class S3FileParamsRepo<P extends Record<string, string | number>> extends S3Repo {
+  constructor() {
+    super()
+  }
+
+  // Guardar un archivo en S3
+  async save(data: any, params: P): Promise<void> {
+    const key = this.buildS3Key(params);
+
+    const putCommand = new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+      Body: data,
+    });
+
+    await s3Client.send(putCommand);
+    console.log(`File saved to S3 at ${key}`);
   }
 
   private buildS3Key(params: P): string {
