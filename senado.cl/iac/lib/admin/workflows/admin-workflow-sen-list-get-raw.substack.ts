@@ -6,7 +6,7 @@ import {IBucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import {SqsEventSource} from "aws-cdk-lib/aws-lambda-event-sources";
 
-const prefix = 'senado-cl-workflows';
+const prefix = 'senado-cl-workflows-sen-list-get-raw';
 
 interface AdminApiWorkflowsSubstackProps {
   layers: LayerVersion[]
