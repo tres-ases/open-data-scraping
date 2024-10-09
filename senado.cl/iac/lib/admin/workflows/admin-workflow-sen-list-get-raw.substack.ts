@@ -22,7 +22,7 @@ export default class AdminWorkflowSenListGetRawSubstack extends NestedStack {
 
     this.queue = new Queue(this, `${prefix}-senadores-saveNew-queue`, {
       queueName: `${prefix}-senadores-saveNew-queue`,
-      visibilityTimeout: Duration.seconds(30),
+      visibilityTimeout: Duration.seconds(122),
       retentionPeriod: Duration.days(1),
       receiveMessageWaitTime: Duration.seconds(10),
       deliveryDelay: Duration.seconds(30),
