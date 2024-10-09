@@ -68,7 +68,7 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
           )
           .next(
             new LambdaInvoke(this, `${prefix}-detect-new-slugs-step`, {
-              lambdaFunction: distillSaveLegislatura,
+              lambdaFunction: newSenSlug,
               payload: TaskInput.fromObject({
                 "legId.$": "$$.Execution.Input.legId"
               }),

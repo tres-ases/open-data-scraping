@@ -72,7 +72,7 @@ jobs:
           aws-region: 'us-east-1'
 
       - name: Get AWS SSM Parameters
-        uses: dkershner6/aws-ssm-getparameters-action@v1
+        uses: dkershner6/aws-ssm-getparameters-action@v2
         with:
           parameterPairs: "
             /openData/senadoCl/admin/cognitoUserPool/id = USER_POOL_ID,
@@ -127,7 +127,7 @@ jobs:
         run: aws s3 sync ./dist s3://senado-admin.open-data.cl
 
       - name: Get AWS SSM Parameters
-        uses: dkershner6/aws-ssm-getparameters-action@v1
+        uses: dkershner6/aws-ssm-getparameters-action@v2
         with:
           parameterPairs: "
             /openData/senadoCl/admin/distributionId = DISTRIBUTION"

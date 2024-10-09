@@ -18,6 +18,8 @@ const senadorRawRepo = new SenadorRawRepo();
 const senadorImgRepo = new SenadorImgRepo();
 const sesionRawListRepo = new SesionRawListRepo();
 
+axios.defaults.timeout = 5000
+
 export const getSenador = async (slug: string) => {
   const response = await axios.get<SenadorResponse>(SENADOR_URL(slug));
   return transform(response.data);

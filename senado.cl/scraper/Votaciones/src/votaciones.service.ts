@@ -4,6 +4,8 @@ import {VotacionesResponse} from "./votaciones.model";
 
 const VOTACIONES_URL = `${CommonsData.SENADO_WEB_BACK_API}/votes`;
 
+axios.defaults.timeout = 5000
+
 export const getVotaciones = async (legId: number) => {
   const votaciones = await axios.get<VotacionesResponse>(VOTACIONES_URL, {
     params: {

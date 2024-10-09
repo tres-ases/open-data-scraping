@@ -23,6 +23,8 @@ const legislaturaMapDtlRepo = new LegislaturaMapDtlRepo();
 const legislaturaDtlRepo = new LegislaturaDtlRepo();
 const legislaturaSesionDtlRepo = new LegislaturaSesionDtlRepo();
 
+axios.defaults.timeout = 5000
+
 export const getLegislaturas = async (): Promise<LegislaturaRaw[]> => {
   const legislaturas = await axios.get<LegislaturasResponse>(LEGISLATURAS_URL, {
     params: {
