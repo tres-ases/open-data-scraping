@@ -68,7 +68,7 @@ export default class AdminStack extends Stack {
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
-      code: Code.fromAsset('../../layers/scraper'),
+      code: Code.fromAsset('../../commons/layer'),
       compatibleArchitectures: [
         Architecture.X86_64
       ]

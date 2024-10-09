@@ -7,7 +7,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "rm -rf dist && rm -rf layer && tsc",
-    "package": "mkdir -p ./layer/nodejs/node_modules/@senado-cl/commons && cp -r dist ./layer/nodejs/node_modules/@senado-cl/commons && cp package.json ./layer/nodejs/node_modules/@senado-cl/commons"
+    "package": "mkdir -p ./layer/nodejs/node_modules/@open-data-scraping/commons && cp -r dist ./layer/nodejs/node_modules/@open-data-scraping/commons && cp package.json ./layer/nodejs/node_modules/@open-data-scraping/commons"
   },
   "keywords": [],
   "author": "Julio Villane",
