@@ -26,7 +26,7 @@ export default class AdminWorkflowSenListGetRawSubstack extends NestedStack {
       retentionPeriod: Duration.days(1),
       receiveMessageWaitTime: Duration.seconds(10),
       contentBasedDeduplication: true,
-      fifo: false,
+      fifo: true,
       deliveryDelay: Duration.seconds(30),
     });
 
