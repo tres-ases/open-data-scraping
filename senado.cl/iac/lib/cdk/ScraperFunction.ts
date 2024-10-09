@@ -19,7 +19,7 @@ function codeFromPackage(name: string) {
 
 export default class ScraperFunction extends nodejs.NodejsFunction {
 
-  constructor(scope: Construct, id: string, {pckName, handler, layers = [], timeout = 30, memorySize}: SenadoNodejsFunctionProps) {
+  constructor(scope: Construct, id: string, {pckName, handler, layers = [], timeout = 30, memorySize, environment}: SenadoNodejsFunctionProps) {
     super(scope, id, {
       functionName: id,
       code: codeFromPackage(pckName),
@@ -27,7 +27,8 @@ export default class ScraperFunction extends nodejs.NodejsFunction {
       runtime: Runtime.NODEJS_20_X,
       layers,
       timeout: Duration.seconds(timeout),
-      memorySize
+      memorySize,
+      environment,
     });
   }
 }
