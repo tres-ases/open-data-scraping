@@ -1,5 +1,6 @@
 import {Logger} from '@aws-lambda-powertools/logger';
-import {SenadorMapRaw, SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
+import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
+import {SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
 import {SenadorImgRepo, SenadorMapRawRepo, SenadorRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
 import axios from "axios";
@@ -10,6 +11,7 @@ const token = 'PoRBxBbd0fniUwg-GS0bp';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
 
 const logger = new Logger();
+const sqsClient = new SQSClient({});
 
 const senadorMapRawRepo = new SenadorMapRawRepo();
 const senadorRawRepo = new SenadorRawRepo();
@@ -55,38 +57,52 @@ export const detectNewSlugs = async (legId: string) => {
       sesionRawListRepo.getBy({legId}),
       senadorMapRawRepo.get()
     ]);
+    logger.debug(`[${typeof senadorMapRawRepo}] Valor obtenido: ${JSON.stringify(senadoresExistentes)}`);
 
-    if(senadoresExistentes === null) senadoresExistentes = {};
+    if (senadoresExistentes === null) senadoresExistentes = {};
 
-    if(sesiones) {
-      const senadoresNuevos: SenadorMapRaw = {};
+    if (sesiones) {
+      const senadoresNuevos = new Set<string>();
       for (const sesion of sesiones) {
-        if(sesion.votaciones) {
+        if (sesion.votaciones) {
           for (const votacion of sesion.votaciones) {
             const votos: VotacionDetalleRaw[] = [];
-            if(votacion.detalle.si) votos.push(...votacion.detalle.si);
-            if(votacion.detalle.no) votos.push(...votacion.detalle.no);
-            if(votacion.detalle.abstencion) votos.push(...votacion.detalle.abstencion);
-            if(votacion.detalle.pareo) votos.push(...votacion.detalle.pareo);
-            for (const senador of votos) {
-              if(senadoresExistentes[senador.parSlug] === undefined) {
-                senadoresExistentes[senador.parSlug] = {
-                  uuid: senador.uuid,
-                  parlId: senador.parlId,
-                  parNombre: senador.parNombre,
-                  parApellidoPaterno: senador.parApellidoPaterno,
-                  parApellidoMaterno: senador.parApellidoMaterno,
+            if (votacion.detalle.si) votos.push(...votacion.detalle.si);
+            if (votacion.detalle.no) votos.push(...votacion.detalle.no);
+            if (votacion.detalle.abstencion) votos.push(...votacion.detalle.abstencion);
+            if (votacion.detalle.pareo) votos.push(...votacion.detalle.pareo);
+            for (const {parSlug, uuid, parlId, parNombre, parApellidoPaterno, parApellidoMaterno} of votos) {
+              if (senadoresExistentes[parSlug] === undefined) {
+                senadoresExistentes[parSlug] = {
+                  uuid, parlId, parNombre, parApellidoPaterno, parApellidoMaterno,
                 };
-                senadoresNuevos[senador.parSlug] = senadoresExistentes[senador.parSlug];
+                senadoresNuevos.add(parSlug);
               }
             }
           }
         }
       }
-      return Object.keys(senadoresNuevos);
+      if(senadoresNuevos.size > 0) {
+        await senadorMapRawRepo.save(senadoresExistentes);
+        await Promise.all(
+          [...senadoresNuevos].map(slug => {
+            const params = {
+              QueueUrl: process.env.NEW_SEN_SLUGS_QUEUE_URL!,
+              MessageBody: slug,
+            };
+            const command = new SendMessageCommand(params);
+            return sqsClient.send(command);
+          })
+        );
+        logger.info(`Cantidad de slugs nuevos detectados ${senadoresNuevos.size}`);
+        logger.debug(`Detalle slugs nuevos detectados: ${senadoresNuevos}`);
+      } else {
+        logger.info('No se detectaron slugs nuevos');
+      }
+      return senadoresNuevos;
     }
   } catch (error) {
-    logger.error('Error al obtener listado de slugs no descargados');
+    logger.error('Error al obtener listado de slugs no descargados', error);
   }
   return [] as string[];
 }

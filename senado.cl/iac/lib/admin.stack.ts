@@ -30,8 +30,8 @@ export default class AdminStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const globalLy = new LayerVersion(this, 'global-ly', {
-      layerVersionName: 'global-layer',
+    const globalLy = new LayerVersion(this, `${prefix}-global-ly`, {
+      layerVersionName: `${prefix}-global-layer`,
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
@@ -41,8 +41,8 @@ export default class AdminStack extends Stack {
       ]
     });
 
-    const commonsLy = new LayerVersion(this, 'commons-ly', {
-      layerVersionName: 'commons-layer',
+    const scraperCommonsLy = new LayerVersion(this, `${prefix}-scraper-commons-ly`, {
+      layerVersionName: `${prefix}-scraper-commons-layer`,
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
@@ -52,8 +52,19 @@ export default class AdminStack extends Stack {
       ]
     });
 
-    const scraperLy = new LayerVersion(this, 'scraper-ly', {
-      layerVersionName: 'scraper-layer',
+    const scraperLy = new LayerVersion(this, `${prefix}-scraper-ly`, {
+      layerVersionName: `${prefix}-scraper-layer`,
+      compatibleRuntimes: [
+        Runtime.NODEJS_20_X
+      ],
+      code: Code.fromAsset('../../layers/scraper'),
+      compatibleArchitectures: [
+        Architecture.X86_64
+      ]
+    });
+
+    const commonsLy = new LayerVersion(this, `${prefix}-commons-ly`, {
+      layerVersionName: `${prefix}-commons-layer`,
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
@@ -190,14 +201,13 @@ export default class AdminStack extends Stack {
     });
 
     const adminWorkflowSubstack = new AdminWorkflowsSubstack(this, {
-      distributionId: distribution.distributionId,
-      layers: [commonsLy, globalLy, scraperLy],
+      layers: [scraperCommonsLy, globalLy, scraperLy, commonsLy],
       dataBucket
     });
 
     const adminApiEndpointsSubstack = new AdminApiEndpointsSubstack(this, {
       api, authorizer,
-      layers: [commonsLy, globalLy, scraperLy],
+      layers: [scraperCommonsLy, globalLy, scraperLy, commonsLy],
       dataBucket,
       sesionesGetSaveWf: adminWorkflowSubstack.legSesGetSaveWf
     });
