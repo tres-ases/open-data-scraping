@@ -1,4 +1,4 @@
-import {getSenador} from "./senador.service";
+import {getSenador} from "./senadores.service";
 
 describe('Obtener información senador', () => {
 

@@ -1,6 +1,6 @@
 import {Handler} from "aws-lambda";
 import { SQSHandler } from 'aws-lambda';
-import {detectNewSlugs, getSaveSenador} from "./senador.service";
+import {detectNewSlugs, getSaveSenador} from "./senadores.service";
 
 interface GetSaveHandlerProps {
   slug: string

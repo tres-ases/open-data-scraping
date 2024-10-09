@@ -4,8 +4,8 @@ import {SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
 import {SenadorImgRepo, SenadorMapRawRepo, SenadorRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
 import axios from "axios";
-import {SenadorResponse} from "./senador.model";
-import {parliamentarianSenadoData2SenadorRaw} from "./senador.mapper";
+import {SenadorResponse} from "./senadores.model";
+import {parliamentarianSenadoData2SenadorRaw} from "./senadores.mapper";
 
 const token = 'PoRBxBbd0fniUwg-GS0bp';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;

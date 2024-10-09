@@ -1,5 +1,5 @@
 import {SenadorRaw} from "@senado-cl/global/model";
-import {ParliamentarianSenadoData} from "./senador.model";
+import {ParliamentarianSenadoData} from "./senadores.model";
 
 export const parliamentarianSenadoData2SenadorRaw = (senData: ParliamentarianSenadoData): SenadorRaw => {
   return {
