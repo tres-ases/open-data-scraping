@@ -1,4 +1,4 @@
-import {S3Location, S3ParamsRepo} from "@open-data-scraping/commons/dist";
+import {S3Location, S3ParamsRepo} from "@open-data-scraping/commons";
 import {MainBucketKey, SesionesBucketKey} from "../config";
 import {LegislaturaSesionDtl, SesionRaw} from "../model";
 

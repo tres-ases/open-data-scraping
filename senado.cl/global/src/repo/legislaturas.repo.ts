@@ -1,6 +1,6 @@
 import {LegislaturasBucketKey, MainBucketKey} from "../config";
 import {LegislaturaDtl, LegislaturaMapDtl, LegislaturaRaw} from "../model";
-import {S3Location, S3ParamsRepo, S3SimpleRepo} from "@open-data-scraping/commons/dist";
+import {S3Location, S3ParamsRepo, S3SimpleRepo} from "@open-data-scraping/commons";
 
 @S3Location({ bucket: MainBucketKey.S3_BUCKET, keyTemplate: LegislaturasBucketKey.distilledDetailJson('{legId}') })
 export class LegislaturaDtlRepo extends S3ParamsRepo<LegislaturaDtl, {legId: string | number}> {}
