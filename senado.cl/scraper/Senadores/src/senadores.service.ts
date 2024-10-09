@@ -1,6 +1,6 @@
 import {Logger} from '@aws-lambda-powertools/logger';
 import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
-import {SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
+import {SenadorMapRaw, SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
 import {SenadorImgRepo, SenadorMapRawRepo, SenadorRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
 import axios from "axios";
@@ -55,10 +55,14 @@ const getSaveSenImg = async (senId: string | number, imageUrl: string, tipo?: st
 
 export const detectNewSlugs = async (legId: string) => {
   try {
-    let [sesiones, senadoresExistentes] = await Promise.all([
-      sesionRawListRepo.getBy({legId}),
-      senadorMapRawRepo.get()
-    ]);
+    const sesiones = await sesionRawListRepo.getBy({legId});
+    let senadoresExistentes: SenadorMapRaw;
+    try {
+      senadoresExistentes = await senadorMapRawRepo.get() ?? {};
+    } catch (error) {
+      logger.error('Error al obtener el listado de senadores', error);
+      senadoresExistentes = {};
+    }
     logger.debug(`[${typeof senadorMapRawRepo}] Valor obtenido: ${JSON.stringify(senadoresExistentes)}`);
 
     if (senadoresExistentes === null) senadoresExistentes = {};
