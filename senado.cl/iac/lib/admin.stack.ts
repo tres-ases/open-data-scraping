@@ -157,7 +157,7 @@ export default class AdminStack extends Stack {
           originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
-        '/Senadores/Detalle/Foto/*': {
+        '/img/*': {
           origin: new S3Origin(dataBucket, {
             originId: `${prefix}-dist-origin-s3-data`,
             originAccessIdentity: oai2,
