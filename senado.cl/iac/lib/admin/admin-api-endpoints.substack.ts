@@ -70,10 +70,19 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       actions: ['s3:GetObject', 's3:ListBucket']
     }));
 
+    this.staticApi();
     this.rawS3Api();
     this.dtlS3Api();
     this.scraperApi();
     this.distillerApi();
+  }
+
+  staticApi() {
+    const staticResource = this.api.root.addResource('img');
+    const staticSenadorResource = staticResource.addResource('senador');
+    const staticSenIdResource = staticSenadorResource.addResource('{senId}');
+    const staticSenIdImgResource = staticSenIdResource.addResource('{img}');
+    this.addS3ToResource(staticSenIdImgResource, SenadoresBucketKey.img('{senId}', '{img}'), ['senId', 'img']);
   }
 
   distillerApi(){
