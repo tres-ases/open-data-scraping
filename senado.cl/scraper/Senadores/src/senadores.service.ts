@@ -59,7 +59,7 @@ const getSaveSenImg = async (senId: string | number, slug: string) => {
       responseType: 'arraybuffer',
       timeout: 10000
     });
-    await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senId});
+    await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senId, tipo: 'default'});
   } catch (error) {
     logger.error(`Error al obtener la imagen para el slug ${slug}`, error);
   }

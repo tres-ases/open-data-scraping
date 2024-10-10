@@ -9,5 +9,5 @@ export class SenadorMapRawRepo extends S3SimpleRepo<SenadorMapRaw> {}
 export class SenadorRawRepo extends S3ParamsRepo<SenadorRaw, {senId: string | number}> {}
 
 @S3Location({ bucket: MainBucketKey.S3_BUCKET, keyTemplate: SenadoresBucketKey.img('{senId}', '{tipo}') })
-export class SenadorImgRepo extends S3FileParamsRepo<{senId: string | number, tipo?: string}> {}
+export class SenadorImgRepo extends S3FileParamsRepo<{senId: string | number, tipo: string}> {}
 
