@@ -20,12 +20,12 @@ export const parliamentarianSenadoData2SenadorRaw = (senData: ParliamentarianSen
       id: senData.data[0].REGION_ID,
       nombre: senData.data[0].REGION,
     },
-    comite: {
+    comite: senData.data[0].COMITE ? {
       id: senData.data[0].COMITE.ID,
       uuid: senData.data[0].COMITE.UUID,
       nombre: senData.data[0].COMITE.NOMBRE,
       abreviatura: senData.data[0].COMITE.ABREVIATURA,
-    },
+    } : undefined,
     fono: senData.data[0].FONO,
     email: senData.data[0].EMAIL,
     sexo: {

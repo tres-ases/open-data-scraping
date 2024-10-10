@@ -10,12 +10,12 @@ interface GetSaveQueueHandlerProps {
 }
 
 export const getSaveHandler: Handler<GetSaveQueueHandlerProps> = async ({slug}) => {
-  logger.info('Ejecutando getSaveHandler - slug', slug);
+  logger.info(`Ejecutando getSaveHandler - slug=${slug}`);
   return await getSaveSenador(slug);
 }
 
 export const getSaveQueueHandler: SQSHandler = async ({Records}) => {
-  logger.info('Ejecutando getSaveQueueHandler - Records', JSON.stringify(Records));
+  logger.info(`Ejecutando getSaveQueueHandler - Records="${JSON.stringify(Records)}"`);
   await Promise.all(
     Records.map(async (record) => getSaveSenador(record.body))
   )
@@ -26,6 +26,6 @@ interface DetectNewSlugsHandlerProps {
 }
 
 export const detectNewSlugsHandler: Handler<DetectNewSlugsHandlerProps> = async ({legId}) => {
-  logger.info('Ejecutando detectNewSlugsHandler - legId', legId);
+  logger.info(`Ejecutando detectNewSlugsHandler - legId=${legId}`);
   return await detectNewSlugs(legId);
 }

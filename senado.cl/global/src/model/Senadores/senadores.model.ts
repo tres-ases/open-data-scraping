@@ -25,7 +25,7 @@ export interface SenadorRaw {
     id: number
     nombre: string
   }
-  comite: {
+  comite?: {
     id: string
     uuid: string
     nombre: string
