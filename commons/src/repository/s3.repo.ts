@@ -117,11 +117,12 @@ export class S3FileRepo extends S3Repo {
   }
 
   // Guardar un archivo en S3
-  async save(data: any): Promise<void> {
+  async save(buffer: Buffer, contentType: string): Promise<void> {
     const putCommand = new PutObjectCommand({
       Bucket: this.bucket,
       Key: this.keyTemplate,
-      Body: data,
+      Body: buffer,
+      ContentType: contentType
     });
 
     await s3Client.send(putCommand);
@@ -135,13 +136,14 @@ export class S3FileParamsRepo<P extends Record<string, string | number>> extends
   }
 
   // Guardar un archivo en S3
-  async save(data: any, params: P): Promise<void> {
+  async save(buffer: Buffer, contentType: string, params: P): Promise<void> {
     const key = this.buildS3Key(params);
 
     const putCommand = new PutObjectCommand({
       Bucket: this.bucket,
       Key: key,
-      Body: data,
+      Body: buffer,
+      ContentType: contentType
     });
 
     await s3Client.send(putCommand);

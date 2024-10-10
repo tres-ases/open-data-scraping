@@ -21,12 +21,12 @@ const sesionRawListRepo = new SesionRawListRepo();
 axios.defaults.timeout = 5000
 
 export const getSenador = async (slug: string) => {
-  logger.debug(`Obteniendo información desde ${SENADOR_URL(slug)}`);
+  logger.info(`Obteniendo información desde ${SENADOR_URL(slug)}`);
   const response = await axios.get<SenadorResponse>(SENADOR_URL(slug));
-  logger.debug(`Información obtenida`, JSON.stringify(response.data));
-  const parlamentario =  parliamentarianSenadoData2SenadorRaw(response.data.pageProps.resource.data.parliamentarianSenadoData);
-  logger.debug(`Parlamentario`, JSON.stringify(parlamentario));
-  return parlamentario;
+  logger.info(`Información obtenida`, JSON.stringify(response.data));
+  const senador =  parliamentarianSenadoData2SenadorRaw(response.data.pageProps.resource.data.parliamentarianSenadoData);
+  logger.info(`Senador`, JSON.stringify(senador));
+  return senador;
 };
 
 export const saveSenador = async (senador: SenadorRaw) => {
@@ -41,15 +41,17 @@ export const saveSenador = async (senador: SenadorRaw) => {
 };
 
 export const getSaveSenador = async (slug: string) => {
+  logger.info('Ejecutando getSaveSenador', slug);
   return await saveSenador(await getSenador(slug));
 }
 
 const getSaveSenImg = async (senId: string | number, imageUrl: string, tipo?: string) => {
   try {
-    const response = await axios.get(imageUrl, {responseType: 'stream'});
-    await senadorImgRepo.save(response.data, {senId, tipo})
+    const response = await axios.get(imageUrl, {responseType: 'arraybuffer'});
+    await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senId, tipo})
   } catch (error) {
-    throw error; // Puedes manejar el error aquí o dejar que se propague
+    logger.error('Error al obtener la imagen desde', imageUrl, error);
+    throw error;
   }
 }
 
