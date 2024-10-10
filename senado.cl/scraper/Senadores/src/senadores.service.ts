@@ -21,12 +21,12 @@ const sesionRawListRepo = new SesionRawListRepo();
 axios.defaults.timeout = 5000
 
 export const getSenador = async (slug: string) => {
+  logger.debug(`Obteniendo información desde ${SENADOR_URL(slug)}`);
   const response = await axios.get<SenadorResponse>(SENADOR_URL(slug));
-  return transform(response.data);
-};
-
-export const transform = (response: SenadorResponse): SenadorRaw => {
-  return parliamentarianSenadoData2SenadorRaw(response.pageProps.resource.data.parliamentarianSenadoData);
+  logger.debug(`Información obtenida`, JSON.stringify(response.data));
+  const parlamentario =  parliamentarianSenadoData2SenadorRaw(response.data.pageProps.resource.data.parliamentarianSenadoData);
+  logger.debug(`Parlamentario`, JSON.stringify(parlamentario));
+  return parlamentario;
 };
 
 export const saveSenador = async (senador: SenadorRaw) => {

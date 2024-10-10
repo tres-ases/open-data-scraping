@@ -2,17 +2,17 @@ import {Handler} from "aws-lambda";
 import { SQSHandler } from 'aws-lambda';
 import {detectNewSlugs, getSaveSenador} from "./senadores.service";
 
-interface GetSaveHandlerProps {
+interface GetSaveQueueHandlerProps {
   slug: string
 }
 
-export const getSaveHandler: Handler<GetSaveHandlerProps> = async ({slug}) => {
+export const getSaveHandler: Handler<GetSaveQueueHandlerProps> = async ({slug}) => {
   return await getSaveSenador(slug);
 }
 
 export const getSaveQueueHandler: SQSHandler = async ({Records}) => {
   await Promise.all(
-    Records.map(async (record) => detectNewSlugs(record.body))
+    Records.map(async (record) => getSaveSenador(record.body))
   )
 }
 
