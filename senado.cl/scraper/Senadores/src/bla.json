@@ -1,0 +1,66 @@
+{
+  id: 1320,
+  uuid: '049F997F-DC90-6F29-E063-5968A8C00BC5',
+  slug: 'loreto-carvajal-ambiado-sen',
+  nombreCompleto: 'Loreto Carvajal Ambiado',
+  nombre: 'Loreto',
+  apellidoPaterno: 'Carvajal',
+  apellidoMaterno: 'Ambiado',
+  camara: 'S',
+  partido: { id: 2, nombre: 'P.P.D.' },
+  circunscripcionId: 16,
+  region: { id: 16, nombre: 'Región de Ñuble' },
+  comite: {
+    id: '5',
+    uuid: 'uuid',
+    nombre: 'Partido Por la Democracia e Independientes',
+    abreviatura: 'PPD'
+  },
+  fono: null,
+  email: 'lcarvajal@senado.cl',
+  sexo: { valor: 1, etiqueta: 'Mujer', etiquetaAbreviatura: 'Sra.' },
+  periodos: [
+    {
+      id: 10,
+      uuid: 0,
+      camara: 'S',
+      desde: '2022',
+      hasta: '2026',
+      vigente: 1
+    },
+    {
+      id: 9,
+      uuid: 0,
+      camara: 'D',
+      desde: '2018',
+      hasta: '2022',
+      vigente: 0
+    },
+    {
+      id: 9,
+      uuid: 0,
+      camara: 'S',
+      desde: '2018',
+      hasta: '2022',
+      vigente: 0
+    },
+    {
+      id: 8,
+      uuid: 0,
+      camara: 'D',
+      desde: '2014',
+      hasta: '2018',
+      vigente: 0
+    }
+  ],
+  cargos: '',
+  enlaces: {
+    facebookPagina: null,
+    facebookCuenta: 'https://www.facebook.com/LoretoCarvajalSenadora',
+    twitter: '@loretosenadora',
+    webPersonal: null,
+    instagram: 'https://www.instagram.com/senadoraloretocarvajal',
+    linkedin: null,
+    flickr: null
+  }
+}

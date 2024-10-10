@@ -48,8 +48,8 @@ export class S3SimpleRepo<T> extends S3ObjectRepo<T> {
       ContentType: "application/json",
     });
 
-    await s3Client.send(putCommand);
-    console.log(`Data saved to S3 at ${this.keyTemplate}`);
+    const result = await s3Client.send(putCommand);
+    console.log('File saved to S3', {result});
   }
 
   async get(): Promise<T | null> {
@@ -83,8 +83,8 @@ export class S3ParamsRepo<T, P extends Record<string, string | number>> extends 
       ContentType: "application/json",
     });
 
-    await s3Client.send(putCommand);
-    console.log(`Data saved to S3 at ${key}`);
+    const result = await s3Client.send(putCommand);
+    console.log('File saved to S3', {result});
 
     return data;
   }
@@ -118,7 +118,6 @@ export class S3FileRepo extends S3Repo {
     super()
   }
 
-  // Guardar un archivo en S3
   async save(buffer: Buffer, contentType: string): Promise<void> {
     const putCommand = new PutObjectCommand({
       Bucket: this.bucket,
@@ -128,8 +127,8 @@ export class S3FileRepo extends S3Repo {
       ContentLength: buffer.length
     });
 
-    await s3Client.send(putCommand);
-    console.log(`File saved to S3 at ${this.keyTemplate}`);
+    const result = await s3Client.send(putCommand);
+    console.log('File saved to S3', {result});
   }
 }
 
@@ -138,7 +137,6 @@ export class S3FileParamsRepo<P extends Record<string, string | number>> extends
     super()
   }
 
-  // Guardar un archivo en S3
   async save(buffer: Buffer, contentType: string, params: P): Promise<void> {
     const key = this.buildS3Key(params);
 
@@ -150,8 +148,8 @@ export class S3FileParamsRepo<P extends Record<string, string | number>> extends
       ContentLength: buffer.length
     });
 
-    await s3Client.send(putCommand);
-    console.log(`File saved to S3 at ${key}`);
+    const result = await s3Client.send(putCommand);
+    console.log('File saved to S3', {result});
   }
 
   private buildS3Key(params: P): string {

@@ -1,6 +1,5 @@
 import {Logger} from '@aws-lambda-powertools/logger';
 import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
-import * as cheerio from 'cheerio';
 import {SenadorMapRaw, SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
 import {SenadorImgRepo, SenadorMapRawRepo, SenadorRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
@@ -10,7 +9,7 @@ import {parliamentarianSenadoData2SenadorRaw} from "./senadores.mapper";
 
 const token = 'PoRBxBbd0fniUwg-GS0bp';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
-const SENADOR_IMG_URL = (slug: string) => `${CommonsData.SENADO_WEB}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}`;
+const SENADOR_IMG_URL2 = (uuid: string, slug: string) => `https://www.senado.cl/_next/image?url=https://cdn.senado.cl/portal-senado-produccion/public/parlamentarios/${uuid}/${slug}_600x600.jpg&w=1080&q=75`;
 
 const logger = new Logger();
 const sqsClient = new SQSClient({});
@@ -23,39 +22,32 @@ const sesionRawListRepo = new SesionRawListRepo();
 axios.defaults.timeout = 5000
 
 export const getSenador = async (slug: string) => {
-  logger.info(`Obteniendo información desde ${SENADOR_URL(slug)}`);
+  logger.info('Obteniendo información', {url: SENADOR_URL(slug)});
   const response = await axios.get<SenadorResponse>(SENADOR_URL(slug));
-  logger.info(`Información obtenida`, JSON.stringify(response.data));
-  const senador =  parliamentarianSenadoData2SenadorRaw(response.data.pageProps.resource.data.parliamentarianSenadoData);
-  logger.info(`Senador`, JSON.stringify(senador));
+  logger.info('Información obtenida', {data: response.data});
+  const senador = parliamentarianSenadoData2SenadorRaw(response.data.pageProps.resource.data.parliamentarianSenadoData);
+  logger.info('Senador', {senador});
   return senador;
 };
 
 export const saveSenador = async (senador: SenadorRaw) => {
   await Promise.all([
     senadorRawRepo.save(senador, {senId: senador.id}),
-    getSaveSenImg(senador.id, senador.slug),
+    getSaveSenImg(senador.id, senador.uuid, senador.slug),
   ]);
   return senador;
 };
 
 export const getSaveSenador = async (slug: string) => {
-  logger.info('Ejecutando getSaveSenador', slug);
+  logger.info('Ejecutando getSaveSenador', {slug});
   return await saveSenador(await getSenador(slug));
 }
 
-export const getSaveSenImg = async (senId: string | number, slug: string) => {
+const getSaveSenImg = async (senId: string | number, uuid: string, slug: string) => {
   try {
-    const { data: html } = await axios.get(SENADOR_IMG_URL(slug));
-    const $ = cheerio.load(html);
-
-    const imageUrl = $('div.parlamentario-img > img').attr('src');
-    if (!imageUrl) {
-      logger.error(`No se encontró la imagen con el selector proporcionado para el slug '${slug}'`);
-      return;
-    }
-
-    const response = await axios.get(new URL(imageUrl, CommonsData.SENADO_WEB).toString(), {
+    const imageUrl = SENADOR_IMG_URL2(uuid, slug);
+    logger.info('Obteniendo img src', {imageUrl});
+    const response = await axios.get(imageUrl, {
       responseType: 'arraybuffer',
       timeout: 10000
     });
@@ -75,7 +67,6 @@ export const detectNewSlugs = async (legId: string) => {
       logger.error('Error al obtener el listado de senadores', error);
       senadoresExistentes = {};
     }
-    logger.debug(`[${typeof senadorMapRawRepo}] Valor obtenido: ${JSON.stringify(senadoresExistentes)}`);
 
     if (senadoresExistentes === null) senadoresExistentes = {};
 
@@ -100,7 +91,7 @@ export const detectNewSlugs = async (legId: string) => {
           }
         }
       }
-      if(senadoresNuevos.size > 0) {
+      if (senadoresNuevos.size > 0) {
         await Promise.all(
           [...senadoresNuevos].map(slug => {
             const params = {
@@ -112,7 +103,7 @@ export const detectNewSlugs = async (legId: string) => {
           })
         );
         logger.info(`Cantidad de slugs nuevos detectados ${senadoresNuevos.size}`);
-        logger.debug(`Detalle slugs nuevos detectados: ${senadoresNuevos}`);
+        logger.debug('Detalle slugs nuevos detectados', {slugs: senadoresNuevos});
         await senadorMapRawRepo.save(senadoresExistentes);
       } else {
         logger.info('No se detectaron slugs nuevos');
