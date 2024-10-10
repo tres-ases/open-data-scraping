@@ -55,7 +55,10 @@ const getSaveSenImg = async (senId: string | number, slug: string) => {
       return;
     }
 
-    const response = await axios.get(imageUrl, {responseType: 'arraybuffer', timeout: 10000});
+    const response = await axios.get(new URL(imageUrl, CommonsData.SENADO_WEB).toString(), {
+      responseType: 'arraybuffer',
+      timeout: 10000
+    });
     await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senId});
   } catch (error) {
     logger.error(`Error al obtener la imagen para el slug ${slug}`, error);
