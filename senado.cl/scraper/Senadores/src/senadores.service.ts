@@ -89,7 +89,6 @@ export const detectNewSlugs = async (legId: string) => {
         }
       }
       if(senadoresNuevos.size > 0) {
-        await senadorMapRawRepo.save(senadoresExistentes);
         await Promise.all(
           [...senadoresNuevos].map(slug => {
             const params = {
@@ -102,6 +101,7 @@ export const detectNewSlugs = async (legId: string) => {
         );
         logger.info(`Cantidad de slugs nuevos detectados ${senadoresNuevos.size}`);
         logger.debug(`Detalle slugs nuevos detectados: ${senadoresNuevos}`);
+        await senadorMapRawRepo.save(senadoresExistentes);
       } else {
         logger.info('No se detectaron slugs nuevos');
       }
