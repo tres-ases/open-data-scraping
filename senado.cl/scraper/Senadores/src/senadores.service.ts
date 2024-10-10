@@ -1,5 +1,6 @@
 import {Logger} from '@aws-lambda-powertools/logger';
 import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
+import * as cheerio from 'cheerio';
 import {SenadorMapRaw, SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
 import {SenadorImgRepo, SenadorMapRawRepo, SenadorRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
@@ -9,6 +10,7 @@ import {parliamentarianSenadoData2SenadorRaw} from "./senadores.mapper";
 
 const token = 'PoRBxBbd0fniUwg-GS0bp';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
+const SENADOR_IMG_URL = (slug: string) => `${CommonsData.SENADO_WEB}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}`;
 
 const logger = new Logger();
 const sqsClient = new SQSClient({});
@@ -32,10 +34,7 @@ export const getSenador = async (slug: string) => {
 export const saveSenador = async (senador: SenadorRaw) => {
   await Promise.all([
     senadorRawRepo.save(senador, {senId: senador.id}),
-    getSaveSenImg(senador.id, senador.imagen.path),
-    getSaveSenImg(senador.id, senador.imagen.path120, '120'),
-    getSaveSenImg(senador.id, senador.imagen.path450, '450'),
-    getSaveSenImg(senador.id, senador.imagen.path600, '600'),
+    getSaveSenImg(senador.id, senador.slug),
   ]);
   return senador;
 };
@@ -45,13 +44,21 @@ export const getSaveSenador = async (slug: string) => {
   return await saveSenador(await getSenador(slug));
 }
 
-const getSaveSenImg = async (senId: string | number, imageUrl: string, tipo?: string) => {
+const getSaveSenImg = async (senId: string | number, slug: string) => {
   try {
-    const response = await axios.get(imageUrl, {responseType: 'arraybuffer'});
-    await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senId, tipo})
+    const { data: html } = await axios.get(SENADOR_IMG_URL(slug));
+    const $ = cheerio.load(html);
+
+    const imageUrl = $('div.parlamentario-img > img').attr('src');
+    if (!imageUrl) {
+      logger.error(`No se encontró la imagen con el selector proporcionado para el slug '${slug}'`);
+      return;
+    }
+
+    const response = await axios.get(imageUrl, {responseType: 'arraybuffer', timeout: 10000});
+    await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senId});
   } catch (error) {
-    logger.error('Error al obtener la imagen desde', imageUrl, error);
-    throw error;
+    logger.error(`Error al obtener la imagen para el slug ${slug}`, error);
   }
 }
 

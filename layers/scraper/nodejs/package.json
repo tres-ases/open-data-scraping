@@ -12,7 +12,7 @@
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.8.0",
     "axios": "^1.7.2",
-    "cheerio": "^1.0.0-rc.12",
+    "cheerio": "^1.0.0",
     "crypto-js": "^4.2.0",
     "lodash": "^4.17.21",
     "reflect-metadata": "^0.2.2"

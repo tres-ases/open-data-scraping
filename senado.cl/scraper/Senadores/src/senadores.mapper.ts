@@ -41,12 +41,6 @@ export const parliamentarianSenadoData2SenadorRaw = (senData: ParliamentarianSen
       hasta: p.HASTA,
       vigente: p.VIGENTE
     })),
-    imagen: {
-      path: senData.data[0].IMAGEN,
-      path120: senData.data[0].IMAGEN_120,
-      path450: senData.data[0].IMAGEN_450,
-      path600: senData.data[0].IMAGEN_600,
-    },
     cargos: senData.CARGOS,
     enlaces: {
       facebookPagina: senData.ENLACES[0].FACEBOOK_PAGE,

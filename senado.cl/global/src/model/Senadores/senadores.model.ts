@@ -39,12 +39,6 @@ export interface SenadorRaw {
     etiquetaAbreviatura: string
   }
   periodos: SenadorPeriodoRaw[]
-  imagen: {
-    path: string
-    path120: string
-    path450: string
-    path600: string
-  }
   cargos: string
   enlaces: {
     facebookPagina: string | null
