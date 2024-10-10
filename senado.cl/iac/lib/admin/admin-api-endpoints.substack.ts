@@ -122,6 +122,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     this.addS3ToResource(rawSesIdVotResource, SesionesBucketKey.rawVotacionJson('{sesId}'), ['sesId']);
 
     const rawSenResource = rawResource.addResource('senadores');
+    this.addS3ToResource(rawSenResource, SenadoresBucketKey.rawMap)
     const rawSenIdResource = rawSenResource.addResource('{senId}');
     this.addS3ToResource(rawSenIdResource, SenadoresBucketKey.rawJson('{senId}'), ['senId'])
   }

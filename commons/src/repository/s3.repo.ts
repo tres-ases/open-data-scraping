@@ -1,6 +1,8 @@
 import "reflect-metadata";
-import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {Logger} from '@aws-lambda-powertools/logger';
+import {Readable} from "stream";
+
 
 const logger = new Logger();
 const s3Client = new S3Client();
@@ -121,8 +123,9 @@ export class S3FileRepo extends S3Repo {
     const putCommand = new PutObjectCommand({
       Bucket: this.bucket,
       Key: this.keyTemplate,
-      Body: buffer,
-      ContentType: contentType
+      Body: Readable.from(buffer),
+      ContentType: contentType,
+      ContentLength: buffer.length
     });
 
     await s3Client.send(putCommand);
@@ -142,8 +145,9 @@ export class S3FileParamsRepo<P extends Record<string, string | number>> extends
     const putCommand = new PutObjectCommand({
       Bucket: this.bucket,
       Key: key,
-      Body: buffer,
-      ContentType: contentType
+      Body: Readable.from(buffer),
+      ContentType: contentType,
+      ContentLength: buffer.length
     });
 
     await s3Client.send(putCommand);

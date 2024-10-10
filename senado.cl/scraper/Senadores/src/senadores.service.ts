@@ -44,7 +44,7 @@ export const getSaveSenador = async (slug: string) => {
   return await saveSenador(await getSenador(slug));
 }
 
-const getSaveSenImg = async (senId: string | number, slug: string) => {
+export const getSaveSenImg = async (senId: string | number, slug: string) => {
   try {
     const { data: html } = await axios.get(SENADOR_IMG_URL(slug));
     const $ = cheerio.load(html);
