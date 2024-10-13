@@ -9,7 +9,7 @@ import {parliamentarianSenadoData2SenadorRaw} from "./senadores.mapper";
 
 const token = 'PoRBxBbd0fniUwg-GS0bp';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
-const SENADOR_IMG_URL2 = (uuid: string, slug: string) => `https://www.senado.cl/_next/image?url=https://cdn.senado.cl/portal-senado-produccion/public/parlamentarios/${uuid}/${slug}_600x600.jpg&w=1080&q=75`;
+const SENADOR_IMG_URL = (uuid: string, slug: string) => `https://www.senado.cl/_next/image?url=https://cdn.senado.cl/portal-senado-produccion/public/parlamentarios/${uuid}/${slug}_600x600.jpg&w=1080&q=75`;
 
 const logger = new Logger();
 const sqsClient = new SQSClient({});
@@ -45,7 +45,7 @@ export const getSaveSenador = async (slug: string) => {
 
 const getSaveSenImg = async (senId: string | number, uuid: string, slug: string) => {
   try {
-    const imageUrl = SENADOR_IMG_URL2(uuid, slug);
+    const imageUrl = SENADOR_IMG_URL(uuid, slug);
     logger.info('Obteniendo img src', {imageUrl});
     const response = await axios.get(imageUrl, {
       responseType: 'arraybuffer',

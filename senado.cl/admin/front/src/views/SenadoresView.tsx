@@ -1,19 +1,24 @@
+import {useEffect, useState} from "react";
+import SenadorService from "../services/senadores.service.ts";
+import {SenadorMapRaw} from "@senado-cl/global/model";
+import SenadoresLoading from "../components/SenadoresLoading.tsx";
+import SenadoresError from "../components/SenadoresError.tsx";
+import SenadoresList from "../components/SenadoresList.tsx";
+
 export default function SenadoresView() {
 
-  return (
-    <>
-      <div className="md:flex md:items-center md:justify-between">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Senadores</h2>
-      </div>
-      <section aria-labelledby="filter-heading" className="border-t border-gray-200 pt-6">
-        <h2 id="filter-heading" className="sr-only">
-          Product filters
-        </h2>
-      </section>
-      <div className="mt-6 grid grid-cols-3 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-5 lg:gap-x-8">
+  const [senadorMap, setSenadorMap ] = useState<SenadorMapRaw | null>();
 
-      </div>
-    </>
-  )
-    ;
+  useEffect(() => {
+    SenadorService.getRawMap()
+      .then(map => setSenadorMap(map))
+  }, []);
+
+  if(senadorMap === undefined) {
+    return <SenadoresLoading/>
+  } else if (senadorMap === null) {
+    return <SenadoresError/>
+  } else {
+    return <SenadoresList map={senadorMap}/>
+  }
 }

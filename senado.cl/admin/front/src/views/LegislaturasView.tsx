@@ -64,8 +64,6 @@ export default function LegislaturasView() {
         </div>
         <LegislaturaList rawList={data?.raw} dtlMap={data?.dtl}/>
       </div>
-      <div className="py-0">
-      </div>
     </div>
   );
 }

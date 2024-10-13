@@ -1,7 +1,7 @@
 export interface SenadorPeriodoRaw {
   id: number
   uuid: number
-  camara: 'S'
+  camara: 'S' | 'D'
   desde: string
   hasta: string
   vigente: 1 | 0

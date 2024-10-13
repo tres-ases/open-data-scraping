@@ -8,7 +8,7 @@ const SenadorService = {
         apiName: 'admin',
         path: `/raw/senadores/${senId}`
       }).response;
-      return JSON.parse(await response.body.text()) as SenadorRaw[];
+      return JSON.parse(await response.body.text()) as SenadorRaw;
     } catch (error) {
       return null;
     }
@@ -20,7 +20,7 @@ const SenadorService = {
         apiName: 'admin',
         path: '/raw/senadores'
       }).response;
-      return JSON.parse(await response.body.text()) as SenadorMapRaw[];
+      return JSON.parse(await response.body.text()) as SenadorMapRaw;
     } catch (error) {
       return null;
     }

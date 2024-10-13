@@ -48,8 +48,8 @@ export class S3SimpleRepo<T> extends S3ObjectRepo<T> {
       ContentType: "application/json",
     });
 
-    const result = await s3Client.send(putCommand);
-    console.log('File saved to S3', {result});
+    await s3Client.send(putCommand);
+    console.log('File saved to S3', {Key: this.keyTemplate});
   }
 
   async get(): Promise<T | null> {
@@ -83,8 +83,8 @@ export class S3ParamsRepo<T, P extends Record<string, string | number>> extends 
       ContentType: "application/json",
     });
 
-    const result = await s3Client.send(putCommand);
-    console.log('File saved to S3', {result});
+    await s3Client.send(putCommand);
+    console.log('File saved to S3', {Key: key});
 
     return data;
   }
@@ -127,8 +127,8 @@ export class S3FileRepo extends S3Repo {
       ContentLength: buffer.length
     });
 
-    const result = await s3Client.send(putCommand);
-    console.log('File saved to S3', {result});
+    await s3Client.send(putCommand);
+    console.log('File saved to S3', {Key: this.keyTemplate});
   }
 }
 
@@ -148,8 +148,8 @@ export class S3FileParamsRepo<P extends Record<string, string | number>> extends
       ContentLength: buffer.length
     });
 
-    const result = await s3Client.send(putCommand);
-    console.log('File saved to S3', {result});
+    await s3Client.send(putCommand);
+    console.log('File saved to S3', {Key: key});
   }
 
   private buildS3Key(params: P): string {
