@@ -1,15 +1,6 @@
 export interface ProyectosMapDataRaw {
   boletin: string
-  fecha: string
-  hora: string
   tema: string
-  quorum: string
-  resultado: {
-    si: number
-    no: number
-    abs: number
-    pareo: number
-  }
 }
 
 export interface ProyectosMapRaw {

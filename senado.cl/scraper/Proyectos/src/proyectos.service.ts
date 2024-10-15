@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
 import {Logger} from "@aws-lambda-powertools/logger";
-import {ProyectoRaw, ProyectosMapRaw, SenadoresMapRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
+import {ProyectoRaw, ProyectosMapRaw} from "@senado-cl/global/model";
 import {ProyectosMapRawRepo, ProyectosRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 
 const logger = new Logger();
@@ -169,14 +169,16 @@ export const detectNewBolIds = async (legId: string) => {
       for (const sesion of sesiones) {
         if (sesion.votaciones) {
           for (const votacion of sesion.votaciones) {
-            const {boletin, fecha, quorum, tema, hora, resultado} = votacion;
-            const boletinLimpio = boletin.indexOf('-') > 0 ? boletin.split('-')[0] : boletin;
-            if (proyectosExistentes[boletinLimpio] === undefined) {
-              proyectosNuevos.add(boletinLimpio);
+            const {boletin, tema} = votacion;
+            if (boletin) {
+              const boletinLimpio = boletin.indexOf('-') > 0 ? boletin.split('-')[0] : boletin;
+              if (proyectosExistentes[boletinLimpio] === undefined) {
+                proyectosNuevos.add(boletinLimpio);
+              }
+              proyectosExistentes[boletinLimpio] = {
+                boletin, tema
+              };
             }
-            proyectosExistentes[boletinLimpio] = {
-              boletin, fecha, hora, quorum, tema, resultado
-            };
           }
         }
       }

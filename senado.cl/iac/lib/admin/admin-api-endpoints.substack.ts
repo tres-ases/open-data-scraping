@@ -10,7 +10,13 @@ import {
   RestApi
 } from "aws-cdk-lib/aws-apigateway";
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {LegislaturasBucketKey, MainBucketKey, SenadoresBucketKey, SesionesBucketKey} from "@senado-cl/global/config";
+import {
+  LegislaturasBucketKey,
+  MainBucketKey,
+  ProyectosBucketKey,
+  SenadoresBucketKey,
+  SesionesBucketKey
+} from "@senado-cl/global/config";
 import ScraperFunction from "../cdk/ScraperFunction";
 import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {IBucket} from "aws-cdk-lib/aws-s3";
@@ -125,6 +131,11 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     this.addS3ToResource(rawSenResource, SenadoresBucketKey.rawMap)
     const rawSenIdResource = rawSenResource.addResource('{senId}');
     this.addS3ToResource(rawSenIdResource, SenadoresBucketKey.rawJson('{senId}'), ['senId'])
+
+    const rawProResource = rawResource.addResource('proyectos');
+    this.addS3ToResource(rawProResource, ProyectosBucketKey.rawMap)
+    const rawProBolIdResource = rawProResource.addResource('{bolId}');
+    this.addS3ToResource(rawProBolIdResource, ProyectosBucketKey.rawJson('{bolId}'), ['bolId'])
   }
 
   dtlS3Api() {
