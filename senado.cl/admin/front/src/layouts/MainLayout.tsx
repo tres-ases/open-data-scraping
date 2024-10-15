@@ -3,8 +3,6 @@ import {Dialog, DialogBackdrop, DialogPanel, TransitionChild} from '@headlessui/
 import {
   Bars3Icon,
   BriefcaseIcon,
-  CurrencyDollarIcon,
-  DocumentCurrencyDollarIcon,
   FolderIcon,
   HomeIcon,
   PowerIcon,

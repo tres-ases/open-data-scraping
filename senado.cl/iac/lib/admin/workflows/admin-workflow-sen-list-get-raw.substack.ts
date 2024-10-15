@@ -20,15 +20,15 @@ export default class AdminWorkflowSenListGetRawSubstack extends NestedStack {
   constructor(scope: Construct, {layers, dataBucket}: AdminApiWorkflowsSubstackProps) {
     super(scope, prefix);
 
-    this.queue = new Queue(this, `${prefix}-senadores-saveNew-queue`, {
-      queueName: `${prefix}-senadores-saveNew-queue`,
+    this.queue = new Queue(this, `${prefix}-saveNew-queue`, {
+      queueName: `${prefix}-saveNew-queue`,
       visibilityTimeout: Duration.seconds(122),
       retentionPeriod: Duration.days(1),
       receiveMessageWaitTime: Duration.seconds(10),
       deliveryDelay: Duration.seconds(30),
     });
 
-    const saveNuevosSenadoresFn = new ScraperFunction(this, `${prefix}-senadores-saveNew`, {
+    const saveNuevosSenadoresFn = new ScraperFunction(this, `${prefix}-saveNew`, {
       pckName: 'Senadores',
       handler: 'senadores.getSaveQueueHandler',
       layers,

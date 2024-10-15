@@ -1,7 +1,7 @@
 import {ProyectosMapRaw} from "@senado-cl/global/model";
-import SenadoresListItem from "./SenadoresListItem.tsx";
 import {Button} from "@headlessui/react";
 import clsx from "clsx";
+import ProyectosListItem from "./ProyectosListItem.tsx";
 
 interface Props {
   map: ProyectosMapRaw

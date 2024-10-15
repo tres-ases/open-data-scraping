@@ -7,6 +7,7 @@ import LegislaturasView from "./views/LegislaturasView.tsx";
 import LegislaturaView from "./views/LegislaturaView.tsx";
 import SesionView from "./views/SesionView.tsx";
 import {LegislaturasViewProvider} from "./context/LegislaturasViewContext.tsx";
+import ProyectosView from "./views/ProyectosView.tsx";
 
 function App() {
   return (
@@ -29,6 +30,9 @@ function App() {
         </Route>
         <Route path="senador">
           <Route path=":senId" element={<SenadorView/>}/>
+        </Route>
+        <Route path="Proyectos">
+          <Route index element={<ProyectosView/>}/>
         </Route>
         <Route path="*" element={<Navigate to="inicio" replace={true}/>}/>
       </Route>

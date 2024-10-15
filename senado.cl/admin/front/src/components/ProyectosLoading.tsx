@@ -1,4 +1,4 @@
-export default function SenadoresLoading() {
+export default function ProyectosLoading() {
   return (
     <>
       <h1>Loading</h1>
