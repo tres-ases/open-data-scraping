@@ -1,10 +1,10 @@
-import {SenadorMapRaw} from "@senado-cl/global/model";
+import {SenadoresMapRaw} from "@senado-cl/global/model";
 import SenadoresListItem from "./SenadoresListItem.tsx";
 import {Button} from "@headlessui/react";
 import clsx from "clsx";
 
 interface Props {
-  map: SenadorMapRaw
+  map: SenadoresMapRaw
 }
 
 export default function SenadoresList({map}: Props) {

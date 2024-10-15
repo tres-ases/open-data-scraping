@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.609.0",
+    "@aws-sdk/client-sqs": "^3.667.0",
     "@jest/globals": "^29.7.0",
     "@types/aws-lambda": "^8.10.140",
     "@types/jest": "^29.5.12",
@@ -23,10 +24,10 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@senado-cl/scraper-commons": "workspace:*",
+    "@aws-lambda-powertools/logger": "^2.8.0",
     "@senado-cl/global": "workspace:*",
+    "@senado-cl/scraper-commons": "workspace:*",
     "axios": "^1.7.2",
-    "cheerio": "1.0.0",
-    "lodash": "^4.17.21"
+    "cheerio": "1.0.0"
   }
 }

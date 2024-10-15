@@ -1,4 +1,4 @@
-export interface SenadorMapDataRaw {
+export interface SenadoresMapDataRaw {
   uuid: string
   parlId: number
   parNombre: string
@@ -6,6 +6,6 @@ export interface SenadorMapDataRaw {
   parApellidoMaterno: string
 }
 
-export interface SenadorMapRaw {
-  [parSlug: string]: SenadorMapDataRaw
+export interface SenadoresMapRaw {
+  [parSlug: string]: SenadoresMapDataRaw
 }

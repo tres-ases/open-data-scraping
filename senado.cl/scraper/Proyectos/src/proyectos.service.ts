@@ -1,7 +1,31 @@
 import * as cheerio from "cheerio";
+import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
+import {Logger} from "@aws-lambda-powertools/logger";
+import {ProyectoRaw, ProyectosMapRaw, SenadoresMapRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
+import {ProyectosMapRawRepo, ProyectosRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 
-export const getBoletin = async (id: string) => {
-  const $ = await cheerio.fromURL(`https://tramitacion.senado.cl/wspublico/tramitacion.php?boletin=${id}`, {
+const logger = new Logger();
+
+const sqsClient = new SQSClient({});
+
+const proyectosRawRepo = new ProyectosRawRepo();
+const proyectosMapRawRepo = new ProyectosMapRawRepo();
+const sesionRawListRepo = new SesionRawListRepo();
+
+export const getSaveProyecto = async (bolId: string) => {
+  const proyecto = await getProyecto(bolId);
+  logger.info(`Proyecto boletin: ${bolId}`, {proyecto})
+  await saveProyecto(bolId, proyecto);
+}
+
+export const saveProyecto = async (bolId: string | number, proyecto: ProyectoRaw): Promise<void> => {
+  await proyectosRawRepo.save(proyecto, {bolId});
+}
+
+export const getProyecto = async (bolId: string) => {
+  const url = `https://tramitacion.senado.cl/wspublico/tramitacion.php?boletin=${bolId}`;
+  logger.info(`Url boletin ${bolId}`, {url})
+  const $ = await cheerio.fromURL(url, {
     xml: {
       lowerCaseAttributeNames: true,
       xmlMode: true,
@@ -124,5 +148,59 @@ export const getBoletin = async (id: string) => {
       }
     ],
   })
-  return data;
+  return data.proyecto as unknown as ProyectoRaw;
+}
+
+export const detectNewBolIds = async (legId: string) => {
+  try {
+    const sesiones = await sesionRawListRepo.getBy({legId});
+    let proyectosExistentes: ProyectosMapRaw;
+    try {
+      proyectosExistentes = await proyectosMapRawRepo.get() ?? {};
+    } catch (error) {
+      logger.error('Error al obtener el listado de senadores', error);
+      proyectosExistentes = {};
+    }
+
+    if (proyectosExistentes === null) proyectosExistentes = {};
+
+    if (sesiones) {
+      const proyectosNuevos = new Set<string>();
+      for (const sesion of sesiones) {
+        if (sesion.votaciones) {
+          for (const votacion of sesion.votaciones) {
+            const {boletin, fecha, quorum, tema, hora, resultado} = votacion;
+            const boletinLimpio = boletin.indexOf('-') > 0 ? boletin.split('-')[0] : boletin;
+            if (proyectosExistentes[boletinLimpio] === undefined) {
+              proyectosNuevos.add(boletinLimpio);
+            }
+            proyectosExistentes[boletinLimpio] = {
+              boletin, fecha, hora, quorum, tema, resultado
+            };
+          }
+        }
+      }
+      if (proyectosNuevos.size > 0) {
+        await Promise.all(
+          [...proyectosNuevos].map(slug => {
+            const params = {
+              QueueUrl: process.env.NEW_SEN_SLUGS_QUEUE_URL!,
+              MessageBody: slug,
+            };
+            const command = new SendMessageCommand(params);
+            return sqsClient.send(command);
+          })
+        );
+        logger.info(`Cantidad de boletines nuevos detectados ${proyectosNuevos.size}`);
+        logger.debug('Detalle boletines nuevos detectados', {boletines: proyectosNuevos});
+        await proyectosMapRawRepo.save(proyectosExistentes);
+      } else {
+        logger.info('No se detectaron boletines nuevos');
+      }
+      return proyectosNuevos;
+    }
+  } catch (error) {
+    logger.error('Error al obtener listado de slugs no descargados', error);
+  }
+  return [] as string[];
 }

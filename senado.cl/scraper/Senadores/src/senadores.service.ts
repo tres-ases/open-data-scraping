@@ -1,6 +1,6 @@
 import {Logger} from '@aws-lambda-powertools/logger';
 import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
-import {SenadorMapRaw, SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
+import {SenadoresMapRaw, SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
 import {SenadorImgRepo, SenadorMapRawRepo, SenadorRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
 import axios from "axios";
@@ -60,7 +60,7 @@ const getSaveSenImg = async (senId: string | number, uuid: string, slug: string)
 export const detectNewSlugs = async (legId: string) => {
   try {
     const sesiones = await sesionRawListRepo.getBy({legId});
-    let senadoresExistentes: SenadorMapRaw;
+    let senadoresExistentes: SenadoresMapRaw;
     try {
       senadoresExistentes = await senadorMapRawRepo.get() ?? {};
     } catch (error) {

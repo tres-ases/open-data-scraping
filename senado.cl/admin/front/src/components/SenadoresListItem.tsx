@@ -1,9 +1,9 @@
-import {SenadorMapDataRaw} from "@senado-cl/global/model";
+import {SenadoresMapDataRaw} from "@senado-cl/global/model";
 import {Link} from "react-router-dom";
 
 interface Props {
   slug: string
-  data: SenadorMapDataRaw
+  data: SenadoresMapDataRaw
 }
 
 export default function SenadoresListItem({slug, data: {parlId, parNombre, parApellidoPaterno, parApellidoMaterno}}: Props) {

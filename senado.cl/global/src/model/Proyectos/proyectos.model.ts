@@ -1,4 +1,22 @@
-export interface ProyectoDescripcion {
+export interface ProyectosMapDataRaw {
+  boletin: string
+  fecha: string
+  hora: string
+  tema: string
+  quorum: string
+  resultado: {
+    si: number
+    no: number
+    abs: number
+    pareo: number
+  }
+}
+
+export interface ProyectosMapRaw {
+  [boletin: string]: ProyectosMapDataRaw
+}
+
+export interface ProyectoDescripcionRaw {
   boletin: string
   titulo: string
   fechaIngreso: string
@@ -14,11 +32,11 @@ export interface ProyectoDescripcion {
   linkMensajeMocion: string
 }
 
-export interface ProyectoAutor {
+export interface ProyectoAutorRaw {
   parlamentario: string
 }
 
-export interface ProyectoTramite {
+export interface ProyectoTramiteRaw {
   sesion: string
   fecha: string
   descripcionTramite: string
@@ -31,7 +49,7 @@ export interface ProyectoVotacionVoto {
   seleccion: string
 }
 
-export interface ProyectoVotacion {
+export interface ProyectoVotacionRaw {
   sesion: string
   fecha: string
   tema: string
@@ -45,7 +63,7 @@ export interface ProyectoVotacion {
   detalle: ProyectoVotacionVoto[]
 }
 
-export interface ProyectoUrgencia {
+export interface ProyectoUrgenciaRaw {
   tipo: string
   ingresoFecha: string
   ingresoMensaje: string
@@ -55,19 +73,19 @@ export interface ProyectoUrgencia {
   retiroCamara: string
 }
 
-export interface ProyectoInforme {
+export interface ProyectoInformeRaw {
   fecha: string
   tramite: string
   etapa: string
   link: string
 }
 
-export interface ProyectoComparado {
+export interface ProyectoComparadoRaw {
   comparado: string
   link: string
 }
 
-export interface ProyectoOficio {
+export interface ProyectoOficioRaw {
   fecha: string
   tramite: string
   etapa: string
@@ -77,27 +95,27 @@ export interface ProyectoOficio {
   link: string
 }
 
-export interface ProyectoIndicacion {
+export interface ProyectoIndicacionRaw {
   fecha: string
   tramite: string
   etapa: string
   link: string
 }
 
-export interface ProyectoObservacion {
+export interface ProyectoObservacionRaw {
 
 }
 
-export interface Proyecto {
-  descripcion: ProyectoDescripcion
-  autores: ProyectoAutor[]
-  tramitaciones: ProyectoTramite[]
-  votaciones: ProyectoVotacion[]
-  urgencias: ProyectoUrgencia[]
-  informes: ProyectoInforme[]
-  comparados: ProyectoComparado[]
-  oficios: ProyectoOficio[]
-  indicaciones: ProyectoIndicacion[]
-  observaciones: ProyectoObservacion[]
+export interface ProyectoRaw {
+  descripcion: ProyectoDescripcionRaw
+  autores: ProyectoAutorRaw[]
+  tramitaciones: ProyectoTramiteRaw[]
+  votaciones: ProyectoVotacionRaw[]
+  urgencias: ProyectoUrgenciaRaw[]
+  informes: ProyectoInformeRaw[]
+  comparados: ProyectoComparadoRaw[]
+  oficios: ProyectoOficioRaw[]
+  indicaciones: ProyectoIndicacionRaw[]
+  observaciones: ProyectoObservacionRaw[]
   materias: string[]
 }

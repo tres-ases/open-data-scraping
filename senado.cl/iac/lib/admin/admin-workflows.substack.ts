@@ -5,6 +5,7 @@ import {IBucket} from "aws-cdk-lib/aws-s3";
 import {StateMachine} from "aws-cdk-lib/aws-stepfunctions";
 import AdminWorkflowLegSesGetDistillSubstackSubstack from "./workflows/admin-workflow-leg-ses-get-distill.substack";
 import AdminWorkflowSenListGetRawSubstack from "./workflows/admin-workflow-sen-list-get-raw.substack";
+import AdminWorkflowProyListGetRawSubstack from "./workflows/admin-workflow-proy-list-get-raw.substack";
 
 const prefix = 'senado-cl-workflows';
 
@@ -21,10 +22,13 @@ export default class AdminWorkflowsSubstack extends NestedStack {
     super(scope, prefix);
 
     const senListGetRawWf = new AdminWorkflowSenListGetRawSubstack(this, {layers, dataBucket});
+    const proyListGetRawWf = new AdminWorkflowProyListGetRawSubstack(this, {layers, dataBucket});
+
     const legSesGetDistillWf = new AdminWorkflowLegSesGetDistillSubstackSubstack(this, {
       dataBucket,
       layers,
-      senSlugQueue: senListGetRawWf.queue
+      senSlugQueue: senListGetRawWf.queue,
+      proyBolIdQueue: proyListGetRawWf.queue,
     });
     this.legSesGetSaveWf = legSesGetDistillWf.stateMachine;
   }
