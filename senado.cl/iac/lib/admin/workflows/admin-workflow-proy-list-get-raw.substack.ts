@@ -28,16 +28,16 @@ export default class AdminWorkflowProyListGetRawSubstack extends NestedStack {
       deliveryDelay: Duration.seconds(30),
     });
 
-    const saveNuevosSenadoresFn = new ScraperFunction(this, `${prefix}-proyectos-saveNew`, {
+    const saveNuevosProyectosFn = new ScraperFunction(this, `${prefix}-proyectos-saveNew`, {
       pckName: 'Proyectos',
       handler: 'proyectos.getSaveQueueHandler',
       layers,
       timeout: 120
     });
 
-    dataBucket.grantReadWrite(saveNuevosSenadoresFn);
-    saveNuevosSenadoresFn.addEventSource(new SqsEventSource(this.queue));
-    this.queue.grantConsumeMessages(saveNuevosSenadoresFn);
+    dataBucket.grantReadWrite(saveNuevosProyectosFn);
+    saveNuevosProyectosFn.addEventSource(new SqsEventSource(this.queue));
+    this.queue.grantConsumeMessages(saveNuevosProyectosFn);
   }
 
   getLogicalId(element: CfnElement): string {

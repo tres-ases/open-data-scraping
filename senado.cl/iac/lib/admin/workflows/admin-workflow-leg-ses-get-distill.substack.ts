@@ -64,7 +64,7 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
       },
     });
     dataBucket.grantReadWrite(newProyBolId);
-    senSlugQueue.grantSendMessages(newProyBolId);
+    proyBolIdQueue.grantSendMessages(newProyBolId);
 
     this.stateMachine = new StateMachine(this, `${prefix}-legislatura-getSaveDistill-Wf`, {
       definitionBody: DefinitionBody.fromChainable(

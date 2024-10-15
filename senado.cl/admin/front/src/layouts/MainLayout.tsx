@@ -19,9 +19,7 @@ const navigation = [
   {name: 'Inicio', href: '/inicio', icon: HomeIcon, current: true},
   {name: 'Legislaturas', href: '/legislaturas', icon: BriefcaseIcon, current: false},
   {name: 'Senadores', href: '/senadores', icon: UsersIcon, current: false},
-  {name: 'Remuneraciones', href: '#', icon: CurrencyDollarIcon, current: false},
-  {name: 'Gastos', href: '#', icon: DocumentCurrencyDollarIcon, current: false},
-  {name: 'Votaciones', href: '#', icon: FolderIcon, current: false},
+  {name: 'Proyectos', href: '/proyectos', icon: FolderIcon, current: false},
 ]
 
 function classNames(...classes: string[]) {
