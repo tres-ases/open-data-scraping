@@ -15,7 +15,8 @@ const sesionRawListRepo = new SesionRawListRepo();
 export const getSaveProyecto = async (bolId: string) => {
   const proyecto = await getProyecto(bolId);
   logger.info(`Proyecto boletin: ${bolId}`, {proyecto})
-  await saveProyecto(bolId, proyecto);
+  if (proyecto)
+    await saveProyecto(bolId, proyecto);
 }
 
 export const saveProyecto = async (bolId: string | number, proyecto: ProyectoRaw): Promise<void> => {
@@ -147,8 +148,12 @@ export const getProyecto = async (bolId: string) => {
         }
       }
     ],
-  })
-  return data.proyecto as unknown as ProyectoRaw;
+  });
+  if (data.proyecto) {
+    return data.proyecto as unknown as ProyectoRaw;
+  } else {
+    return undefined;
+  }
 }
 
 export const detectNewBolIds = async (legId: string) => {
@@ -171,7 +176,10 @@ export const detectNewBolIds = async (legId: string) => {
           for (const votacion of sesion.votaciones) {
             const {boletin, tema} = votacion;
             if (boletin) {
-              const boletinLimpio = boletin.indexOf('-') > 0 ? boletin.split('-')[0] : boletin;
+              const boletinLimpio =
+                boletin.indexOf('-') > 0 ?
+                  boletin.split('-')[0].replace(/\D/g, '') :
+                  boletin;
               if (proyectosExistentes[boletinLimpio] === undefined) {
                 proyectosNuevos.add(boletinLimpio);
               }
