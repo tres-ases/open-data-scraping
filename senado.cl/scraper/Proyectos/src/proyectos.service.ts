@@ -192,17 +192,17 @@ export const detectNewBolIds = async (legId: string) => {
       }
       if (proyectosNuevos.size > 0) {
         await Promise.all(
-          [...proyectosNuevos].map(slug => {
+          [...proyectosNuevos].map(bolId => {
             const params = {
-              QueueUrl: process.env.NEW_SEN_SLUGS_QUEUE_URL!,
-              MessageBody: slug,
+              QueueUrl: process.env.NEW_SEN_SLUGS_QUEUE_URL,
+              MessageBody: bolId,
             };
             const command = new SendMessageCommand(params);
             return sqsClient.send(command);
           })
         );
         logger.info(`Cantidad de boletines nuevos detectados ${proyectosNuevos.size}`);
-        logger.debug('Detalle boletines nuevos detectados', {boletines: proyectosNuevos});
+        logger.info('Detalle boletines nuevos detectados', {boletines: proyectosNuevos});
         await proyectosMapRawRepo.save(proyectosExistentes);
       } else {
         logger.info('No se detectaron boletines nuevos');

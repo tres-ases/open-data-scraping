@@ -23,7 +23,7 @@ export default function ProyectosListItem({data: {boletin, tema}}: Props) {
           </p>
           <p className="mt-1 flex text-xs leading-5 text-gray-400">
             <a target="_blank" className="relative truncate hover:underline"
-               href={`GET https://tramitacion.senado.cl/wspublico/tramitacion.php?boletin=${boletinLimpio}`}>
+               href={`https://tramitacion.senado.cl/wspublico/tramitacion.php?boletin=${boletinLimpio}`}>
               Ver XML en senado.cl
             </a>
           </p>
