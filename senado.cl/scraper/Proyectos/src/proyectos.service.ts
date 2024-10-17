@@ -150,7 +150,11 @@ export const getProyecto = async (bolId: string) => {
     ],
   });
   if (data.proyecto) {
-    return data.proyecto as unknown as ProyectoRaw;
+    try {
+      return data.proyecto[0] as unknown as ProyectoRaw;
+    } catch (err) {
+      return undefined;
+    }
   } else {
     return undefined;
   }

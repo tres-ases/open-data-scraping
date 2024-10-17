@@ -6,7 +6,7 @@ interface Props {
 }
 
 export default function ProyectosListItem({data: {boletin, tema}}: Props) {
-  const boletinLimpio = boletin.indexOf('-') > 0 ? boletin.split('-')[0] : boletin;
+  const boletinLimpio = boletin.indexOf('-') > 0 ? boletin.split('-')[0].replace(/\D/g, '') : boletin;
 
   return (
     <li className="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
@@ -15,7 +15,7 @@ export default function ProyectosListItem({data: {boletin, tema}}: Props) {
           <p className="text-sm font-semibold leading-6 text-gray-900">
             <Link to={`/proyecto/${boletinLimpio}`}>
               <span className="absolute inset-x-0 -top-px bottom-0"/>
-              {boletinLimpio}
+              {boletin}
             </Link>
           </p>
           <p className="text-xs font-normal leading-6 text-gray-700">
