@@ -2,9 +2,10 @@ import {ProyectosMapRaw} from "@senado-cl/global/model";
 import {Button} from "@headlessui/react";
 import clsx from "clsx";
 import ProyectosListItem from "./ProyectosListItem.tsx";
+import ProyectosListItemLoading from "./ProyectosListItemLoading.tsx";
 
 interface Props {
-  map: ProyectosMapRaw
+  map?: ProyectosMapRaw
 }
 
 export default function ProyectosList({map}: Props) {
@@ -29,13 +30,16 @@ export default function ProyectosList({map}: Props) {
             </div>
           </div>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
-            El Senado está conformado por 50 integrantes, elegidos en votación directa por 16 circunscripciones
-            senatoriales, quienes permanecen ocho años en el cargo.
+            La tramitación de un proyecto de ley puede iniciarse tanto en la Cámara de Diputados como en el Senado. La
+            primera que estudia el proyecto recibe el nombre de Cámara de Origen, en tanto la otra pasa a constituirse
+            como la Cámara Revisora.
           </p>
         </div>
         <ul role="list" className="divide-y divide-gray-200">
-          {Object.keys(map).map(bolId => (
+          {map ? Object.keys(map).map(bolId => (
             <ProyectosListItem key={bolId} data={map[bolId]}/>
+          )) : [1, 2, 3, 4, 5].map(index => (
+            <ProyectosListItemLoading key={index}/>
           ))}
         </ul>
       </div>

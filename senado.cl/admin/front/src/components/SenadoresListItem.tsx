@@ -16,18 +16,18 @@ export default function SenadoresListItem({slug, data: {parlId, parNombre, parAp
              src={`/img/senador/${parlId}/default.jpg`}
              className="h-12 w-12 flex-none rounded-full bg-gray-50"/>
         <div className="min-w-0 flex-auto">
-          <p className="text-sm font-semibold leading-6 text-gray-900">
+          <div className="text-sm font-semibold leading-6 text-gray-900">
             <Link to={`/senador/${parlId}`}>
               <span className="absolute inset-x-0 -top-px bottom-0"/>
               {nombreCompleto}
             </Link>
-          </p>
-          <p className="mt-1 flex text-xs leading-5 text-gray-400">
+          </div>
+          <div className="mt-1 flex text-xs leading-5 text-gray-400">
             <a target="_blank" className="relative truncate hover:underline"
                href={`https://www.senado.cl/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}`}>
               Ver perfil en senado.cl
             </a>
-          </p>
+          </div>
         </div>
       </div>
     </li>

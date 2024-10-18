@@ -1,3 +1,4 @@
+import * as React from 'react'
 import {useState} from 'react'
 import {Dialog, DialogBackdrop, DialogPanel, TransitionChild} from '@headlessui/react'
 import {
@@ -10,14 +11,21 @@ import {
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import {Outlet} from "react-router-dom";
+import {Outlet, useLocation} from "react-router-dom";
 import {useAuthenticator} from "@aws-amplify/ui-react";
 
-const navigation = [
-  {name: 'Inicio', href: '/inicio', icon: HomeIcon, current: true},
-  {name: 'Legislaturas', href: '/legislaturas', icon: BriefcaseIcon, current: false},
-  {name: 'Senadores', href: '/senadores', icon: UsersIcon, current: false},
-  {name: 'Proyectos', href: '/proyectos', icon: FolderIcon, current: false},
+interface NavigationItem {
+  name: string
+  href: string
+  icon: React.ForwardRefExoticComponent<React.PropsWithoutRef<React.SVGProps<SVGSVGElement>>>
+  locations?: string[]
+}
+
+const navigation: NavigationItem[] = [
+  {name: 'Inicio', href: '/inicio', icon: HomeIcon},
+  {name: 'Legislaturas', href: '/legislaturas', icon: BriefcaseIcon, locations: ['/legislatura']},
+  {name: 'Senadores', href: '/senadores', icon: UsersIcon, locations: ['/senador']},
+  {name: 'Proyectos', href: '/proyectos', icon: FolderIcon, locations: ['/proyecto']},
 ]
 
 function classNames(...classes: string[]) {
@@ -27,6 +35,22 @@ function classNames(...classes: string[]) {
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const {user, signOut} = useAuthenticator(context => [context.user]);
+  const location = useLocation();
+
+  console.log('location', location);
+
+  const current = ({href, locations}: NavigationItem) => {
+    if(location.pathname.startsWith(href)) {
+      return true;
+    } else if(locations) {
+      for(const l of locations) {
+        if(location.pathname.startsWith(l)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   return (
     <>
@@ -62,7 +86,7 @@ export default function MainLayout() {
                             <a
                               href={item.href}
                               className={classNames(
-                                item.current
+                                current(item)
                                   ? 'bg-gray-50 text-indigo-600'
                                   : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
                                 'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
@@ -71,7 +95,7 @@ export default function MainLayout() {
                               <item.icon
                                 aria-hidden="true"
                                 className={classNames(
-                                  item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                                  current(item) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
                                   'h-6 w-6 shrink-0',
                                 )}
                               />
@@ -101,7 +125,7 @@ export default function MainLayout() {
                         <a
                           href={item.href}
                           className={classNames(
-                            item.current
+                            current(item)
                               ? 'bg-gray-50 text-indigo-600'
                               : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
                             'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
@@ -110,7 +134,7 @@ export default function MainLayout() {
                           <item.icon
                             aria-hidden="true"
                             className={classNames(
-                              item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                              current(item) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
                               'h-6 w-6 shrink-0',
                             )}
                           />

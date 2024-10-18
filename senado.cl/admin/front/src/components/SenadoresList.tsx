@@ -2,9 +2,10 @@ import {SenadoresMapRaw} from "@senado-cl/global/model";
 import SenadoresListItem from "./SenadoresListItem.tsx";
 import {Button} from "@headlessui/react";
 import clsx from "clsx";
+import SenadoresListItemLoading from "./SenadoresListItemLoading.tsx";
 
 interface Props {
-  map: SenadoresMapRaw
+  map?: SenadoresMapRaw
 }
 
 export default function SenadoresList({map}: Props) {
@@ -34,12 +35,13 @@ export default function SenadoresList({map}: Props) {
           </p>
         </div>
         <ul role="list" className="divide-y divide-gray-200">
-          {Object.keys(map).map(slug => (
+          {map ? Object.keys(map).map(slug => (
             <SenadoresListItem key={slug} slug={slug} data={map[slug]}/>
+          )) : [1,2,3,4,5,6,7,8,9].map(index => (
+            <SenadoresListItemLoading key={index}/>
           ))}
         </ul>
       </div>
     </div>
-  )
-    ;
+  );
 }

@@ -29,7 +29,7 @@ interface Props {
   dtl?: LegislaturaDtl
 }
 
-export default function LegislaturaItem({raw, dtl}: Props) {
+export default function LegislaturaListItem({raw, dtl}: Props) {
   const {id, numero, tipo, inicio, termino} = raw;
 
   const {ids, add, remove} = useContext(LegislaturasViewContext);

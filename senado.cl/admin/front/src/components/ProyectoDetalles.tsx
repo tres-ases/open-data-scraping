@@ -1,12 +1,15 @@
 import {ChevronRightIcon} from "@heroicons/react/24/outline";
 import {ProyectoRaw} from "@senado-cl/global/model";
 import {Link} from "react-router-dom";
+import ProyectoDetallesDescripcion from "./ProyectoDetallesDescripcion.tsx";
+import ProyectoDetallesAdjuntos from "./ProyectoDetallesAdjuntos.tsx";
+import ProyectoDetallesTimeline from "./ProyectoDetallesTimeline.tsx";
 
 interface Props {
   proyecto: ProyectoRaw
 }
 
-export default function ProyectoDetalles({proyecto}: Props) {
+export default function ProyectoDetalles({proyecto: {descripcion, informes, oficios, tramitaciones, materias}}: Props) {
   return (
     <>
       <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
@@ -16,7 +19,7 @@ export default function ProyectoDetalles({proyecto}: Props) {
               <ol role="list" className="flex items-center space-x-2">
                 <li>
                   <div className="flex items-center">
-                    <Link to="/senadores" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+                    <Link to="/proyectos" className="text-sm font-medium text-gray-500 hover:text-gray-700">
                       Proyectos
                     </Link>
                   </div>
@@ -31,17 +34,18 @@ export default function ProyectoDetalles({proyecto}: Props) {
                 </li>
               </ol>
             </nav>
-            <div
-              className=" lg:grid lg:grid-cols-2">
-              <div className="lg:max-w-lg lg:self-end">
-                <div className="mt-4">
-                  <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                    {proyecto.descripcion.boletin} - Ley N° {proyecto.descripcion.leyNumero}
-                  </h1>
-                </div>
-              </div>
-            </div>
+            <ProyectoDetallesDescripcion descripcion={descripcion} materias={materias}/>
           </div>
+        </div>
+      </div>
+      <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow mt-6">
+        <div className="flex mx-4">
+          <ProyectoDetallesAdjuntos linkMensajeMocion={descripcion.linkMensajeMocion} informes={informes}/>
+        </div>
+      </div>
+      <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow mt-6">
+        <div className="flex mx-4 my-6">
+          <ProyectoDetallesTimeline informes={informes} oficios={oficios} tramitaciones={tramitaciones}/>
         </div>
       </div>
     </>
