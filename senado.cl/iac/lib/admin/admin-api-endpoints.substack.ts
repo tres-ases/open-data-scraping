@@ -76,9 +76,9 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
       actions: ['s3:GetObject', 's3:ListBucket']
     }));
 
-    //this.staticApi();
-    //this.rawS3Api();
-    //this.dtlS3Api();
+    this.staticApi();
+    this.rawS3Api();
+    this.dtlS3Api();
     this.scraperApi();
     this.distillerApi();
   }
