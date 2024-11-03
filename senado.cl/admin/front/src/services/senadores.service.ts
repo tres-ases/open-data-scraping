@@ -2,11 +2,11 @@ import {get} from 'aws-amplify/api';
 import {SenadoresMapRaw, SenadorRaw} from "@senado-cl/global/model";
 
 const SenadorService = {
-  getRaw: async (senId: number | string) => {
+  getRaw: async (senSlug: number | string) => {
     try {
       const response = await get({
         apiName: 'admin',
-        path: `/raw/senadores/${senId}`
+        path: `/raw/senadores/${senSlug}`
       }).response;
       return JSON.parse(await response.body.text()) as SenadorRaw;
     } catch (error) {

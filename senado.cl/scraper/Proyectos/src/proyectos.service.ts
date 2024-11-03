@@ -1,8 +1,9 @@
 import * as cheerio from "cheerio";
 import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
 import {Logger} from "@aws-lambda-powertools/logger";
-import {ProyectoRaw, ProyectosMapRaw} from "@senado-cl/global/model";
-import {ProyectosMapRawRepo, ProyectosRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
+import {ProyectoRaw, ProyectosMapDtl, ProyectosMapRaw} from "@senado-cl/global/model";
+import {ProyectosMapDtlRepo, ProyectosMapRawRepo, ProyectosRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
+import {proyectoRaw2ProyectoDtl} from "./proyectos.mapper";
 
 const logger = new Logger();
 
@@ -10,22 +11,54 @@ const sqsClient = new SQSClient({});
 
 const proyectosRawRepo = new ProyectosRawRepo();
 const proyectosMapRawRepo = new ProyectosMapRawRepo();
+const proyectosMapDtlRepo = new ProyectosMapDtlRepo();
 const sesionRawListRepo = new SesionRawListRepo();
 
-export const getSaveProyecto = async (bolId: string) => {
-  const proyecto = await getProyecto(bolId);
-  logger.info(`Proyecto boletin: ${bolId}`, {proyecto})
-  if (proyecto)
-    await saveProyecto(bolId, proyecto);
+export const distill = async (bolId: string) => {
+  let mapDtl: ProyectosMapDtl;
+  try {
+    mapDtl = await proyectosMapDtlRepo.get() ?? {};
+  } catch (error) {
+    logger.error('Error al obtener el listado de senadores', error);
+    mapDtl = {};
+  }
+  const proyecto = await proyectosRawRepo.getBy({bolId});
+  if (proyecto) {
+    mapDtl[bolId] = proyectoRaw2ProyectoDtl(proyecto);
+    await proyectosMapDtlRepo.save(mapDtl);
+  } else {
+    logger.error('Error al obtener el proyecto');
+  }
 }
 
-export const saveProyecto = async (bolId: string | number, proyecto: ProyectoRaw): Promise<void> => {
+export const getSaveProyectoRaw = async (bolId: string) => {
+  const dLogger = logger.createChild({
+    persistentKeys: {bolId}
+  });
+  const proyecto = await getProyectoRaw(bolId);
+  dLogger.debug('getProyectoRaw', {proyecto});
+  if (proyecto) {
+    await saveProyectoRaw(bolId, proyecto);
+    const params = {
+      QueueUrl: process.env.PROYECTO_DISTILL_QUEUE_URL!,
+      MessageBody: bolId,
+    };
+    const command = new SendMessageCommand(params);
+    dLogger.debug('SQS.SendMessageCommand', {params});
+    return await sqsClient.send(command);
+  }
+}
+
+export const saveProyectoRaw = async (bolId: string | number, proyecto: ProyectoRaw): Promise<void> => {
   await proyectosRawRepo.save(proyecto, {bolId});
 }
 
-export const getProyecto = async (bolId: string) => {
-  const url = `https://tramitacion.senado.cl/wspublico/tramitacion.php?boletin=${bolId}`;
-  logger.info(`Url boletin ${bolId}`, {url})
+export const getProyectoRaw = async (proId: string) => {
+  const dLogger = logger.createChild({
+    persistentKeys: {proId}
+  });
+  const url = `https://tramitacion.senado.cl/wspublico/tramitacion.php?boletin=${proId}`;
+  logger.info('Obteniendo información', {url})
   const $ = await cheerio.fromURL(url, {
     xml: {
       lowerCaseAttributeNames: true,
@@ -33,7 +66,7 @@ export const getProyecto = async (bolId: string) => {
       lowerCaseTags: true,
       recognizeSelfClosing: true,
     }
-  })
+  });
 
   const data = $('proyectos').extract({
     proyecto: [
@@ -149,72 +182,100 @@ export const getProyecto = async (bolId: string) => {
       }
     ],
   });
-  if (data.proyecto) {
+  if (data.proyecto && data.proyecto[0]) {
     try {
-      return data.proyecto[0] as unknown as ProyectoRaw;
-    } catch (err) {
+      const proyecto = data.proyecto[0] as unknown as ProyectoRaw;
+      dLogger.debug('Proyecto obtenido satisfactoriamente', {proyecto})
+      return proyecto;
+    } catch (error) {
+      dLogger.error('Error al obtener proyecto', {error});
       return undefined;
     }
   } else {
+    dLogger.error('No se encontró el proyecto');
     return undefined;
   }
+
 }
 
 export const detectNewBolIds = async (legId: string) => {
+  const dLogger = logger.createChild();
   try {
+    dLogger.appendKeys({legId})
     const sesiones = await sesionRawListRepo.getBy({legId});
+    dLogger.debug('sesionRawListRepo.getBy', {sesiones});
     let proyectosExistentes: ProyectosMapRaw;
     try {
       proyectosExistentes = await proyectosMapRawRepo.get() ?? {};
+      dLogger.debug('proyectosMapRawRepo.get', {proyectos: proyectosExistentes})
     } catch (error) {
-      logger.error('Error al obtener el listado de senadores', error);
+      dLogger.error('Error al obtener el listado de senadores', error);
       proyectosExistentes = {};
     }
+    dLogger.debug('Proyectos existentes', {proyectosExistentes});
 
     if (proyectosExistentes === null) proyectosExistentes = {};
 
     if (sesiones) {
       const proyectosNuevos = new Set<string>();
       for (const sesion of sesiones) {
-        if (sesion.votaciones) {
-          for (const votacion of sesion.votaciones) {
-            const {boletin, tema} = votacion;
-            if (boletin) {
-              const boletinLimpio =
-                boletin.indexOf('-') > 0 ?
-                  boletin.split('-')[0].replace(/\D/g, '') :
-                  boletin;
-              if (proyectosExistentes[boletinLimpio] === undefined) {
-                proyectosNuevos.add(boletinLimpio);
+        try {
+          dLogger.appendKeys({sesId: sesion.id});
+          if (sesion.votaciones) {
+            for (const votacion of sesion.votaciones) {
+              try {
+                dLogger.appendKeys({votId: votacion.id});
+                const {boletin, tema} = votacion;
+                if (boletin) {
+                  const proId =
+                    boletin.indexOf('-') > 0 ?
+                      boletin.split('-')[0].replace(/\D/g, '') :
+                      boletin;
+                  const exists = proyectosExistentes[proId] != undefined;
+                  dLogger.debug('Info Proyecto', {proId, boletin, exists})
+                  if (!exists) {
+                    proyectosNuevos.add(proId);
+                  }
+                  proyectosExistentes[proId] = {
+                    boletin, tema
+                  };
+                } else {
+                  dLogger.debug('Votación sin boletin')
+                }
+              } finally {
+                dLogger.removeKeys(['votId'])
               }
-              proyectosExistentes[boletinLimpio] = {
-                boletin, tema
-              };
             }
+          } else {
+            dLogger.debug('Sesión sin votaciones');
           }
+        } finally {
+          dLogger.removeKeys(['sesId'])
         }
       }
       if (proyectosNuevos.size > 0) {
         await Promise.all(
           [...proyectosNuevos].map(bolId => {
             const params = {
-              QueueUrl: process.env.NEW_SEN_SLUGS_QUEUE_URL,
+              QueueUrl: process.env.NEW_SEN_SLUGS_QUEUE_URL!,
               MessageBody: bolId,
             };
             const command = new SendMessageCommand(params);
             return sqsClient.send(command);
           })
         );
-        logger.info(`Cantidad de boletines nuevos detectados ${proyectosNuevos.size}`);
-        logger.info('Detalle boletines nuevos detectados', {boletines: proyectosNuevos});
+        dLogger.info(`Cantidad de boletines nuevos detectados ${proyectosNuevos.size}`);
+        dLogger.info('Detalle boletines nuevos detectados', {boletines: proyectosNuevos});
         await proyectosMapRawRepo.save(proyectosExistentes);
       } else {
-        logger.info('No se detectaron boletines nuevos');
+        dLogger.info('No se detectaron boletines nuevos');
       }
       return proyectosNuevos;
     }
   } catch (error) {
-    logger.error('Error al obtener listado de slugs no descargados', error);
+    dLogger.error('Error al obtener listado de slugs no descargados', {error});
+  } finally {
+    dLogger.resetKeys();
   }
   return [] as string[];
 }

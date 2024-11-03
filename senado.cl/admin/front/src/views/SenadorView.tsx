@@ -7,17 +7,17 @@ import SenadorError from "../components/SenadorError.tsx";
 import SenadorDetalles from "../components/SenadorDetalles.tsx";
 
 export default function SenadorView() {
-  const { senId } = useParams();
+  const { senSlug } = useParams();
   const [senador, setSenador] = useState<SenadorRaw | null>()
 
   useEffect(() => {
     setSenador(undefined);
-    if(senId) {
-      SenadorService.getRaw(senId)
+    if(senSlug) {
+      SenadorService.getRaw(senSlug)
         .then(senador => setSenador(senador))
         .catch(() => setSenador(null));
     }
-  }, [senId]);
+  }, [senSlug]);
 
   if(senador === undefined) {
     return <SenadorLoading/>

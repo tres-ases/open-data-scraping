@@ -1,9 +1,9 @@
-import {getProyecto} from "./proyectos.service";
+import {getProyectoRaw} from "./proyectos.service";
 
 describe('Obtener información boletines', () => {
 
   test('Boletin n° 16504', async () => {
-    const result = await getProyecto('16504');
+    const result = await getProyectoRaw('16504');
     console.log(JSON.stringify(result, null, 2));
     expect(result).toBeDefined();
     expect(result.proyecto.length).toEqual(1);
@@ -13,7 +13,7 @@ describe('Obtener información boletines', () => {
   });
 
   test('Boletin n° 12465 - Ley de Pesca - Agravar penas', async () => {
-    const result = await getProyecto('12465');
+    const result = await getProyectoRaw('12465');
     expect(result).toBeDefined();
     expect(result.proyecto.length).toEqual(1);
     expect(result.proyecto[0].tramitaciones.length).toEqual(23);

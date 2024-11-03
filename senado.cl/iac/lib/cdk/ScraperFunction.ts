@@ -29,6 +29,7 @@ export default class ScraperFunction extends nodejs.NodejsFunction {
       timeout: Duration.seconds(timeout),
       memorySize,
       environment,
+      
     });
   }
 }

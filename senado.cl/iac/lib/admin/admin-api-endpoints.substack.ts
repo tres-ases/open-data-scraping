@@ -86,9 +86,9 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
   staticApi() {
     const staticResource = this.api.root.addResource('img');
     const staticSenadorResource = staticResource.addResource('senador');
-    const staticSenIdResource = staticSenadorResource.addResource('{senId}');
+    const staticSenIdResource = staticSenadorResource.addResource('{senSlug}');
     const staticSenIdImgResource = staticSenIdResource.addResource('{img}');
-    this.addS3ToResource(staticSenIdImgResource, SenadoresBucketKey.img('{senId}', '{img}'), ['senId', 'img']);
+    this.addS3ToResource(staticSenIdImgResource, SenadoresBucketKey.img('{senSlug}', '{img}'), ['senSlug', 'img']);
   }
 
   distillerApi(){
@@ -129,8 +129,8 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
 
     const rawSenResource = rawResource.addResource('senadores');
     this.addS3ToResource(rawSenResource, SenadoresBucketKey.rawMap)
-    const rawSenIdResource = rawSenResource.addResource('{senId}');
-    this.addS3ToResource(rawSenIdResource, SenadoresBucketKey.rawJson('{senId}'), ['senId'])
+    const rawSenIdResource = rawSenResource.addResource('{senSlug}');
+    this.addS3ToResource(rawSenIdResource, SenadoresBucketKey.rawJson('{senSlug}'), ['senSlug'])
 
     const rawProResource = rawResource.addResource('proyectos');
     this.addS3ToResource(rawProResource, ProyectosBucketKey.rawMap)

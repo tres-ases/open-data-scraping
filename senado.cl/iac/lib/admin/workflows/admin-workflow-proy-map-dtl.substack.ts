@@ -6,42 +6,38 @@ import {IBucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import {SqsEventSource} from "aws-cdk-lib/aws-lambda-event-sources";
 
-const prefix = 'senadoClWorkflows-proListGetRaw';
+const prefix = 'senadoClWorkflows-proMapDtl';
 
-interface AdminApiWorkflowsSubstackProps {
+interface AdminWorkflowProyMapDtlSubstackProps {
   layers: LayerVersion[]
   dataBucket: IBucket
-  proyDistillQueue: Queue
 }
 
-export default class AdminWorkflowProyListGetRawSubstack extends NestedStack {
+export default class AdminWorkflowProyMapDtlSubstack extends NestedStack {
 
   readonly queue: Queue;
 
-  constructor(scope: Construct, {layers, dataBucket, proyDistillQueue}: AdminApiWorkflowsSubstackProps) {
+  constructor(scope: Construct, {layers, dataBucket}: AdminWorkflowProyMapDtlSubstackProps) {
     super(scope, prefix);
 
-    this.queue = new Queue(this, `${prefix}-saveNew-queue`, {
-      queueName: `${prefix}-saveNew-queue`,
+    this.queue = new Queue(this, `${prefix}-distillProyecto-queue`, {
+      queueName: `${prefix}-distillProyecto-queue`,
       visibilityTimeout: Duration.seconds(122),
       retentionPeriod: Duration.days(1),
       receiveMessageWaitTime: Duration.seconds(10),
       deliveryDelay: Duration.seconds(30),
     });
 
-    const saveNuevosProyectosFn = new ScraperFunction(this, `${prefix}-saveNew`, {
+    const distillProyectoFn = new ScraperFunction(this, `${prefix}-distillProyecto`, {
       pckName: 'Proyectos',
-      handler: 'proyectos.getSaveRawQueueHandler',
+      handler: 'proyectos.distill',
       layers,
-      timeout: 120,
-      environment: {
-        PROYECTO_DISTILL_QUEUE_URL: proyDistillQueue.queueUrl
-      },
+      timeout: 120
     });
 
-    dataBucket.grantReadWrite(saveNuevosProyectosFn);
-    saveNuevosProyectosFn.addEventSource(new SqsEventSource(this.queue));
-    this.queue.grantConsumeMessages(saveNuevosProyectosFn);
+    dataBucket.grantReadWrite(distillProyectoFn);
+    distillProyectoFn.addEventSource(new SqsEventSource(this.queue));
+    this.queue.grantConsumeMessages(distillProyectoFn);
   }
 
   getLogicalId(element: CfnElement): string {

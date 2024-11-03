@@ -32,7 +32,8 @@ export default class AdminWorkflowSenListGetRawSubstack extends NestedStack {
       pckName: 'Senadores',
       handler: 'senadores.getSaveQueueHandler',
       layers,
-      timeout: 120
+      timeout: 120,
+
     });
 
     dataBucket.grantReadWrite(saveNuevosSenadoresFn);

@@ -32,8 +32,8 @@ export const getSenador = async (slug: string) => {
 
 export const saveSenador = async (senador: SenadorRaw) => {
   await Promise.all([
-    senadorRawRepo.save(senador, {senId: senador.id}),
-    getSaveSenImg(senador.id, senador.uuid, senador.slug),
+    senadorRawRepo.save(senador, {senSlug: senador.slug}),
+    getSaveSenImg(senador.uuid, senador.slug),
   ]);
   return senador;
 };
@@ -43,17 +43,17 @@ export const getSaveSenador = async (slug: string) => {
   return await saveSenador(await getSenador(slug));
 }
 
-const getSaveSenImg = async (senId: string | number, uuid: string, slug: string) => {
+const getSaveSenImg = async (uuid: string, senSlug: string) => {
   try {
-    const imageUrl = SENADOR_IMG_URL(uuid, slug);
+    const imageUrl = SENADOR_IMG_URL(uuid, senSlug);
     logger.info('Obteniendo img src', {imageUrl});
     const response = await axios.get(imageUrl, {
       responseType: 'arraybuffer',
       timeout: 10000
     });
-    await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senId, img: 'default.jpg'});
+    await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senSlug, img: 'default.jpg'});
   } catch (error) {
-    logger.error(`Error al obtener la imagen para el slug ${slug}`, error);
+    logger.error(`Error al obtener la imagen para el slug ${senSlug}`, error);
   }
 }
 
