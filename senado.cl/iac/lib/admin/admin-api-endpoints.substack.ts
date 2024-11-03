@@ -77,7 +77,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     }));
 
     this.staticApi();
-    this.rawS3Api();
+    //this.rawS3Api();
     this.dtlS3Api();
     this.scraperApi();
     this.distillerApi();
