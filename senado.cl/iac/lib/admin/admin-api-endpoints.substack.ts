@@ -141,10 +141,10 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
   dtlS3Api() {
     const dtlResource = this.api.root.addResource('dtl');
     const dtlLegResource = dtlResource.addResource('legislaturas');
-    this.addS3ToResource(dtlLegResource, LegislaturasBucketKey.distilledJson);
+    this.addS3ToResource(dtlLegResource, LegislaturasBucketKey.dtlJson);
 
     const dtlLegIdResource = dtlLegResource.addResource('{legId}');
-    this.addS3ToResource(dtlLegIdResource, LegislaturasBucketKey.distilledDetailJson('{legId}'), ['legId']);
+    this.addS3ToResource(dtlLegIdResource, LegislaturasBucketKey.dtlDetailJson('{legId}'), ['legId']);
 
     const dtlSesResource = dtlResource.addResource('sesiones');
     const dtlSesIdResource = dtlSesResource.addResource('{sesId}');
