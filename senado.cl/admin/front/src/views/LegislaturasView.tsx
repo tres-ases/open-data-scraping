@@ -22,8 +22,11 @@ export default function LegislaturasView() {
     if(ids.size === 0) extract();
   }, [ids.size]);
 
-  const extract = () => {
+  const extract = async () => {
     setData({});
+
+    await LegislaturaService.scrape();
+
     Promise.all([
       LegislaturaService.getRawList(),
       LegislaturaService.getDtlList()

@@ -38,7 +38,7 @@ export default class AdminWorkflowProyListGetRawSubstack extends NestedStack {
         PROYECTO_DISTILL_QUEUE_URL: proyDistillQueue.queueUrl
       },
     });
-
+    proyDistillQueue.grantSendMessages(saveNuevosProyectosFn);
     dataBucket.grantReadWrite(saveNuevosProyectosFn);
     saveNuevosProyectosFn.addEventSource(new SqsEventSource(this.queue));
     this.queue.grantConsumeMessages(saveNuevosProyectosFn);
