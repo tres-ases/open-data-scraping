@@ -30,7 +30,7 @@ function App() {
           <Route index element={<SenadoresView/>}/>
         </Route>
         <Route path="senador">
-          <Route path=":senId" element={<SenadorView/>}/>
+          <Route path=":senSlug" element={<SenadorView/>}/>
         </Route>
         <Route path="proyectos">
           <Route index element={<ProyectosView/>}/>

@@ -7,7 +7,7 @@ import axios from "axios";
 import {SenadorResponse} from "./senadores.model";
 import {parliamentarianSenadoData2SenadorRaw} from "./senadores.mapper";
 
-const token = 'PoRBxBbd0fniUwg-GS0bp';
+const token = 'GkTQim2_3oBCgZvYsnznZ';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
 const SENADOR_IMG_URL = (uuid: string, slug: string) => `https://www.senado.cl/_next/image?url=https://cdn.senado.cl/portal-senado-produccion/public/parlamentarios/${uuid}/${slug}_600x600.jpg&w=1080&q=75`;
 

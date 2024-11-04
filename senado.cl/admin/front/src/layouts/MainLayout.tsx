@@ -37,8 +37,6 @@ export default function MainLayout() {
   const {user, signOut} = useAuthenticator(context => [context.user]);
   const location = useLocation();
 
-  console.log('location', location);
-
   const current = ({href, locations}: NavigationItem) => {
     if(location.pathname.startsWith(href)) {
       return true;

@@ -73,7 +73,7 @@ export default function SenadorDetalles({senador}: Props) {
 
               <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
                 <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
-                  <img alt="senador.nombre" src={`/img/senador/${senador.id}/default.jpg`}
+                  <img alt={senador.nombre} src={`/img/senador/${senador.slug}/default.jpg`}
                        className="h-1/2 w-1/2 object-cover object-center"/>
                 </div>
               </div>
@@ -81,8 +81,8 @@ export default function SenadorDetalles({senador}: Props) {
               <section className="mt-12">
                 <h2 className="text-base font-semibold leading-6 text-gray-900">Períodos</h2>
                 <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
-                  {senador.periodos.map(({camara, desde, hasta, vigente}) => (
-                    <li className="py-4 sm:flex">
+                  {senador.periodos.map(({camara, desde, hasta, vigente}, index) => (
+                    <li key={index} className="py-4 sm:flex">
                       <p className="w-28 flex-none">
                         {desde} - {hasta}
                       </p>

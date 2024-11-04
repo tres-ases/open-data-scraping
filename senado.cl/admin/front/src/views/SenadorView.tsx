@@ -15,7 +15,10 @@ export default function SenadorView() {
     if(senSlug) {
       SenadorService.getRaw(senSlug)
         .then(senador => setSenador(senador))
-        .catch(() => setSenador(null));
+        .catch(err => {
+          console.error(err);
+          setSenador(null);
+        });
     }
   }, [senSlug]);
 
