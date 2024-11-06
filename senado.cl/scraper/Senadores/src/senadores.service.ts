@@ -1,78 +1,16 @@
 import {Logger} from '@aws-lambda-powertools/logger';
 import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
-import {SenadoresMapRaw, SenadorRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
-import {SenadorImgRepo, SenadorMapRawRepo, SenadorRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
-import {CommonsData} from "@senado-cl/scraper-commons";
+import {SenadoresMapRaw, VotacionDetalleRaw} from "@senado-cl/global/model";
+import {SenadorMapRawRepo, SesionRawListRepo} from "@senado-cl/global/repo";
 import axios from "axios";
-import {SenadorResponse} from "./senadores.model";
-import {parliamentarianSenadoData2SenadorRaw} from "./senadores.mapper";
-
-const token = 'GkTQim2_3oBCgZvYsnznZ';
-const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
-const SENADOR_IMG_URL = (uuid: string, slug: string) => `${CommonsData.SENADO_WEB}/_next/image?url=https://cdn.senado.cl/portal-senado-produccion/public/parlamentarios/${uuid}/${slug}_600x600.jpg&w=1080&q=75`;
 
 const logger = new Logger();
 const sqsClient = new SQSClient({});
 
 const senadorMapRawRepo = new SenadorMapRawRepo();
-const senadorRawRepo = new SenadorRawRepo();
-const senadorImgRepo = new SenadorImgRepo();
 const sesionRawListRepo = new SesionRawListRepo();
 
-axios.defaults.timeout = 5000
-
-export const getSenador = async (slug: string) => {
-  const dLogger = logger.createChild({
-    persistentKeys: {slug}
-  });
-  const url = SENADOR_URL(slug);
-  dLogger.info('Obteniendo información', {url});
-  const response = await axios.get<SenadorResponse>(SENADOR_URL(slug));
-  dLogger.debug('Información obtenida', {data: response.data});
-  const senador = parliamentarianSenadoData2SenadorRaw(response.data.pageProps.resource.data.parliamentarianSenadoData);
-  dLogger.info('Senador', {senador});
-  return senador;
-};
-
-export const saveSenador = async (senador: SenadorRaw) => {
-  await Promise.all([
-    senadorRawRepo.save(senador, {senSlug: senador.slug}),
-    getSaveSenImg(senador.uuid, senador.slug),
-  ]);
-  return senador;
-};
-
-export const getSaveSenador = async (slug: string) => {
-  const dLogger = logger.createChild({
-    persistentKeys: {slug}
-  });
-  dLogger.info('Ejecutando getSaveSenador', {slug});
-  await saveSenador(await getSenador(slug));
-  const params = {
-    QueueUrl: process.env.PART_MAP_DISTILL_QUEUE_URL!,
-    MessageBody: slug,
-  };
-  const command = new SendMessageCommand(params);
-  dLogger.debug('SQS.SendMessageCommand', {params});
-  return await sqsClient.send(command);
-}
-
-const getSaveSenImg = async (uuid: string, slug: string) => {
-  const dLogger = logger.createChild({
-    persistentKeys: {uuid, slug}
-  });
-  try {
-    const imageUrl = SENADOR_IMG_URL(uuid, slug);
-    dLogger.info("Obteniendo img src", {imageUrl});
-    const response = await axios.get(imageUrl, {
-      responseType: 'arraybuffer',
-      timeout: 10000
-    });
-    await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senSlug: slug, img: 'default.jpg'});
-  } catch (error) {
-    dLogger.error("Error al obtener la imagen", error);
-  }
-}
+axios.defaults.timeout = 5000;
 
 export const detectNewSlugs = async (legId: string) => {
   const dLogger = logger.createChild({

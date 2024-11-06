@@ -1,4 +1,4 @@
-import {Code, LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda";
+import {Code, LayerVersion, Runtime, Tracing} from "aws-cdk-lib/aws-lambda";
 import {aws_lambda_nodejs as nodejs, Duration} from "aws-cdk-lib";
 import {Construct} from "constructs";
 
@@ -31,6 +31,7 @@ export default class ScraperFunction extends nodejs.NodejsFunction {
       memorySize,
       environment,
       reservedConcurrentExecutions,
+      tracing: Tracing.ACTIVE
     });
   }
 }

@@ -31,7 +31,7 @@ export default class AdminWorkflowSenListGetRawSubstack extends NestedStack {
 
     const saveNuevosSenadoresFn = new ScraperFunction(this, `${prefix}-saveNew`, {
       pckName: 'Senadores',
-      handler: 'senadores.getSaveQueueHandler',
+      handler: 'senadores.handler.getSave.handler',
       layers,
       timeout: 120,
       environment: {
