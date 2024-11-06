@@ -58,7 +58,7 @@ export const getProyectoRaw = async (proId: string) => {
     persistentKeys: {proId}
   });
   const url = `https://tramitacion.senado.cl/wspublico/tramitacion.php?boletin=${proId}`;
-  logger.info('Obteniendo información', {url})
+  dLogger.info('Obteniendo información', {url})
   const $ = await cheerio.fromURL(url, {
     xml: {
       lowerCaseAttributeNames: true,
@@ -195,7 +195,6 @@ export const getProyectoRaw = async (proId: string) => {
     dLogger.error('No se encontró el proyecto');
     return undefined;
   }
-
 }
 
 export const detectNewBolIds = async (legId: string) => {

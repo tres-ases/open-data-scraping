@@ -7,6 +7,7 @@ import AdminWorkflowLegSesGetDistillSubstackSubstack from "./workflows/admin-wor
 import AdminWorkflowSenListGetRawSubstack from "./workflows/admin-workflow-sen-list-get-raw.substack";
 import AdminWorkflowProyListGetRawSubstack from "./workflows/admin-workflow-proy-list-get-raw.substack";
 import AdminWorkflowProyMapDtlSubstack from "./workflows/admin-workflow-proy-map-dtl.substack";
+import AdminWorkflowPartMapDtlSubstack from "./workflows/admin-workflow-part-map-dtl.substack";
 
 const prefix = 'senado-cl-workflows';
 
@@ -22,7 +23,13 @@ export default class AdminWorkflowsSubstack extends NestedStack {
   constructor(scope: Construct, {layers, dataBucket}: AdminApiWorkflowsSubstackProps) {
     super(scope, prefix);
 
-    const senListGetRawWf = new AdminWorkflowSenListGetRawSubstack(this, {layers, dataBucket});
+    const partMapDtlWf = new AdminWorkflowPartMapDtlSubstack(this, {layers, dataBucket});
+
+    const senListGetRawWf = new AdminWorkflowSenListGetRawSubstack(this, {
+      layers, dataBucket,
+      partMapDtlQueue: partMapDtlWf.queue
+    });
+
     const proyDistillWf = new AdminWorkflowProyMapDtlSubstack(this, {layers, dataBucket});
     const proyListGetRawWf = new AdminWorkflowProyListGetRawSubstack(this, {
       layers, dataBucket,

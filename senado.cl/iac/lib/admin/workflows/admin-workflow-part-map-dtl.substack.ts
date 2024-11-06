@@ -6,43 +6,39 @@ import {IBucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import {SqsEventSource} from "aws-cdk-lib/aws-lambda-event-sources";
 
-const prefix = 'senadoClWorkflows-senListGetRaw';
+const prefix = 'senadoClWorkflows-partMapDtl';
 
-interface AdminApiWorkflowsSubstackProps {
+interface AdminWorkflowPartMapDtlSubstackProps {
   layers: LayerVersion[]
   dataBucket: IBucket
-  partMapDtlQueue: Queue
 }
 
-export default class AdminWorkflowSenListGetRawSubstack extends NestedStack {
+export default class AdminWorkflowPartMapDtlSubstack extends NestedStack {
 
   readonly queue: Queue;
 
-  constructor(scope: Construct, {layers, dataBucket, partMapDtlQueue}: AdminApiWorkflowsSubstackProps) {
+  constructor(scope: Construct, {layers, dataBucket}: AdminWorkflowPartMapDtlSubstackProps) {
     super(scope, prefix);
 
-    this.queue = new Queue(this, `${prefix}-saveNew-queue`, {
-      queueName: `${prefix}-saveNew-queue`,
+    this.queue = new Queue(this, `${prefix}-distill-queue`, {
+      queueName: `${prefix}-distill-queue`,
       visibilityTimeout: Duration.seconds(122),
       retentionPeriod: Duration.days(1),
       receiveMessageWaitTime: Duration.seconds(10),
       deliveryDelay: Duration.seconds(30),
     });
 
-    const saveNuevosSenadoresFn = new ScraperFunction(this, `${prefix}-saveNew`, {
-      pckName: 'Senadores',
-      handler: 'senadores.getSaveQueueHandler',
+    const distillPartidosFn = new ScraperFunction(this, `${prefix}-distill`, {
+      pckName: 'Partidos',
+      handler: 'partidos.distillMapQueueHandler',
       layers,
       timeout: 120,
-      environment: {
-        PART_MAP_DISTILL_QUEUE_URL: partMapDtlQueue.queueUrl
-      }
+      reservedConcurrentExecutions: 1
     });
 
-    partMapDtlQueue.grantSendMessages(saveNuevosSenadoresFn);
-    dataBucket.grantReadWrite(saveNuevosSenadoresFn);
-    saveNuevosSenadoresFn.addEventSource(new SqsEventSource(this.queue));
-    this.queue.grantConsumeMessages(saveNuevosSenadoresFn);
+    dataBucket.grantReadWrite(distillPartidosFn);
+    distillPartidosFn.addEventSource(new SqsEventSource(this.queue));
+    this.queue.grantConsumeMessages(distillPartidosFn);
   }
 
   getLogicalId(element: CfnElement): string {

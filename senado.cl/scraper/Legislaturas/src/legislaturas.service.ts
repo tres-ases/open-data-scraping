@@ -49,6 +49,9 @@ export const getSaveLegislaturas = async () => {
 }
 
 const readRawLegislatura = async (legId: string): Promise<LegislaturaRaw> => {
+  const dLogger = logger.createChild({
+    persistentKeys: {legId}
+  });
   const list = await legislaturaRawListRepo.get();
   if (list) {
     const filtered = list.filter(l => l.id === +legId);
@@ -56,7 +59,7 @@ const readRawLegislatura = async (legId: string): Promise<LegislaturaRaw> => {
       return filtered[0];
     }
   }
-  logger.error('readRawLegislatura', "List doesn't exist");
+  dLogger.error("legislaturaRawListRepo.get - list doesn't exist");
   throw new Error(`RawLegislatura not found for legId: ${legId}`);
 };
 
@@ -72,7 +75,10 @@ const saveDistilledLegislatura = async (legislatura: LegislaturaDtl) => {
 };
 
 export const distillSaveLegislatura = async (legId: string) => {
-  logger.info(`Destilando legislatura id:${legId}`)
+  const dLogger = logger.createChild({
+    persistentKeys: {legId}
+  });
+  dLogger.info("Destilando legislatura");
   let [rawLeg, rawSesList] = await Promise.all([
     readRawLegislatura(legId),
     sesionRawListRepo.getBy({legId})
@@ -89,8 +95,11 @@ export const distillSaveLegislatura = async (legId: string) => {
     const hashActual = sha1(JSON.stringify(legislaturaMap[legislatura.id]));
     const hashNuevo = sha1(JSON.stringify(legislatura));
 
-    logger.debug(`Hash valor actual legislatura : ${hashActual}`);
-    logger.debug(`Hash valor nuevo legislatura  : ${hashNuevo}`);
+    dLogger.debug("Comparando hash's", {hashActual, hashNuevo});
+    if(hashNuevo === hashActual) {
+      dLogger.info("No hay cambios", {hashActual, hashNuevo});
+      return;
+    }
   }
   legislaturaMap[legislatura.id] = legislatura;
 

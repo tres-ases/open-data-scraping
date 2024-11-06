@@ -1,15 +1,15 @@
 import {useEffect, useState} from "react";
-import {ProyectosMapRaw} from "@senado-cl/global/model";
+import {ProyectosMapDtl} from "@senado-cl/global/model";
 import ProyectosService from "../services/proyectos.service.ts";
 import ProyectosError from "../components/ProyectosError.tsx";
 import ProyectosList from "../components/ProyectosList.tsx";
 
 export default function ProyectosView() {
 
-  const [proyectosMap, setProyectosMap ] = useState<ProyectosMapRaw | null>();
+  const [proyectosMap, setProyectosMap ] = useState<ProyectosMapDtl | null>();
 
   useEffect(() => {
-    ProyectosService.getRawMap()
+    ProyectosService.getDtlMap()
       .then(map => setProyectosMap(map))
   }, []);
 

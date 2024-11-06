@@ -10,7 +10,8 @@ interface SenadoNodejsFunctionProps {
   memorySize?: number,
   environment?: {
     [key: string]: string;
-  }
+  },
+  reservedConcurrentExecutions?: number
 }
 
 function codeFromPackage(name: string) {
@@ -19,7 +20,7 @@ function codeFromPackage(name: string) {
 
 export default class ScraperFunction extends nodejs.NodejsFunction {
 
-  constructor(scope: Construct, id: string, {pckName, handler, layers = [], timeout = 30, memorySize, environment}: SenadoNodejsFunctionProps) {
+  constructor(scope: Construct, id: string, {pckName, handler, layers = [], timeout = 30, memorySize, environment, reservedConcurrentExecutions}: SenadoNodejsFunctionProps) {
     super(scope, id, {
       functionName: id,
       code: codeFromPackage(pckName),
@@ -29,7 +30,7 @@ export default class ScraperFunction extends nodejs.NodejsFunction {
       timeout: Duration.seconds(timeout),
       memorySize,
       environment,
-      
+      reservedConcurrentExecutions,
     });
   }
 }

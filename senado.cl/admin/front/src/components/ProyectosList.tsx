@@ -1,14 +1,16 @@
-import {ProyectosMapRaw} from "@senado-cl/global/model";
+import {ProyectosMapDtl} from "@senado-cl/global/model";
 import {Button} from "@headlessui/react";
 import clsx from "clsx";
 import ProyectosListItem from "./ProyectosListItem.tsx";
 import ProyectosListItemLoading from "./ProyectosListItemLoading.tsx";
 
 interface Props {
-  map?: ProyectosMapRaw
+  map?: ProyectosMapDtl
 }
 
 export default function ProyectosList({map}: Props) {
+  const mapKeys = map ? Object.keys(map) : undefined;
+
   return (
     <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
       <div>
@@ -16,7 +18,7 @@ export default function ProyectosList({map}: Props) {
           <div className="flex pb-2">
             <div className="flex-auto">
               <h3 className="text-base font-semibold leading-7 text-gray-900">
-                Listado de Proyectos
+                Listado de Proyectos {mapKeys ? `(${mapKeys.length})` : ''}
               </h3>
             </div>
             <div className="flex-none">
@@ -36,8 +38,8 @@ export default function ProyectosList({map}: Props) {
           </p>
         </div>
         <ul role="list" className="divide-y divide-gray-200">
-          {map ? Object.keys(map).map(bolId => (
-            <ProyectosListItem key={bolId} data={map[bolId]}/>
+          {mapKeys ? mapKeys.map(bolId => (
+            <ProyectosListItem key={bolId} data={map![bolId]}/>
           )) : [1, 2, 3, 4, 5].map(index => (
             <ProyectosListItemLoading key={index}/>
           ))}
