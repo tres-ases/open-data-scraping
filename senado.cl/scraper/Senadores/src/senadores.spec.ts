@@ -1,10 +1,10 @@
-import {getSenador} from "./senadores.service";
-
+import {ExtractSaveRaw} from "./senadores.handler.extractSaveRaw";
 
 describe('Obtener información senador', () => {
 
   test('Detalles senador Rojo Edwards Silva', async () => {
-    const result = await getSenador('rojo-edwards-silva-sen');
+    const instance = new ExtractSaveRaw();
+    const result = await instance.extract('rojo-edwards-silva-sen');
     expect(result).toBeDefined();
   });
 });

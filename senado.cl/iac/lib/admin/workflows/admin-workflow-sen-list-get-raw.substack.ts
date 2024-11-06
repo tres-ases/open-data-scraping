@@ -6,7 +6,7 @@ import {IBucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import {SqsEventSource} from "aws-cdk-lib/aws-lambda-event-sources";
 
-const prefix = 'senadoClWorkflows-senListGetRaw';
+const prefix = 'senadoClWorkflows-senListExtractGetRaw';
 
 interface AdminApiWorkflowsSubstackProps {
   layers: LayerVersion[]
@@ -21,17 +21,17 @@ export default class AdminWorkflowSenListGetRawSubstack extends NestedStack {
   constructor(scope: Construct, {layers, dataBucket, partMapDtlQueue}: AdminApiWorkflowsSubstackProps) {
     super(scope, prefix);
 
-    this.queue = new Queue(this, `${prefix}-saveNew-queue`, {
-      queueName: `${prefix}-saveNew-queue`,
+    this.queue = new Queue(this, `${prefix}Queue`, {
+      queueName: `${prefix}-queue`,
       visibilityTimeout: Duration.seconds(122),
       retentionPeriod: Duration.days(1),
       receiveMessageWaitTime: Duration.seconds(10),
       deliveryDelay: Duration.seconds(30),
     });
 
-    const saveNuevosSenadoresFn = new ScraperFunction(this, `${prefix}-saveNew`, {
+    const saveNuevosSenadoresFn = new ScraperFunction(this, `${prefix}Fn`, {
       pckName: 'Senadores',
-      handler: 'senadores.handler.getSave.handler',
+      handler: 'senadores.handler.extractSaveRaw.handler',
       layers,
       timeout: 120,
       environment: {

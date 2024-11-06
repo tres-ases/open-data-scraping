@@ -7,7 +7,7 @@ import {DefinitionBody, JsonPath, Parallel, StateMachine, StateMachineType, Task
 import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 
-const prefix = 'senado-cl-workflows-leg-ses-get-distill';
+const prefix = 'senadoClWorkflows-LegSesExtractDistill';
 
 interface AdminApiWorkflowsSubstackProps {
   layers: LayerVersion[]
@@ -40,9 +40,9 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
     });
     dataBucket.grantReadWrite(distillSaveLegislatura);
 
-    const newSenSlug = new ScraperFunction(this, `${prefix}-detect-new-slugs`, {
+    const newSenSlug = new ScraperFunction(this, `${prefix}-DetectNewSlugsFn`, {
       pckName: 'Senadores',
-      handler: 'senadores.detectNewSlugsHandler',
+      handler: 'senadores.handler.detectNewSlugs.handler',
       layers,
       timeout: 180,
       memorySize: 512,
@@ -53,9 +53,9 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
     dataBucket.grantReadWrite(newSenSlug);
     senSlugQueue.grantSendMessages(newSenSlug);
 
-    const newProyBolId = new ScraperFunction(this, `${prefix}-detect-new-bolIds`, {
+    const newProyBolId = new ScraperFunction(this, `${prefix}-DetectNew2QueueFn`, {
       pckName: 'Proyectos',
-      handler: 'proyectos.detectNewBolIdsHandler',
+      handler: 'proyectos.handler.detectNew2Queue.handler',
       layers,
       timeout: 180,
       memorySize: 512,

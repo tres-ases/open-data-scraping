@@ -20,17 +20,17 @@ export default class AdminWorkflowProyMapDtlSubstack extends NestedStack {
   constructor(scope: Construct, {layers, dataBucket}: AdminWorkflowProyMapDtlSubstackProps) {
     super(scope, prefix);
 
-    this.queue = new Queue(this, `${prefix}-distillProyecto-queue`, {
-      queueName: `${prefix}-distillProyecto-queue`,
+    this.queue = new Queue(this, `${prefix}Queue`, {
+      queueName: `${prefix}-queue`,
       visibilityTimeout: Duration.seconds(122),
       retentionPeriod: Duration.days(1),
       receiveMessageWaitTime: Duration.seconds(10),
       deliveryDelay: Duration.seconds(30),
     });
 
-    const distillProyectoFn = new ScraperFunction(this, `${prefix}-distillProyecto`, {
+    const distillProyectoFn = new ScraperFunction(this, `${prefix}Fn`, {
       pckName: 'Proyectos',
-      handler: 'proyectos.distillQueueHandler',
+      handler: 'proyectos.handler.distillMapFromQueue.handler',
       layers,
       timeout: 120
     });
