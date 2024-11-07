@@ -23,9 +23,9 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
   constructor(scope: Construct, {layers, dataBucket, senSlugQueue, proyBolIdQueue}: AdminApiWorkflowsSubstackProps) {
     super(scope, prefix);
 
-    const sesionesGetSaveFunction = new ScraperFunction(this, `${prefix}-sesiones-getSave`, {
+    const sesionesGetSaveFunction = new ScraperFunction(this, `${prefix}-SesExtractSaveFn`, {
       pckName: 'Sesiones',
-      handler: 'sesiones.getSaveSesionesHandler',
+      handler: 'sesiones.handler.extractSaveRaw.handler',
       layers,
       timeout: 180
     });
@@ -33,7 +33,7 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
 
     const distillSaveLegislatura = new ScraperFunction(this, `${prefix}-legislatura-distill`, {
       pckName: 'Legislaturas',
-      handler: 'legislaturas.distillSaveLegislaturaHandler',
+      handler: 'legislaturas.handler.distill.handler',
       layers,
       timeout: 180,
       memorySize: 512

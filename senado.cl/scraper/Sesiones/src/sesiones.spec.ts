@@ -1,9 +1,10 @@
-import {getSesiones} from "./sesiones.service";
+import {ExtractSaveRaw} from "./sesiones.handler.extractSaveRaw";
 
 describe('Descargar listado sesiones', () => {
 
   test('Listado completo para legislatura id:503', async () => {
-    const result = await getSesiones('503');
+    const instance = new ExtractSaveRaw();
+    const result = await instance.extractSesiones('503');
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThanOrEqual(106);
     const sesionTipos = result.reduce((acc, curr) => acc.add(curr.tipo), new Set());

@@ -6,7 +6,7 @@ import {IBucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import {SqsEventSource} from "aws-cdk-lib/aws-lambda-event-sources";
 
-const prefix = 'senadoClWorkflows-partMapDtl';
+const prefix = 'senadoClWorkflows-PartMapDtl';
 
 interface AdminWorkflowPartMapDtlSubstackProps {
   layers: LayerVersion[]
@@ -20,7 +20,7 @@ export default class AdminWorkflowPartMapDtlSubstack extends NestedStack {
   constructor(scope: Construct, {layers, dataBucket}: AdminWorkflowPartMapDtlSubstackProps) {
     super(scope, prefix);
 
-    this.queue = new Queue(this, `${prefix}-distill-queue`, {
+    this.queue = new Queue(this, `${prefix}Queue`, {
       queueName: `${prefix}-distill-queue`,
       visibilityTimeout: Duration.seconds(122),
       retentionPeriod: Duration.days(1),
@@ -28,9 +28,9 @@ export default class AdminWorkflowPartMapDtlSubstack extends NestedStack {
       deliveryDelay: Duration.seconds(30),
     });
 
-    const distillPartidosFn = new ScraperFunction(this, `${prefix}-distill`, {
+    const distillPartidosFn = new ScraperFunction(this, `${prefix}Fn`, {
       pckName: 'Partidos',
-      handler: 'partidos.distillMapQueueHandler',
+      handler: 'partidos.handler.distillMap.handler',
       layers,
       timeout: 120,
       reservedConcurrentExecutions: 1

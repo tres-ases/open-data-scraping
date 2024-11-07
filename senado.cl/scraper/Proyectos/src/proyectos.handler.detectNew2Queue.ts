@@ -8,7 +8,7 @@ import {SendMessageCommand, SQSClient} from "@aws-sdk/client-sqs";
 
 axios.defaults.timeout = 5000;
 
-const serviceName = 'SenadoresGetSaveFromQueue';
+const serviceName = 'ProyectosDetectNew2Queue';
 const logger = new Logger({
   logLevel: 'INFO',
   serviceName

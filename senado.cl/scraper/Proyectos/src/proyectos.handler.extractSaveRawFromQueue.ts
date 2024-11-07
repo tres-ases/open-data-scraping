@@ -10,7 +10,7 @@ import * as cheerio from "cheerio";
 
 axios.defaults.timeout = 5000;
 
-const serviceName = 'SenadoresGetSaveFromQueue';
+const serviceName = 'ProyectosExtractSaveRawFromQueue';
 const logger = new Logger({
   logLevel: 'INFO',
   serviceName

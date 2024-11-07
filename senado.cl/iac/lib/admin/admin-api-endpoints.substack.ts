@@ -98,7 +98,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
 
     this.addLambdaToResource(dtlrLegIdResource, 'dstlr-legislaturas-get', {
       pckName: 'Legislaturas',
-      handler: 'legislaturas.distillSaveLegislaturaHandler',
+      handler: 'legislaturas.handler.distill.handler',
       grant: 'both'
     }, {
       httpMethod: 'POST',
@@ -159,9 +159,9 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     const scrSenadoresResource = scraperResource.addResource('senadores');
     const scrSenSlugResource = scrSenadoresResource.addResource('{slug}');
 
-    this.addLambdaToResource(scrSenSlugResource, 'senador-getSave', {
+    this.addLambdaToResource(scrSenSlugResource, 'SenExtractSaveRawFn', {
       pckName: 'Senadores',
-      handler: 'senadores.getSaveHandler',
+      handler: 'senadores.handler.extractSaveRaw.handler',
       grant: 'write'
     }, {
       httpMethod: 'POST',
@@ -169,18 +169,18 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     });
 
     const scrLegislaturasResource = scraperResource.addResource('legislaturas');
-    this.addLambdaToResource(scrLegislaturasResource, 'legislaturas-getSave', {
+    this.addLambdaToResource(scrLegislaturasResource, 'LegExtractSaveRawFn', {
       pckName: 'Legislaturas',
-      handler: 'legislaturas.getSaveLegislaturasHandler',
+      handler: 'legislaturas.handler.extractSaveRaw.handler',
       grant: 'write'
     }, {
       httpMethod: 'POST',
       responseTemplate: "$input.json('$.body')",
     });
 
-    this.addLambdaToResource(scrLegislaturasResource, 'legislaturas-get', {
+    this.addLambdaToResource(scrLegislaturasResource, 'LegExtractFn', {
       pckName: 'Legislaturas',
-      handler: 'legislaturas.getLegislaturasHandler',
+      handler: 'legislaturas.handler.extract.handler',
       grant: 'read'
     }, {
       httpMethod: 'GET',

@@ -9,7 +9,7 @@ import {proyectoRaw2ProyectoDtl} from "./proyectos.mapper";
 
 axios.defaults.timeout = 5000;
 
-const serviceName = 'SenadoresGetSaveFromQueue';
+const serviceName = 'ProyectosDistillFromQueue';
 const logger = new Logger({
   logLevel: 'INFO',
   serviceName

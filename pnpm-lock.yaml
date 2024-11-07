@@ -233,18 +233,21 @@ importers:
 
   senado.cl/scraper/Legislaturas:
     dependencies:
+      '@aws-lambda-powertools/commons':
+        specifier: ^2.10.0
+        version: 2.10.0
       '@aws-lambda-powertools/logger':
         specifier: ^2.8.0
         version: 2.9.0
+      '@aws-lambda-powertools/tracer':
+        specifier: ^2.10.0
+        version: 2.10.0
       '@senado-cl/global':
         specifier: workspace:*
         version: link:../../global
       '@senado-cl/scraper-commons':
         specifier: workspace:*
         version: link:../Commons
-      axios:
-        specifier: ^1.7.2
-        version: 1.7.7
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
@@ -285,18 +288,21 @@ importers:
 
   senado.cl/scraper/Partidos:
     dependencies:
+      '@aws-lambda-powertools/commons':
+        specifier: ^2.10.0
+        version: 2.10.0
       '@aws-lambda-powertools/logger':
         specifier: ^2.8.0
         version: 2.9.0
+      '@aws-lambda-powertools/tracer':
+        specifier: ^2.10.0
+        version: 2.10.0
       '@senado-cl/global':
         specifier: workspace:*
         version: link:../../global
       '@senado-cl/scraper-commons':
         specifier: workspace:*
         version: link:../Commons
-      axios:
-        specifier: ^1.7.2
-        version: 1.7.7
       cheerio:
         specifier: 1.0.0
         version: 1.0.0
@@ -453,15 +459,21 @@ importers:
 
   senado.cl/scraper/Sesiones:
     dependencies:
+      '@aws-lambda-powertools/commons':
+        specifier: ^2.10.0
+        version: 2.10.0
+      '@aws-lambda-powertools/logger':
+        specifier: ^2.8.0
+        version: 2.9.0
+      '@aws-lambda-powertools/tracer':
+        specifier: ^2.10.0
+        version: 2.10.0
       '@senado-cl/global':
         specifier: workspace:*
         version: link:../../global
       '@senado-cl/scraper-commons':
         specifier: workspace:*
         version: link:../Commons
-      axios:
-        specifier: ^1.7.2
-        version: 1.7.7
     devDependencies:
       '@aws-sdk/client-s3':
         specifier: ^3.609.0
