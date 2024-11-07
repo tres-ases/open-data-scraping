@@ -1,9 +1,7 @@
 import {Logger} from "@aws-lambda-powertools/logger";
 import type {LambdaInterface} from "@aws-lambda-powertools/commons/types";
 import {Tracer} from '@aws-lambda-powertools/tracer';
-import {LegislaturaRawListRepo} from "@senado-cl/global/repo";
 import {LegislaturaRaw, LegislaturaSc} from "@senado-cl/global/model";
-import axios from "axios";
 import {LegislaturasResponse} from "./legislaturas.model";
 import {CommonsData} from "@senado-cl/scraper-commons";
 
