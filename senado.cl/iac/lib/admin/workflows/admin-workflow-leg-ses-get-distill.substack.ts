@@ -25,7 +25,7 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
 
     const sesionesGetSaveFunction = new ScraperFunction(this, `${prefix}-SesExtractSaveFn`, {
       pckName: 'Sesiones',
-      handler: 'sesiones.handler.extractSaveRaw.handler',
+      handler: 'sesiones-extractSaveRaw.handler',
       layers,
       timeout: 180
     });
@@ -33,7 +33,7 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
 
     const distillSaveLegislatura = new ScraperFunction(this, `${prefix}-legislatura-distill`, {
       pckName: 'Legislaturas',
-      handler: 'legislaturas.handler.distill.handler',
+      handler: 'legislaturas-distill.handler',
       layers,
       timeout: 180,
       memorySize: 512
@@ -42,7 +42,7 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
 
     const newSenSlug = new ScraperFunction(this, `${prefix}-DetectNewSlugsFn`, {
       pckName: 'Senadores',
-      handler: 'senadores.handler.detectNewSlugs.handler',
+      handler: 'senadores-detectNewSlugs.handler',
       layers,
       timeout: 180,
       memorySize: 512,
@@ -55,7 +55,7 @@ export default class AdminWorkflowLegSesGetDistillSubstackSubstack extends Neste
 
     const newProyBolId = new ScraperFunction(this, `${prefix}-DetectNew2QueueFn`, {
       pckName: 'Proyectos',
-      handler: 'proyectos.handler.detectNew2Queue.handler',
+      handler: 'proyectos-detectNew2Queue.handler',
       layers,
       timeout: 180,
       memorySize: 512,

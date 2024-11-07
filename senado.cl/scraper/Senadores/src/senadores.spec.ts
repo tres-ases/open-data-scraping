@@ -1,4 +1,4 @@
-import {ExtractSaveRaw} from "./senadores.handler.extractSaveRaw";
+import {ExtractSaveRaw} from "./senadores-extractSaveRaw";
 
 describe('Obtener información senador', () => {
 

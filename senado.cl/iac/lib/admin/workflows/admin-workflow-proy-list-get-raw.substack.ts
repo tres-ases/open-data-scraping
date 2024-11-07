@@ -31,7 +31,7 @@ export default class AdminWorkflowProyListGetRawSubstack extends NestedStack {
 
     const saveNuevosProyectosFn = new ScraperFunction(this, `${prefix}Fn`, {
       pckName: 'Proyectos',
-      handler: 'proyectos.handler.extractSaveRawFromQueue.handler',
+      handler: 'proyectos-extractSaveRawFromQueue.handler',
       layers,
       timeout: 120,
       environment: {

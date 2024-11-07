@@ -1,4 +1,4 @@
-import {ExtractSaveRawFromQueue} from "./proyectos.handler.extractSaveRawFromQueue";
+import {ExtractSaveRawFromQueue} from "./proyectos-extractSaveRawFromQueue";
 
 describe('Obtener información boletines', () => {
 

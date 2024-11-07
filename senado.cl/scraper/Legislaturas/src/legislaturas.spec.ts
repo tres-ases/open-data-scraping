@@ -1,4 +1,4 @@
-import {LegExtract} from "./legislaturas.handler.extract";
+import {LegExtract} from "./legislaturas-extract";
 
 describe('Descargar listado legislaturas', () => {
 

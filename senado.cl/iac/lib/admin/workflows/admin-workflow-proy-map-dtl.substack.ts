@@ -30,7 +30,7 @@ export default class AdminWorkflowProyMapDtlSubstack extends NestedStack {
 
     const distillProyectoFn = new ScraperFunction(this, `${prefix}Fn`, {
       pckName: 'Proyectos',
-      handler: 'proyectos.handler.distillMapFromQueue.handler',
+      handler: 'proyectos-distillMapFromQueue.handler',
       layers,
       timeout: 120
     });

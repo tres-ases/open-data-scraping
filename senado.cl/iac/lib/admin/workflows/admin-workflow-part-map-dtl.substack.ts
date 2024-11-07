@@ -30,7 +30,7 @@ export default class AdminWorkflowPartMapDtlSubstack extends NestedStack {
 
     const distillPartidosFn = new ScraperFunction(this, `${prefix}Fn`, {
       pckName: 'Partidos',
-      handler: 'partidos.handler.distillMap.handler',
+      handler: 'partidos-distillMap.handler',
       layers,
       timeout: 120,
       reservedConcurrentExecutions: 1
