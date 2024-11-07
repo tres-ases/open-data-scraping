@@ -23,7 +23,7 @@ interface Event {
   slug: string
 }
 
-const token = 'GkTQim2_3oBCgZvYsnznZ';
+const token = '049F997F-DCA7-6F29-E063-5968A8C00BC5';
 const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
 const SENADOR_IMG_URL = (uuid: string, slug: string) => `${CommonsData.SENADO_WEB}/_next/image?url=https://cdn.senado.cl/portal-senado-produccion/public/parlamentarios/${uuid}/${slug}_600x600.jpg&w=1080&q=75`;
 
