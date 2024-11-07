@@ -6,8 +6,8 @@ import {SendMessageCommand, SQSClient} from "@aws-sdk/client-sqs";
 import {SenadorImgRepo, SenadorRawRepo} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
 import {SenadorRaw} from "@senado-cl/global/model";
-import {SenadorResponse} from "./senadores.model";
 import {parliamentarianSenadoData2SenadorRaw} from "./senadores.mapper";
+import * as cheerio from "cheerio";
 
 axios.defaults.timeout = 5000;
 
@@ -23,9 +23,11 @@ interface Event {
   slug: string
 }
 
-const token = '049F997F-DCA7-6F29-E063-5968A8C00BC5';
-const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/_next/data/${token}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}.json`;
-const SENADOR_IMG_URL = (uuid: string, slug: string) => `${CommonsData.SENADO_WEB}/_next/image?url=https://cdn.senado.cl/portal-senado-produccion/public/parlamentarios/${uuid}/${slug}_600x600.jpg&w=1080&q=75`;
+interface ImageFileUrlMap {
+  [file: string]: string
+}
+
+const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/senadoras-y-senadores/listado-de-senadoras-y-senadores/${slug}`;
 
 const senadorRawRepo = new SenadorRawRepo();
 const senadorImgRepo = new SenadorImgRepo();
@@ -39,7 +41,9 @@ export class ExtractSaveRaw implements LambdaInterface {
       persistentKeys: {slug}
     });
     dLogger.info('Ejecutando getSaveSenador', {slug});
-    await this.save(await this.extract(slug));
+    const json = await this.extractData(slug);
+    const imageFileUrlMap = await this.getImageFileUrlMapFromJson(slug, json)
+    await this.save(await this.extractFromJson(slug, json), imageFileUrlMap);
     const params = {
       QueueUrl: process.env.PART_MAP_DISTILL_QUEUE_URL!,
       MessageBody: slug,
@@ -50,42 +54,89 @@ export class ExtractSaveRaw implements LambdaInterface {
   }
 
   @tracer.captureMethod()
-  public async extractSaveImg(uuid: string, slug: string) {
+  public async extractSaveImgMap(slug: string, imageFileUrlMap: ImageFileUrlMap) {
     const dLogger = logger.createChild({
-      persistentKeys: {uuid, slug}
+      persistentKeys: {slug}
     });
     try {
-      const imageUrl = SENADOR_IMG_URL(uuid, slug);
-      dLogger.info("Obteniendo img src", {imageUrl});
-      const response = await axios.get(imageUrl, {
-        responseType: 'arraybuffer',
-        timeout: 10000
-      });
-      await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senSlug: slug, img: 'default.jpg'});
+      const promises: Promise<any>[] = [];
+      for (const [img, url] of Object.entries(imageFileUrlMap)) {
+        promises.push(
+          this.extractSaveImg(slug, img, url)
+        );
+      }
+      await Promise.all(promises);
     } catch (error) {
-      dLogger.error("Error al obtener la imagen", error);
+      dLogger.error("Error al extraer la imagen", error);
     }
   }
 
   @tracer.captureMethod()
-  public async extract(slug: string) {
+  public async extractSaveImg(slug: string, img: string, url: string) {
     const dLogger = logger.createChild({
       persistentKeys: {slug}
     });
-    const url = SENADOR_URL(slug);
-    dLogger.info('Obteniendo información', {url});
-    const response = await axios.get<SenadorResponse>(SENADOR_URL(slug));
-    dLogger.debug('Información obtenida', {data: response.data});
-    const senador = parliamentarianSenadoData2SenadorRaw(response.data.pageProps.resource.data.parliamentarianSenadoData);
+    try {
+      const response = await axios.get(url, {
+        responseType: 'arraybuffer',
+        timeout: 10000
+      });
+      await senadorImgRepo.save(Buffer.from(response.data), 'image/jpeg', {senSlug: slug, img});
+    } catch (error) {
+      dLogger.error("Error al extraer la imagen", error);
+    }
+  }
+
+  @tracer.captureMethod()
+  public async getImageFileUrlMapFromJson(slug: string, json: any) {
+    const dLogger = logger.createChild({
+      persistentKeys: {slug}
+    });
+    const images: ImageFileUrlMap = {};
+    try {
+      const senadorData = json['props']['pageProps']['resource']['data']['parliamentarianSenadoData']['data'][0];
+      if (senadorData) {
+        images['default.jpg'] = senadorData['IMAGEN'];
+        images['120x120.jpg'] = senadorData['IMAGEN_120'];
+        images['450x750.jpg'] = senadorData['IMAGEN_450'];
+        images['600x600.jpg'] = senadorData['IMAGEN_600'];
+      } else {
+        dLogger.error("La información del senador no está definida");
+      }
+    } catch (err) {
+      dLogger.error("Error al obtener la información del senador", err);
+    }
+    return images;
+  }
+
+  @tracer.captureMethod()
+  public async extractFromJson(slug: string, json: any) {
+    const dLogger = logger.createChild({
+      persistentKeys: {slug}
+    });
+    const senador = parliamentarianSenadoData2SenadorRaw(json.props.pageProps.resource.data.parliamentarianSenadoData);
     dLogger.info('Senador', {senador});
     return senador;
   }
 
   @tracer.captureMethod()
-  public async save(senador: SenadorRaw) {
+  public async extractData(slug: string) {
+    const dLogger = logger.createChild({
+      persistentKeys: {slug}
+    });
+    const url = SENADOR_URL(slug);
+    dLogger.info('Obteniendo información', {url});
+    const $ = await cheerio.fromURL(url);
+    const json = JSON.parse($('#__NEXT_DATA__').text());
+    dLogger.debug('Información obtenida', {json});
+    return json;
+  }
+
+  @tracer.captureMethod()
+  public async save(senador: SenadorRaw, imageFileUrlMap: ImageFileUrlMap) {
     await Promise.all([
       senadorRawRepo.save(senador, {senSlug: senador.slug}),
-      this.extractSaveImg(senador.uuid, senador.slug),
+      this.extractSaveImgMap(senador.slug, imageFileUrlMap),
     ]);
     return senador;
   };

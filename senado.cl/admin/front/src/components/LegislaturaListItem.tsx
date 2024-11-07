@@ -43,8 +43,8 @@ export default function LegislaturaListItem({raw, dtl}: Props) {
   const isProcessing = ids.has(id);
 
   return (
-    <>
-      <div className="min-w-0">
+    <li className="group flex gap-x-6 px-6 py-5 group hover:bg-gray-50">
+      <div className="grow min-w-0">
         <div className="flex items-start gap-x-3">
           {dtl ? (
             <Link to={`/legislatura/${id}`} className="text-sm font-semibold leading-6 text-gray-900">
@@ -93,15 +93,15 @@ export default function LegislaturaListItem({raw, dtl}: Props) {
           </div>
         )}
       </div>
-      <span className="isolate inline-flex shadow-sm">
+      <div className="flex-none shadow-sm">
         <Button type="button" disabled={isProcessing} onClick={process}
                 className={clsx(
-                  'transition ease-in-out duration-300 ring-1 ring-inset ring-gray-50 hover:bg-gray-50 text-gray-200 hover:text-gray-900 hover:ring-gray-300',
-                  'relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-50 focus:z-10'
+                  'transition ease-in-out duration-300 ring-1 ring-inset ring-gray-50 group-hover:bg-gray-100 text-gray-200 group-hover:text-gray-900 group-hover:ring-gray-300',
+                  'relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold group-hover:hover:bg-gray-50 focus:z-10'
                 )}>
           {isProcessing ? <Spinner/> : 'Procesar'}
         </Button>
-      </span>
-    </>
+      </div>
+    </li>
   );
 }
