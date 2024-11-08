@@ -70,6 +70,7 @@ class DetectNewSlugs implements LambdaInterface {
           }
         }
         if (senadoresNuevos.size > 0) {
+          await senadorMapRawRepo.save(senadoresExistentes);
           await Promise.all(
             [...senadoresNuevos].map(slug => {
               const params = {
@@ -82,7 +83,6 @@ class DetectNewSlugs implements LambdaInterface {
           );
           dLogger.info(`Cantidad de slugs nuevos detectados ${senadoresNuevos.size}`);
           dLogger.debug('Detalle slugs nuevos detectados', {slugs: senadoresNuevos});
-          await senadorMapRawRepo.save(senadoresExistentes);
         } else {
           dLogger.info('No se detectaron slugs nuevos');
         }
