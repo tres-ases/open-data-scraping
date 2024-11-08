@@ -12,7 +12,7 @@ import {
 import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {
   LegislaturasBucketKey,
-  MainBucketKey,
+  MainBucketKey, PartidosBucketKey,
   ProyectosBucketKey,
   SenadoresBucketKey,
   SesionesBucketKey
@@ -142,6 +142,9 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
     const dtlResource = this.api.root.addResource('dtl');
     const dtlLegResource = dtlResource.addResource('legislaturas');
     this.addS3ToResource(dtlLegResource, LegislaturasBucketKey.dtlJson);
+
+    const dtlPartResource = dtlResource.addResource('partidos');
+    this.addS3ToResource(dtlPartResource, PartidosBucketKey.dtlMap);
 
     const dtlProResource = dtlResource.addResource('proyectos');
     this.addS3ToResource(dtlProResource, ProyectosBucketKey.dtlMap);
