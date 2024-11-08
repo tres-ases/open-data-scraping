@@ -8,6 +8,7 @@ import {CommonsData} from "@senado-cl/scraper-commons";
 import {SenadorRaw} from "@senado-cl/global/model";
 import {parliamentarianSenadoData2SenadorRaw} from "./senadores.mapper";
 import * as cheerio from "cheerio";
+import {SQSEvent} from "aws-lambda/trigger/sqs";
 
 axios.defaults.timeout = 5000;
 
@@ -32,10 +33,18 @@ const SENADOR_URL = (slug: string) => `${CommonsData.SENADO_WEB}/senadoras-y-sen
 const senadorRawRepo = new SenadorRawRepo();
 const senadorImgRepo = new SenadorImgRepo();
 
-export class ExtractSaveRaw implements LambdaInterface {
+export class ExtractSaveRawFromQueue implements LambdaInterface {
 
   @tracer.captureLambdaHandler()
-  public async handler({slug}: Event, _context: any) {
+  public async handler({Records}: SQSEvent, _context: any) {
+    logger.info('Ejecutando getSaveDtlQueueHandler', {Records});
+    await Promise.all(
+      Records.map(async (record) => this.extractSaveRaw(record.body))
+    );
+  }
+
+  @tracer.captureMethod()
+  public async extractSaveRaw(slug: string) {
     logger.info('Ejecutando getSaveHandler', {slug});
     const dLogger = logger.createChild({
       persistentKeys: {slug}
@@ -142,5 +151,5 @@ export class ExtractSaveRaw implements LambdaInterface {
   };
 }
 
-const instance = new ExtractSaveRaw();
+const instance = new ExtractSaveRawFromQueue();
 export const handler = instance.handler.bind(instance);

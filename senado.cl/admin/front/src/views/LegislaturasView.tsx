@@ -23,6 +23,7 @@ export default function LegislaturasView() {
   }, [ids.size]);
 
   const scrape = async () => {
+    setData({});
     await LegislaturaService.scrape();
     await getLists();
   }

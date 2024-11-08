@@ -1,10 +1,10 @@
-import {ExtractSaveRaw} from "./senadores-extractSaveRaw";
+import {ExtractSaveRawFromQueue} from "./senadores-extractSaveRawFromQueue";
 
 describe('Obtener información senador', () => {
 
   test('Detalles senador Matías Walker Prieto', async () => {
     const slug = 'matias-walker-prieto-sen'; //const slug = 'rojo-edwards-silva-sen';
-    const instance = new ExtractSaveRaw();
+    const instance = new ExtractSaveRawFromQueue();
     const json = await instance.extractData(slug);
     const imageFileUrlMap = await instance.getImageFileUrlMapFromJson(slug, json)
     console.log(imageFileUrlMap);

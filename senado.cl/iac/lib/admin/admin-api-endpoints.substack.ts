@@ -161,7 +161,7 @@ export default class AdminApiEndpointsSubstack extends NestedStack {
 
     this.addLambdaToResource(scrSenSlugResource, 'SenExtractSaveRawFn', {
       pckName: 'Senadores',
-      handler: 'senadores-extractSaveRaw.handler',
+      handler: 'senadores-extractSaveRawFromQueue.handler',
       grant: 'write'
     }, {
       httpMethod: 'POST',
