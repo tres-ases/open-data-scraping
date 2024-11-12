@@ -7,6 +7,7 @@ import {
   FolderIcon,
   HomeIcon,
   PowerIcon,
+  UserGroupIcon,
   UserIcon,
   UsersIcon,
   XMarkIcon,
@@ -26,6 +27,7 @@ const navigation: NavigationItem[] = [
   {name: 'Legislaturas', href: '/legislaturas', icon: BriefcaseIcon, locations: ['/legislatura']},
   {name: 'Senadores', href: '/senadores', icon: UsersIcon, locations: ['/senador']},
   {name: 'Proyectos', href: '/proyectos', icon: FolderIcon, locations: ['/proyecto']},
+  {name: 'Partidos', href: '/partidos', icon: UserGroupIcon, locations: ['/partido']},
 ]
 
 function classNames(...classes: string[]) {

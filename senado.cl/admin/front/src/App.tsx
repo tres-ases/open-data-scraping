@@ -9,6 +9,7 @@ import SesionView from "./views/SesionView.tsx";
 import {LegislaturasViewProvider} from "./context/LegislaturasViewContext.tsx";
 import ProyectosView from "./views/ProyectosView.tsx";
 import ProyectoView from "./views/ProyectoView.tsx";
+import PartidosView from "./views/PartidosView.tsx";
 
 function App() {
   return (
@@ -37,6 +38,9 @@ function App() {
         </Route>
         <Route path="proyecto">
           <Route path=":bolId" element={<ProyectoView/>}/>
+        </Route>
+        <Route path="partidos">
+          <Route index element={<PartidosView/>}/>
         </Route>
         <Route path="*" element={<Navigate to="inicio" replace={true}/>}/>
       </Route>
