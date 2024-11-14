@@ -61,9 +61,9 @@ export interface VotacionRaw {
     pareo: number
   }
   detalle: {
-    si: VotacionDetalleRaw[] | 0
-    no: VotacionDetalleRaw[] | 0
-    abstencion: VotacionDetalleRaw[] | 0
-    pareo: VotacionDetalleRaw[] | 0
+    si: VotacionDetalleRaw[]
+    no: VotacionDetalleRaw[]
+    abstencion: VotacionDetalleRaw[]
+    pareo: VotacionDetalleRaw[]
   }
 }

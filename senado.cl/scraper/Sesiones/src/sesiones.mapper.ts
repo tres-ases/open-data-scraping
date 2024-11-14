@@ -1,8 +1,8 @@
 import {AsistenciaSc, SesionSc, VotacionSc, VotoDetalleSc} from "./sesiones.model";
 import {AsistenciaRaw, SesionRaw, VotacionDetalleRaw, VotacionRaw} from "@senado-cl/global/model";
 
-export function votoDetalleSc2VotacionDetalleRaw(detalles: VotoDetalleSc[] | 0): 0 | VotacionDetalleRaw[] {
-  return detalles === 0 ? 0 : detalles.map(d => ({
+export function votoDetalleSc2VotacionDetalleRaw(detalles: VotoDetalleSc[] | 0): VotacionDetalleRaw[] {
+  return detalles === 0 ? [] : detalles.map(d => ({
     uuid: d.UUID,
     parlId: d.PARLID,
     parSlug: d.SLUG,
