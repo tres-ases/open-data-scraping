@@ -9,10 +9,10 @@ export default function SesionVotacionItem({votacion}: Props) {
   const {hora, boletin, quorum, tema, detalle} = votacion;
 
   const items = [
-    {nombre: 'Apruebo', votos: detalle.si === 0 ? 0 : detalle.si.length},
-    {nombre: 'Rechazo', votos: detalle.no === 0 ? 0 : detalle.no.length},
-    {nombre: 'Abstención', votos: detalle.abstencion === 0 ? 0 : detalle.abstencion.length},
-    {nombre: 'Pareo', votos: detalle.pareo === 0 ? 0 : detalle.pareo.length},
+    {nombre: 'Apruebo', votos: detalle.si.length},
+    {nombre: 'Rechazo', votos: detalle.no.length},
+    {nombre: 'Abstención', votos: detalle.abstencion.length},
+    {nombre: 'Pareo', votos: detalle.pareo.length},
   ];
   const total = items.reduce((acc, curr) => acc + curr.votos, 0)
 
