@@ -1,11 +1,18 @@
 import {Logger} from "@aws-lambda-powertools/logger";
 import type {LambdaInterface} from "@aws-lambda-powertools/commons/types";
 import {Tracer} from '@aws-lambda-powertools/tracer';
-import {AsistenciaRawRepo, SesionRawListRepo, SesionRawRepo, VotacionRawListRepo} from "@senado-cl/global/repo";
+import {
+  AsistenciaRawRepo,
+  SesionRawListRepo,
+  SesionRawRepo, VotacionDetalleTableListRepo,
+  VotacionRawListRepo,
+  VotacionTableListRepo
+} from "@senado-cl/global/repo";
 import {CommonsData} from "@senado-cl/scraper-commons";
 import {AsistenciaRaw, SesionRaw, VotacionRaw} from "@senado-cl/global/model";
 import {AsistenciaResponse, SesionesResponse, VotacionesResponse} from "./sesiones.model";
 import {asistenciaSc2AsistenciaRaw, sesionSc2SesionRaw, votacionSc2VotacionRaw} from "./sesiones.mapper";
+import {VotacionesMapper} from "@senado-cl/global/mapper";
 
 const serviceName = 'SesionesExtractSaveRaw';
 const logger = new Logger({
@@ -26,6 +33,8 @@ const votacionRawListRepo = new VotacionRawListRepo();
 const asistenciaRawRepo = new AsistenciaRawRepo();
 const sesionRawRepo = new SesionRawRepo();
 const sesionRawListRepo = new SesionRawListRepo();
+const votacionTableListRepo = new VotacionTableListRepo();
+const votacionDetalleTableListRepo = new VotacionDetalleTableListRepo();
 
 export class ExtractSaveRaw implements LambdaInterface {
 
@@ -44,8 +53,18 @@ export class ExtractSaveRaw implements LambdaInterface {
       await Promise.all([
         sesionRawRepo.save(sesion, {sesId}),
         sesion.asistencia ? asistenciaRawRepo.save(sesion.asistencia, {sesId}) : Promise.resolve(),
-        sesion.votaciones ? votacionRawListRepo.save(sesion.votaciones, {sesId}) : Promise.resolve()
+        sesion.votaciones ? votacionRawListRepo.save(sesion.votaciones, {sesId}) : Promise.resolve(),
+        sesion.votaciones ? votacionTableListRepo.save(
+          sesion.votaciones.map(v => VotacionesMapper.votacionRaw2VotacionTable(v)), {sesId}
+        ) : Promise.resolve(),
+        sesion.votaciones ? sesion.votaciones.map(
+          v => votacionDetalleTableListRepo.save(
+            VotacionesMapper.votacionRaw2VotacionDetalleTable(v), {votId: v.id}
+          )
+        ) : Promise.resolve(),
       ]);
+
+
     }
   }
 
