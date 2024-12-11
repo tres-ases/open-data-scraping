@@ -1,0 +1,202 @@
+{
+  "QueryLanguage": "JSONata",
+  "Comment": "A description of my state machine",
+  "StartAt": "Assign sesId",
+  "States": {
+    "Assign sesId": {
+      "Type": "Pass",
+      "Next": "Parallel Sesion",
+      "Assign": {
+        "sesId": "{% $states.input.sesId %}"
+      }
+    },
+    "Parallel Sesion": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "Get Asistencia",
+          "States": {
+            "Get Asistencia": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::http:invoke",
+              "Arguments": {
+                "ApiEndpoint": "https://web-back.senado.cl/api/sessions/attendance",
+                "InvocationConfig": {
+                  "ConnectionArn": "__EVENTS_CONNECTION_ARN__"
+                },
+                "QueryParameters": {
+                  "id_sesion": "{% $sesId %}"
+                },
+                "Method": "GET"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "BackoffRate": 2,
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "Next": "Parallel Asistencia",
+              "Output": "{% $states.result.ResponseBody.data.{\n    \"sesId\": ID_SESION, \n    \"sesNumero\": NUMERO_SESION,\n    \"totalSenadores\": TOTAL_SENADORES,\n    \"totalSesiones\": TOTAL_SESIONES,\n    \"inicio\": FECHA_HORA_INICIO,\n    \"termino\": FECHA_HORA_TERMINO,\n    \"detalle\": DATA[].{\n        \"sesId\": ID_SESION,\n        \"sesNumero\": NUMERO_SESION,\n        \"parId\": ID_PARLAMENTARIO,\n        \"parNombre\": NOMBRE,\n        \"parApellidoPaterno\": APELLIDO_PATERNO,\n        \"parApellidoMaterno\": APELLIDO_MATERNO,\n        \"slug\": SLUG,\n        \"asistencia\": ASISTENCIA,\n        \"justificacion\": JUSTIFICACION\n    }\n} %}"
+            },
+            "Parallel Asistencia": {
+              "Type": "Parallel",
+              "Branches": [
+                {
+                  "StartAt": "Save Asistencia By SesId",
+                  "States": {
+                    "Save Asistencia By SesId": {
+                      "Type": "Task",
+                      "Arguments": {
+                        "Body": "{% $states.input %}",
+                        "Bucket": "__BUCKET_NAME__",
+                        "Key": "{% 'raw/sesion/asistencia/sesId=' & $sesId & '/data.json' %}"
+                      },
+                      "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
+                      "End": true
+                    }
+                  }
+                },
+                {
+                  "StartAt": "Senadores",
+                  "States": {
+                    "Senadores": {
+                      "Type": "Map",
+                      "ItemProcessor": {
+                        "ProcessorConfig": {
+                          "Mode": "INLINE"
+                        },
+                        "StartAt": "Assign slug",
+                        "States": {
+                          "Assign slug": {
+                            "Type": "Pass",
+                            "Assign": {
+                              "slug": "{% $states.input %}"
+                            },
+                            "Next": "Senador SQS"
+                          },
+                          "Senador SQS": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::sqs:sendMessage",
+                            "Arguments": {
+                              "QueueUrl": "__SENADOR_QUEUE_URL__",
+                              "MessageBody": "{% $slug %}"
+                            },
+                            "End": true,
+                            "Output": {
+                              "MessageId": "{% $states.result.MessageId %}"
+                            }
+                          }
+                        }
+                      },
+                      "End": true,
+                      "Items": "{% $append( $distinct($states.input.detalle[].slug), [] ) %}",
+                      "MaxConcurrency": 10
+                    }
+                  }
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Get Votacion",
+          "States": {
+            "Get Votacion": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::http:invoke",
+              "Arguments": {
+                "ApiEndpoint": "https://web-back.senado.cl/api/votes",
+                "Method": "GET",
+                "InvocationConfig": {
+                  "ConnectionArn": "__EVENTS_CONNECTION_ARN__"
+                },
+                "QueryParameters": {
+                  "id_sesion": "{% $sesId %}"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "BackoffRate": 2,
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "Next": "Parallel Votacion",
+              "Output": "{% $states.result.ResponseBody.data.data.{\n    \"id\": ID_VOTACION,\n    \"sesId\": ID_SESION, \n    \"sesNumero\": NUMERO_SESION,\n    \"fecha\": FECHA_VOTACION,\n    \"hora\": HORA,\n    \"tema\": TEMA,\n    \"quorum\": QUORUM,\n    \"boletin\": BOLETIN,\n    \"resultado\": {\n        \"si\": SI,\n        \"no\": NO,\n        \"abs\": ABS,\n        \"pareo\": PAREO\n    },\n    \"detalle\": {\n        \"si\": VOTACIONES.SI[].{\n            \"uuid\": UUID,\n            \"parlId\": PARLID,\n            \"parSlug\": SLUG,\n            \"parNombre\": NOMBRE,\n            \"parApellidoPaterno\": APELLIDO_PATERNO,\n            \"parApellidoMaterno\": APELLIDO_MATERNO\n        },\n        \"no\": VOTACIONES.NO[].{\n            \"uuid\": UUID,\n            \"parlId\": PARLID,\n            \"parSlug\": SLUG,\n            \"parNombre\": NOMBRE,\n            \"parApellidoPaterno\": APELLIDO_PATERNO,\n            \"parApellidoMaterno\": APELLIDO_MATERNO\n        },\n        \"abs\": VOTACIONES.ABSTENCION[].{\n            \"uuid\": UUID,\n            \"parlId\": PARLID,\n            \"parSlug\": SLUG,\n            \"parNombre\": NOMBRE,\n            \"parApellidoPaterno\": APELLIDO_PATERNO,\n            \"parApellidoMaterno\": APELLIDO_MATERNO\n        },\n        \"pareo\": VOTACIONES.PAREO[].{\n            \"uuid\": UUID,\n            \"parlId\": PARLID,\n            \"parSlug\": SLUG,\n            \"parNombre\": NOMBRE,\n            \"parApellidoPaterno\": APELLIDO_PATERNO,\n            \"parApellidoMaterno\": APELLIDO_MATERNO\n        }\n    },\n    \"detalle2\": DATA.{\n        \"sesId\": ID_SESION,\n        \"sesNumero\": NUMERO_SESION,\n        \"parId\": ID_PARLAMENTARIO,\n        \"parNombre\": NOMBRE,\n        \"parApellidoPaterno\": APELLIDO_PATERNO,\n        \"parApellidoMaterno\": APELLIDO_MATERNO,\n        \"slug\": SLUG,\n        \"asistencia\": ASISTENCIA,\n        \"justificacion\": JUSTIFICACION\n    }\n} %}"
+            },
+            "Parallel Votacion": {
+              "Type": "Parallel",
+              "Branches": [
+                {
+                  "StartAt": "Save Votacion By SesId",
+                  "States": {
+                    "Save Votacion By SesId": {
+                      "Type": "Task",
+                      "Arguments": {
+                        "Body": "{% $states.input %}",
+                        "Bucket": "__BUCKET_NAME__",
+                        "Key": "{% 'raw/sesion/votacion/sesId=' & $sesId & '/data.json' %}"
+                      },
+                      "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
+                      "End": true
+                    }
+                  }
+                },
+                {
+                  "StartAt": "Boletines",
+                  "States": {
+                    "Boletines": {
+                      "Type": "Map",
+                      "ItemProcessor": {
+                        "ProcessorConfig": {
+                          "Mode": "INLINE"
+                        },
+                        "StartAt": "Assign boletin",
+                        "States": {
+                          "Assign boletin": {
+                            "Type": "Pass",
+                            "Assign": {
+                              "boletin": "{% $states.input %}"
+                            },
+                            "Next": "Boletin SQS"
+                          },
+                          "Boletin SQS": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::sqs:sendMessage",
+                            "Arguments": {
+                              "QueueUrl": "__PROYECTO_QUEUE_URL__",
+                              "MessageBody": "{% $boletin %}"
+                            },
+                            "End": true,
+                            "Output": {
+                              "MessageId": "{% $states.result.MessageId %}"
+                            }
+                          }
+                        }
+                      },
+                      "End": true,
+                      "Items": "{% $append( $distinct( $map( $states.input[boletin != null].boletin[], function($v) { $replace($v, /-\\d+$/, \"\") } )[] ), []) %}",
+                      "MaxConcurrency": 10
+                    }
+                  }
+                }
+              ],
+              "End": true
+            }
+          }
+        }
+      ],
+      "End": true
+    }
+  }
+}

@@ -24,7 +24,7 @@ export default class LegislaturaScraperSubStack extends NestedStack {
     bucket.grantReadWrite(sfRole);
     sesionStateMachine.grantStartSyncExecution(sfRole);
 
-    const definition = fs.readFileSync('./lib/scraper/asl/legislatura.asl.yaml', 'utf8');
+    const definition = fs.readFileSync('./lib/scraper/asl/legislatura.asl.json', 'utf8');
     definition.replace(/__EVENTS_CONNECTION_ARN__/, connection.connectionArn);
     definition.replace(/__BUCKET_NAME__/, bucket.bucketName);
     definition.replace(/__SESION_STATE_MACHINE__/, sesionStateMachine.stateMachineArn);
