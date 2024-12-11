@@ -3,8 +3,11 @@ import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {Logger} from '@aws-lambda-powertools/logger';
 import {Readable} from "stream";
 
-
-const logger = new Logger();
+const serviceName = 'CommonsRepo';
+const logger = new Logger({
+  logLevel: 'INFO',
+  serviceName
+});
 const s3Client = new S3Client();
 
 interface S3LocationParams {
@@ -49,7 +52,7 @@ export class S3SimpleRepo<T> extends S3ObjectRepo<T> {
     });
 
     await s3Client.send(putCommand);
-    console.log('File saved to S3', {Key: this.keyTemplate});
+    logger.trace('File saved to S3', {Key: this.keyTemplate});
   }
 
   async get(): Promise<T | null> {
@@ -84,7 +87,7 @@ export class S3ParamsRepo<T, P extends Record<string, string | number>> extends 
     });
 
     await s3Client.send(putCommand);
-    console.log('File saved to S3', {Key: key});
+    logger.trace('File saved to S3', {Key: key});
 
     return data;
   }
@@ -128,7 +131,7 @@ export class S3FileRepo extends S3Repo {
     });
 
     await s3Client.send(putCommand);
-    console.log('File saved to S3', {Key: this.keyTemplate});
+    logger.trace('File saved to S3', {Key: this.keyTemplate});
   }
 }
 
@@ -149,7 +152,7 @@ export class S3FileParamsRepo<P extends Record<string, string | number>> extends
     });
 
     await s3Client.send(putCommand);
-    console.log('File saved to S3', {Key: key});
+    logger.trace('File saved to S3', {Key: key});
   }
 
   private buildS3Key(params: P): string {

@@ -1,0 +1,22 @@
+{
+  "name": "@servel-cl/libs",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "src/index",
+  "exports": {
+    "./model": "./dist/model/index.js",
+    "./repo": "./dist/repo/index.js"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "build": "rm -rf dist && rm -rf layer && tsc"
+  },
+  "keywords": [],
+  "author": "Julio Villane",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.15",
+    "typescript": "^5.3.3"
+  }
+}

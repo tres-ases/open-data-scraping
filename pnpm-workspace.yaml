@@ -5,3 +5,5 @@ packages:
   - "senado.cl/admin/front"
   - "senado.cl/admin/api/*"
   - "senado.cl/iac"
+  - "servel.cl/libs"
+  - "servel.cl/processor/*"

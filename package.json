@@ -5,12 +5,12 @@
     "commons:build": "turbo build --filter=@open-data-scraping/commons",
     "commons:package": "turbo package --filter=@open-data-scraping/commons",
     "layers:build": "cd ./layers/scraper/nodejs && npm install --production",
-    "@senado.cl/global:build": "turbo build --filter=@senado-cl/global",
     "@senado.cl/global:package": "turbo package --filter=@senado-cl/global",
     "@senado.cl/iac:build": "turbo build --filter=@senado.cl/iac",
     "@senado.cl/scraper:build": "turbo build --filter=\"./senado.cl/scraper/*\"",
     "@senado.cl/scraper:package": "turbo package --filter=@senado-cl/scraper-commons",
-    "@senado.cl/admin-front:build": "turbo build --filter=@senado-cl/admin-front"
+    "@senado.cl/admin-front:build": "turbo build --filter=@senado-cl/admin-front",
+    "@servel.cl/processor:build": "turbo build --filter=\"./servel.cl/processor/*\""
   },
   "devDependencies": {
     "turbo": "^2.0.5",

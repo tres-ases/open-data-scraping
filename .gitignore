@@ -44,6 +44,8 @@ senado.cl/global/dist
 senado.cl/global/layer
 senado.cl/scraper/**/dist
 senado.cl/scraper/**/layer
+servel.cl/libs/dist
+servel.cl/processor/**/dist
 
 .turbo
 
