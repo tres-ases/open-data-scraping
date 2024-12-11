@@ -2,10 +2,9 @@ import {CfnOutput, NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
 import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
-import {Queue} from "aws-cdk-lib/aws-sqs";
 import {StateMachine, StateMachineType, StringDefinitionBody} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
-import fs from "fs";
+import * as fs from "fs";
 
 interface Props extends NestedStackProps {
   bucket: Bucket

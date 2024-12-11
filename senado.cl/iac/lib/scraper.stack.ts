@@ -18,12 +18,12 @@ export default class ScraperStack extends Stack {
 
     const senadorQueue = new Queue(this, `${id}-senador-queue`, {
       queueName: `${id}-senador-queue`,
-      visibilityTimeout: Duration.days(7),
+      visibilityTimeout: Duration.hours(12),
     });
 
     const proyectoQueue = new Queue(this, `${id}-proyecto-queue`, {
       queueName: `${id}-proyecto-queue`,
-      visibilityTimeout: Duration.days(7),
+      visibilityTimeout: Duration.hours(12),
     });
 
     const connection = new Connection(this, `${id}-connection`, {
