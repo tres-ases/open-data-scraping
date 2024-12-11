@@ -34,10 +34,10 @@ export default class SesionScraperSubStack extends NestedStack {
       roleArn: sfRole.roleArn,
       definitionString: definition,
       definitionSubstitutions: {
-        __EVENTS_CONNECTION_ARN__: connection.connectionArn,
-        __BUCKET_NAME__: bucket.bucketName,
-        __SENADOR_QUEUE_URL__: senadorQueue.queueUrl,
-        __PROYECTO_QUEUE_URL__: proyectoQueue.queueUrl
+        events_connection_arn: connection.connectionArn,
+        bucket_name: bucket.bucketName,
+        senador_queue_url: senadorQueue.queueUrl,
+        proyecto_queue_url: proyectoQueue.queueUrl
       },
       stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.EXPRESS,
@@ -46,16 +46,16 @@ export default class SesionScraperSubStack extends NestedStack {
       },
     });
 
-    new CfnOutput(this, '__EVENTS_CONNECTION_ARN__', {
+    new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,
     });
-    new CfnOutput(this, '__BUCKET_NAME__', {
+    new CfnOutput(this, '${bucket_name}', {
       value: bucket.bucketName,
     });
-    new CfnOutput(this, '__SENADOR_QUEUE_URL__', {
+    new CfnOutput(this, '${senador_queue_url}', {
       value: senadorQueue.queueUrl,
     });
-    new CfnOutput(this, '__PROYECTO_QUEUE_URL__', {
+    new CfnOutput(this, '${proyecto_queue_url}', {
       value: proyectoQueue.queueUrl,
     });
   }

@@ -17,7 +17,7 @@
         "ApiEndpoint": "https://web-back.senado.cl/api/sessions",
         "Method": "GET",
         "InvocationConfig": {
-          "ConnectionArn": "__EVENTS_CONNECTION_ARN__"
+          "ConnectionArn": "${events_connection_arn}"
         },
         "QueryParameters": {
           "id_legislatura=": "{% $legId %}"
@@ -47,7 +47,7 @@
               "Type": "Task",
               "Arguments": {
                 "Body": "{% $states.input %}",
-                "Bucket": "__BUCKET_NAME__",
+                "Bucket": "${bucket_name}",
                 "Key": "{% 'raw/sesiones/legId=' & $legId & '/data.json' %}"
               },
               "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
@@ -76,7 +76,7 @@
                   "ExtractVotacionAndAsistencia": {
                     "Type": "Task",
                     "Arguments": {
-                      "StateMachineArn": "__SESION_STATE_MACHINE__",
+                      "StateMachineArn": "${sesion_state_machine}",
                       "Input": {
                         "sesId": "{% $sesId %}"
                       },

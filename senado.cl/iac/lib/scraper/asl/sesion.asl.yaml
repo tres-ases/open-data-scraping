@@ -18,7 +18,7 @@ States:
             Arguments:
               ApiEndpoint: https://web-back.senado.cl/api/sessions/attendance
               InvocationConfig:
-                ConnectionArn: __EVENTS_CONNECTION_ARN__
+                ConnectionArn: ${events_connection_arn}
               QueryParameters:
                 id_sesion: '{% $sesId %}'
               Method: GET
@@ -59,7 +59,7 @@ States:
                     Type: Task
                     Arguments:
                       Body: '{% $states.input %}'
-                      Bucket: __BUCKET_NAME__
+                      Bucket: ${bucket_name}
                       Key: >-
                         {% 'raw/sesion/asistencia/sesId=' & $sesId &
                         '/data.json' %}
@@ -83,7 +83,7 @@ States:
                           Type: Task
                           Resource: arn:aws:states:::sqs:sendMessage
                           Arguments:
-                            QueueUrl: __SENADOR_QUEUE_URL__
+                            QueueUrl: ${senador_queue_url}
                             MessageBody: '{% $slug %}'
                           End: true
                           Output:
@@ -103,7 +103,7 @@ States:
               ApiEndpoint: https://web-back.senado.cl/api/votes
               Method: GET
               InvocationConfig:
-                ConnectionArn: __EVENTS_CONNECTION_ARN__
+                ConnectionArn: ${events_connection_arn}
               QueryParameters:
                 id_sesion: '{% $sesId %}'
             Retry:
@@ -185,7 +185,7 @@ States:
                     Type: Task
                     Arguments:
                       Body: '{% $states.input %}'
-                      Bucket: __BUCKET_NAME__
+                      Bucket: ${bucket_name}
                       Key: >-
                         {% 'raw/sesion/votacion/sesId=' & $sesId & '/data.json'
                         %}
@@ -209,7 +209,7 @@ States:
                           Type: Task
                           Resource: arn:aws:states:::sqs:sendMessage
                           Arguments:
-                            QueueUrl: __PROYECTO_QUEUE_URL__
+                            QueueUrl: ${proyecto_queue_url}
                             MessageBody: '{% $boletin %}'
                           End: true
                           Output:

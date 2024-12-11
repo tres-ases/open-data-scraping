@@ -35,9 +35,9 @@ export default class LegislaturaScraperSubStack extends NestedStack {
       roleArn: sfRole.roleArn,
       definitionString: definition,
       definitionSubstitutions: {
-        __EVENTS_CONNECTION_ARN__: connection.connectionArn,
-        __BUCKET_NAME__: bucket.bucketName,
-        __SESION_STATE_MACHINE__: sesionStateMachine.attrArn
+        events_connection_arn: connection.connectionArn,
+        bucket_name: bucket.bucketName,
+        sesion_state_machine: sesionStateMachine.attrArn
       },
       stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.EXPRESS,
@@ -46,13 +46,13 @@ export default class LegislaturaScraperSubStack extends NestedStack {
       },
     });
 
-    new CfnOutput(this, '__EVENTS_CONNECTION_ARN__', {
+    new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,
     });
-    new CfnOutput(this, '__BUCKET_NAME__', {
+    new CfnOutput(this, '${bucket_name}', {
       value: bucket.bucketName,
     });
-    new CfnOutput(this, '__SESION_STATE_MACHINE__', {
+    new CfnOutput(this, '${sesion_state_machine}', {
       value: sesionStateMachine.attrArn,
     });
   }
