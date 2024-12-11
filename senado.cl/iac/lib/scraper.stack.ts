@@ -5,6 +5,7 @@ import {Queue} from 'aws-cdk-lib/aws-sqs';
 import {Authorization, Connection} from 'aws-cdk-lib/aws-events';
 import SesionScraperSubStack from "./scraper/sesion.scraper.substack";
 import LegislaturaScraperSubStack from "./scraper/legislatura.scraper.substack";
+import SenadorScraperSubStack from "./scraper/senador.scraper.substack";
 
 export default class ScraperStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -37,6 +38,10 @@ export default class ScraperStack extends Stack {
 
     new LegislaturaScraperSubStack(this, `${id}-legislatura`, {
       bucket, connection, sesionStateMachine: sesionSubStack.stateMachine
+    });
+
+    new SenadorScraperSubStack(this, `${id}-senador`, {
+      bucket, connection, senadorQueue
     });
   }
 

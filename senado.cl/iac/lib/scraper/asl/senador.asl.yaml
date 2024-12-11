@@ -1,0 +1,100 @@
+QueryLanguage: JSONata
+Comment: A description of my state machine
+StartAt: Assign senSlug
+States:
+  Assign senSlug:
+    Type: Pass
+    Assign:
+      senSlug: '{% $states.input.senSlug %}'
+    Next: Call HTTPS APIs
+  Call HTTPS APIs:
+    Type: Task
+    Resource: arn:aws:states:::http:invoke
+    Arguments:
+      ApiEndpoint: >-
+        {%
+        'https://www.senado.cl/senadoras-y-senadores/listado-de-senadoras-y-senadores/'
+        & $senSlug %}
+      Method: GET
+      InvocationConfig:
+        ConnectionArn: ${events_connection_arn}
+    Retry:
+      - ErrorEquals:
+          - States.ALL
+        BackoffRate: 2
+        IntervalSeconds: 1
+        MaxAttempts: 3
+        JitterStrategy: FULL
+    Output:
+      senData: >-
+        {% $parse( $match($states.result.ResponseBody, /<script
+        id="__NEXT_DATA__"
+        type="application\/json">([\s\S]*?)<\/script>/).groups[0] ) %}
+    Next: Transform Senador
+  Transform Senador:
+    Type: Pass
+    Next: Save Senador By senSlug
+    Output: >-
+      {%
+      $states.input.senData.props.pageProps.resource.data.parliamentarianSenadoData.{
+          "id": data[0].ID_PARLAMENTARIO,
+          "uuid": data[0].UUID,
+          "slug": data[0].SLUG,
+          "nombreCompleto": data[0].NOMBRE_COMPLETO,
+          "nombre": data[0].NOMBRE,
+          "apellidoPaterno": data[0].APELLIDO_PATERNO,
+          "apellidoMaterno": data[0].APELLIDO_MATERNO,
+          "camara": data[0].CAMARA,
+          "partido": {
+            "id": data[0].PARTIDO_ID,
+            "nombre": data[0].PARTIDO
+          },
+          "circunscripcionId": data[0].CIRCUNSCRIPCION_ID,
+          "region": {
+            "id": data[0].REGION_ID,
+            "nombre": data[0].REGION
+          },
+          "comite": $exists(data[0].COMITE) ? {
+              "id": data[0].COMITE.ID,
+              "uuid": data[0].COMITE.UUID,
+              "nombre": data[0].COMITE.NOMBRE,
+              "abreviatura": data[0].COMITE.ABREVIATURA
+          } : undefined,
+          "fono": data[0].FONO,
+          "email": data[0].EMAIL,
+          "sexo": {
+            "valor": data[0].SEXO,
+            "etiqueta": data[0].SEXO_ETIQUETA,
+            "etiquetaAbreviatura": data[0].SEXO_ETIQUETA_ABREVIATURA
+          },
+          "periodos": data[0].PERIODOS[].{
+              "id": ID,
+              "uuid": UUID,
+              "camara": CAMARA,
+              "desde": DESDE,
+              "hasta": HASTA,
+              "vigente": VIGENTE = 1
+          },
+          "cargos": CARGOS.data[].{
+              "cargo": CARGO,
+              "inicio": INICIO,
+              "termino": $exists(TERMINO) ? TERMINO : undefined
+          },
+          "enlaces": {
+            "facebookPagina": ENLACES[0].FACEBOOK_PAGE = null ? ENLACES[0].FACEBOOK_PAGE : undefined,
+            "facebookCuenta": ENLACES[0].FACEBOOK_CUENTA = null ? ENLACES[0].FACEBOOK_CUENTA : undefined,
+            "twitter": ENLACES[0].TWITTER = null ? ENLACES[0].TWITTER : undefined,
+            "webPersonal": ENLACES[0].WEB_PERSONAL = null ? ENLACES[0].WEB_PERSONAL : undefined,
+            "instagram": ENLACES[0].INSTAGRAM = null ? ENLACES[0].INSTAGRAM : undefined,
+            "linkedin": ENLACES[0].LINKEDIN = null ? ENLACES[0].LINKEDIN : undefined,
+            "flickr": ENLACES[0].FLICKR = null ? ENLACES[0].FLICKR : undefined
+          }
+      } %}
+  Save Senador By senSlug:
+    Type: Task
+    Arguments:
+      Body: '{% $states.input %}'
+      Bucket: ${bucket_name}
+      Key: '{% ''raw/senador/senSlug='' & $senSlug & ''/data.json'' %}'
+    Resource: arn:aws:states:::aws-sdk:s3:putObject
+    End: true
