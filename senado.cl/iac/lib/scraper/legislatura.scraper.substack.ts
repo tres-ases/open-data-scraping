@@ -46,12 +46,6 @@ export default class LegislaturaScraperSubStack extends NestedStack {
       },
     });
 
-    new StateMachine(this, `${id}-sm`, {
-      stateMachineName: `${id}-sm`,
-      stateMachineType: StateMachineType.EXPRESS,
-      definitionBody: StringDefinitionBody.fromString(definition)
-    });
-
     new CfnOutput(this, '__EVENTS_CONNECTION_ARN__', {
       value: connection.connectionArn,
     });
