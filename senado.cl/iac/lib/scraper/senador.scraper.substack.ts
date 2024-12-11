@@ -25,7 +25,7 @@ export default class SenadorScraperSubStack extends NestedStack {
 
     bucket.grantReadWrite(sfRole);
 
-    let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.yaml', 'utf8');
+    let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.json', 'utf8');
 
     const sm = new CfnStateMachine(this, `${id}-sm`, {
       roleArn: sfRole.roleArn,

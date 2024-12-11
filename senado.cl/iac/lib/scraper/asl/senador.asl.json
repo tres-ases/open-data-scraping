@@ -1,0 +1,55 @@
+{
+  "QueryLanguage": "JSONata",
+  "Comment": "A description of my state machine",
+  "StartAt": "Assign senSlug",
+  "States": {
+    "Assign senSlug": {
+      "Type": "Pass",
+      "Assign": {
+        "senSlug": "{% $states.input.senSlug %}"
+      },
+      "Next": "Call HTTPS APIs"
+    },
+    "Call HTTPS APIs": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::http:invoke",
+      "Arguments": {
+        "ApiEndpoint": "{% 'https://www.senado.cl/senadoras-y-senadores/listado-de-senadoras-y-senadores/' & $senSlug %}",
+        "Method": "GET",
+        "InvocationConfig": {
+          "ConnectionArn": "arn:aws:events:us-east-1:886436935193:connection/senado-connection/53d29902-bbe6-4ea5-a4a4-7e28dc4a3656"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "BackoffRate": 2,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Output": {
+        "senData": "{% $parse( $match($states.result.ResponseBody, /<script id=\"__NEXT_DATA__\" type=\"application\\/json\">([\\s\\S]*?)<\\/script>/).groups[0] ) %}"
+      },
+      "Next": "Transform Senador"
+    },
+    "Transform Senador": {
+      "Type": "Pass",
+      "Next": "Save Senador By senSlug",
+      "Output": "{% $states.input.senData.props.pageProps.resource.data.parliamentarianSenadoData.{\n    \"id\": data[0].ID_PARLAMENTARIO,\n    \"uuid\": data[0].UUID,\n    \"slug\": data[0].SLUG,\n    \"nombreCompleto\": data[0].NOMBRE_COMPLETO,\n    \"nombre\": data[0].NOMBRE,\n    \"apellidoPaterno\": data[0].APELLIDO_PATERNO,\n    \"apellidoMaterno\": data[0].APELLIDO_MATERNO,\n    \"camara\": data[0].CAMARA,\n    \"partido\": {\n      \"id\": data[0].PARTIDO_ID,\n      \"nombre\": data[0].PARTIDO\n    },\n    \"circunscripcionId\": data[0].CIRCUNSCRIPCION_ID,\n    \"region\": {\n      \"id\": data[0].REGION_ID,\n      \"nombre\": data[0].REGION\n    },\n    \"comite\": $exists(data[0].COMITE) ? {\n        \"id\": data[0].COMITE.ID,\n        \"uuid\": data[0].COMITE.UUID,\n        \"nombre\": data[0].COMITE.NOMBRE,\n        \"abreviatura\": data[0].COMITE.ABREVIATURA\n    } : undefined,\n    \"fono\": data[0].FONO,\n    \"email\": data[0].EMAIL,\n    \"sexo\": {\n      \"valor\": data[0].SEXO,\n      \"etiqueta\": data[0].SEXO_ETIQUETA,\n      \"etiquetaAbreviatura\": data[0].SEXO_ETIQUETA_ABREVIATURA\n    },\n    \"periodos\": data[0].PERIODOS[].{\n        \"id\": ID,\n        \"uuid\": UUID,\n        \"camara\": CAMARA,\n        \"desde\": DESDE,\n        \"hasta\": HASTA,\n        \"vigente\": VIGENTE = 1\n    },\n    \"cargos\": CARGOS.data[].{\n        \"cargo\": CARGO,\n        \"inicio\": INICIO,\n        \"termino\": $exists(TERMINO) ? TERMINO : undefined\n    },\n    \"enlaces\": {\n      \"facebookPagina\": ENLACES[0].FACEBOOK_PAGE = null ? ENLACES[0].FACEBOOK_PAGE : undefined,\n      \"facebookCuenta\": ENLACES[0].FACEBOOK_CUENTA = null ? ENLACES[0].FACEBOOK_CUENTA : undefined,\n      \"twitter\": ENLACES[0].TWITTER = null ? ENLACES[0].TWITTER : undefined,\n      \"webPersonal\": ENLACES[0].WEB_PERSONAL = null ? ENLACES[0].WEB_PERSONAL : undefined,\n      \"instagram\": ENLACES[0].INSTAGRAM = null ? ENLACES[0].INSTAGRAM : undefined,\n      \"linkedin\": ENLACES[0].LINKEDIN = null ? ENLACES[0].LINKEDIN : undefined,\n      \"flickr\": ENLACES[0].FLICKR = null ? ENLACES[0].FLICKR : undefined\n    }\n} %}"
+    },
+    "Save Senador By senSlug": {
+      "Type": "Task",
+      "Arguments": {
+        "Body": "{% $states.input %}",
+        "Bucket": "open-data-cl-bucket",
+        "Key": "{% 'raw/senador/senSlug=' & $senSlug & '/data.json' %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
+      "End": true
+    }
+  }
+}

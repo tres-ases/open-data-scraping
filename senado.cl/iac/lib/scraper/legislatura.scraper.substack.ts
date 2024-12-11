@@ -29,7 +29,7 @@ export default class LegislaturaScraperSubStack extends NestedStack {
       })
     );
 
-    let definition = fs.readFileSync('./lib/scraper/asl/legislatura.asl.yaml', 'utf8');
+    let definition = fs.readFileSync('./lib/scraper/asl/legislatura.asl.json', 'utf8');
 
     new CfnStateMachine(this, `${id}-sm`, {
       roleArn: sfRole.roleArn,

@@ -28,7 +28,7 @@ export default class SesionScraperSubStack extends NestedStack {
     senadorQueue.grantSendMessages(sfRole);
     proyectoQueue.grantSendMessages(sfRole);
 
-    const definition = fs.readFileSync('./lib/scraper/asl/sesion.asl.yaml', 'utf8');
+    const definition = fs.readFileSync('./lib/scraper/asl/sesion.asl.json', 'utf8');
 
     this.stateMachine = new CfnStateMachine(this, `${id}-sm`, {
       roleArn: sfRole.roleArn,
