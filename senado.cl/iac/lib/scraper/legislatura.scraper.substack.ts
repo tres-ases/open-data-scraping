@@ -1,15 +1,15 @@
 import {CfnOutput, NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
-import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
+import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
-import {StateMachine, StateMachineType, StringDefinitionBody} from "aws-cdk-lib/aws-stepfunctions";
+import {CfnStateMachine, StateMachine, StateMachineType, StringDefinitionBody} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
   connection: Connection
-  sesionStateMachine: StateMachine
+  sesionStateMachine: CfnStateMachine
 }
 
 export default class LegislaturaScraperSubStack extends NestedStack {
@@ -22,14 +22,31 @@ export default class LegislaturaScraperSubStack extends NestedStack {
     });
 
     bucket.grantReadWrite(sfRole);
-    sesionStateMachine.grantStartSyncExecution(sfRole);
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        actions: ['states:StartSyncExecution'],
+        resources: [sesionStateMachine.attrArn]
+      })
+    );
 
     let definition = fs.readFileSync('./lib/scraper/asl/legislatura.asl.json', 'utf8');
-    definition = definition.replace(/__EVENTS_CONNECTION_ARN__/, connection.connectionArn);
-    definition = definition.replace(/__BUCKET_NAME__/, bucket.bucketName);
-    definition = definition.replace(/__SESION_STATE_MACHINE__/, sesionStateMachine.stateMachineArn);
 
-    const stateMachine = new StateMachine(this, `${id}-sm`, {
+    new CfnStateMachine(this, `${id}-sm`, {
+      roleArn: sfRole.roleArn,
+      definitionString: definition,
+      definitionSubstitutions: {
+        __EVENTS_CONNECTION_ARN__: connection.connectionArn,
+        __BUCKET_NAME__: bucket.bucketName,
+        __SESION_STATE_MACHINE__: sesionStateMachine.attrArn
+      },
+      stateMachineName: `${id}-sm`,
+      stateMachineType: StateMachineType.EXPRESS,
+      tracingConfiguration: {
+        enabled: true
+      },
+    });
+
+    new StateMachine(this, `${id}-sm`, {
       stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.EXPRESS,
       definitionBody: StringDefinitionBody.fromString(definition)
@@ -42,7 +59,7 @@ export default class LegislaturaScraperSubStack extends NestedStack {
       value: bucket.bucketName,
     });
     new CfnOutput(this, '__SESION_STATE_MACHINE__', {
-      value: sesionStateMachine.stateMachineArn,
+      value: sesionStateMachine.attrArn,
     });
   }
 }

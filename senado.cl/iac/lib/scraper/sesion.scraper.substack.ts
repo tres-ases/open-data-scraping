@@ -3,7 +3,7 @@ import {Connection} from "aws-cdk-lib/aws-events";
 import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
-import {StateMachine, StateMachineType, StringDefinitionBody} from "aws-cdk-lib/aws-stepfunctions";
+import {CfnStateMachine, StateMachine, StateMachineType, StringDefinitionBody} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
 
@@ -15,7 +15,7 @@ interface Props extends NestedStackProps {
 }
 
 export default class SesionScraperSubStack extends NestedStack {
-  readonly stateMachine: StateMachine;
+  readonly stateMachine: CfnStateMachine;
 
   constructor(scope: Construct, id: string, {bucket, connection, senadorQueue, proyectoQueue}: Props) {
     super(scope, id);
@@ -29,15 +29,21 @@ export default class SesionScraperSubStack extends NestedStack {
     proyectoQueue.grantSendMessages(sfRole);
 
     const definition = fs.readFileSync('./lib/scraper/asl/sesion.asl.json', 'utf8');
-    definition.replace(/__EVENTS_CONNECTION_ARN__/, connection.connectionArn);
-    definition.replace(/__BUCKET_NAME__/, bucket.bucketName);
-    definition.replace(/__SENADOR_QUEUE_URL__/, senadorQueue.queueUrl);
-    definition.replace(/__PROYECTO_QUEUE_URL__/, proyectoQueue.queueUrl);
 
-    this.stateMachine = new StateMachine(this, `${id}-sm`, {
+    this.stateMachine = new CfnStateMachine(this, `${id}-sm`, {
+      roleArn: sfRole.roleArn,
+      definitionString: definition,
+      definitionSubstitutions: {
+        __EVENTS_CONNECTION_ARN__: connection.connectionArn,
+        __BUCKET_NAME__: bucket.bucketName,
+        __SENADOR_QUEUE_URL__: senadorQueue.queueUrl,
+        __PROYECTO_QUEUE_URL__: proyectoQueue.queueUrl
+      },
       stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.EXPRESS,
-      definitionBody: StringDefinitionBody.fromString(definition)
+      tracingConfiguration: {
+        enabled: true
+      },
     });
 
     new CfnOutput(this, '__EVENTS_CONNECTION_ARN__', {
