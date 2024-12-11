@@ -40,7 +40,7 @@ export default class LegislaturaScraperSubStack extends NestedStack {
         sesion_state_machine: sesionStateMachine.attrArn
       },
       stateMachineName: `${id}-sm`,
-      stateMachineType: StateMachineType.EXPRESS,
+      stateMachineType: StateMachineType.STANDARD,
       tracingConfiguration: {
         enabled: true
       },
