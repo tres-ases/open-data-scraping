@@ -35,9 +35,9 @@ export default class ScraperStack extends Stack {
       bucket, connection, senadorQueue, proyectoQueue
     });
 
-    new LegislaturaScraperSubStack(this, `${id}-legislatura`, {
-      bucket, connection, sesionStateMachine: sesionSubStack.stateMachine
-    });
+    //new LegislaturaScraperSubStack(this, `${id}-legislatura`, {
+    //  bucket, connection, sesionStateMachine: sesionSubStack.stateMachine
+    //});
   }
 
   getLogicalId(element: CfnElement): string {
