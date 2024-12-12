@@ -1,6 +1,6 @@
 import {CfnOutput, NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
-import {Effect, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
+import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
@@ -28,18 +28,31 @@ export default class LegislaturaScraperSubStack extends NestedStack {
         resources: [sesionStateMachine.attrArn]
       })
     );
-    sfRole.addToPolicy(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['sts:AssumeRole'],
-        principals: [new ServicePrincipal('pipes.amazonaws.com')],
-        resources: [connection.connectionArn]
+    sfRole.attachInlinePolicy(
+      new Policy(this, `${id}-EventBridgeRetrieveConnectionCredentialsScopedAccessPolicy`, {
+        statements: [
+          new PolicyStatement({
+            sid: `${id}-ps-RetrieveConnectionCredentials`,
+            effect: Effect.ALLOW,
+            actions: ["events:RetrieveConnectionCredentials"],
+            resources: [connection.connectionArn]
+          }),
+          new PolicyStatement({
+            sid: `${id}-ps-GetAndDescribeSecretValue`,
+            effect: Effect.ALLOW,
+            actions: [
+              "secretsmanager:GetSecretValue",
+              "secretsmanager:DescribeSecret"
+            ],
+            resources: [connection.connectionSecretArn]
+          })
+        ]
       })
     );
 
     let definition = fs.readFileSync('./lib/scraper/asl/legislatura.asl.json', 'utf8');
 
-    new CfnStateMachine(this, `${id}-sm`, {
+    const sm = new CfnStateMachine(this, `${id}-sm`, {
       roleArn: sfRole.roleArn,
       definitionString: definition,
       definitionSubstitutions: {
@@ -53,6 +66,15 @@ export default class LegislaturaScraperSubStack extends NestedStack {
         enabled: true
       },
     });
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        sid: `${id}-ps-InvokeHttpEndpoint1`,
+        effect: Effect.ALLOW,
+        actions: ["states:InvokeHTTPEndpoint"],
+        resources: [sm.attrArn]
+      })
+    );
+
 
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,

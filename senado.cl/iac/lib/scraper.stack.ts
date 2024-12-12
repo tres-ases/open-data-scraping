@@ -13,7 +13,7 @@ export default class ScraperStack extends Stack {
 
     const bucket = new Bucket(this, `${id}-bucket`, {
       bucketName: 'open-data-cl-bucket',
-      removalPolicy: RemovalPolicy.DESTROY, // Cambiar a RETAIN en producción
+      removalPolicy: RemovalPolicy.RETAIN,
       autoDeleteObjects: true,
     });
 
