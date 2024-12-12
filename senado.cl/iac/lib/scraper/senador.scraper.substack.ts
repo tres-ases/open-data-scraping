@@ -48,6 +48,14 @@ export default class SenadorScraperSubStack extends NestedStack {
         enabled: true
       },
     });
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        sid: `${id}-ps-InvokeHttpEndpoint1`,
+        effect: Effect.ALLOW,
+        actions: ["states:InvokeHTTPEndpoint"],
+        resources: [sm.attrArn]
+      })
+    );
 
     const pipeRole = new Role(this, `${id}-pipe-role`, {
       assumedBy: new ServicePrincipal('pipes.amazonaws.com'),

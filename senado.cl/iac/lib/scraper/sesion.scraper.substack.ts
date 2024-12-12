@@ -27,14 +27,6 @@ export default class SesionScraperSubStack extends NestedStack {
     bucket.grantReadWrite(sfRole);
     senadorQueue.grantSendMessages(sfRole);
     proyectoQueue.grantSendMessages(sfRole);
-    sfRole.addToPolicy(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['sts:AssumeRole'],
-        principals: [new ServicePrincipal('pipes.amazonaws.com')],
-        resources: [connection.connectionArn]
-      })
-    );
 
     const definition = fs.readFileSync('./lib/scraper/asl/sesion.asl.json', 'utf8');
 
@@ -53,6 +45,14 @@ export default class SesionScraperSubStack extends NestedStack {
         enabled: true
       },
     });
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        sid: `${id}-ps-InvokeHttpEndpoint1`,
+        effect: Effect.ALLOW,
+        actions: ["states:InvokeHTTPEndpoint"],
+        resources: [this.stateMachine.attrArn]
+      })
+    );
 
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,
