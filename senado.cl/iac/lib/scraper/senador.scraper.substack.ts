@@ -1,4 +1,4 @@
-import {CfnOutput, NestedStack, NestedStackProps} from "aws-cdk-lib";
+import {CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
 import {Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
@@ -7,6 +7,7 @@ import {Construct} from "constructs";
 import * as fs from "fs";
 import {CfnPipe} from "aws-cdk-lib/aws-pipes";
 import {Queue} from "aws-cdk-lib/aws-sqs";
+import {LogGroup} from "aws-cdk-lib/aws-logs";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
@@ -27,17 +28,29 @@ export default class SenadorScraperSubStack extends NestedStack {
     let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.json', 'utf8');
 
     const sm = new CfnStateMachine(this, `${id}-sm`, {
+      stateMachineName: `${id}-sm`,
       roleArn: sfRole.roleArn,
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
         bucket_name: bucket.bucketName
       },
-      stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.EXPRESS,
       tracingConfiguration: {
         enabled: true
       },
+      loggingConfiguration: {
+        destinations: [{
+          cloudWatchLogsLogGroup: {
+            logGroupArn: new LogGroup(this, `${id}-smLogs`, {
+              logGroupName: `/aws/vendedlogs/states/${id}-sm`,
+              removalPolicy: RemovalPolicy.DESTROY
+            }).logGroupArn,
+          },
+        }],
+        includeExecutionData: true,
+        level: 'ALL',
+      }
     });
     sfRole.addToPolicy(
       new PolicyStatement({
