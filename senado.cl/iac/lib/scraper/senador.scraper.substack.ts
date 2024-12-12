@@ -22,7 +22,16 @@ export default class SenadorScraperSubStack extends NestedStack {
     const sfRole = new Role(this, `${id}-role`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
+
     bucket.grantReadWrite(sfRole);
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['sts:AssumeRole'],
+        principals: [new ServicePrincipal('pipes.amazonaws.com')],
+        resources: [connection.connectionArn]
+      })
+    );
 
     let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.json', 'utf8');
 
@@ -48,7 +57,7 @@ export default class SenadorScraperSubStack extends NestedStack {
       })
     );
 
-    const pipeRole = new Role(this, `${id}-pipe-role`, {
+π    const pipeRole = new Role(this, `${id}-pipe-role`, {
       assumedBy: new ServicePrincipal('pipes.amazonaws.com'),
       inlinePolicies: {
         AppPolicy: new PolicyDocument({
