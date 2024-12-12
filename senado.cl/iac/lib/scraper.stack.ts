@@ -11,11 +11,10 @@ export default class ScraperStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    //const bucket = new Bucket(this, `${id}-bucket`, {
-    //  bucketName: 'open-data-cl-bucket',
-    //  removalPolicy: RemovalPolicy.RETAIN,
-    //  autoDeleteObjects: true,
-    //});
+    const bucket = new Bucket(this, `${id}-bucket`, {
+      bucketName: 'open-data-cl-bucket',
+      removalPolicy: RemovalPolicy.RETAIN
+    });
 
     const senadorQueue = new Queue(this, `${id}-senador-queue`, {
       queueName: `${id}-senador-queue`,
@@ -32,17 +31,17 @@ export default class ScraperStack extends Stack {
       authorization: Authorization.apiKey('API-KEY', SecretValue.unsafePlainText('DUMMY'))
     });
 
-    //const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
-    //  bucket, connection, senadorQueue, proyectoQueue
-    //});
-//
-    //new LegislaturaScraperSubStack(this, `${id}-legislatura`, {
-    //  bucket, connection, sesionStateMachine: sesionSubStack.stateMachine
-    //});
-//
-    //new SenadorScraperSubStack(this, `${id}-senador`, {
-    //  bucket, connection, senadorQueue
-    //});
+    const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
+      bucket, connection, senadorQueue, proyectoQueue
+    });
+
+    new LegislaturaScraperSubStack(this, `${id}-legislatura`, {
+      bucket, connection, sesionStateMachine: sesionSubStack.stateMachine
+    });
+
+    new SenadorScraperSubStack(this, `${id}-senador`, {
+      bucket, connection, senadorQueue
+    });
   }
 
   getLogicalId(element: CfnElement): string {
