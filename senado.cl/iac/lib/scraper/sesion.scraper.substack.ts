@@ -3,7 +3,7 @@ import {Connection} from "aws-cdk-lib/aws-events";
 import {Effect, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
-import {CfnStateMachine, StateMachine, StateMachineType, StringDefinitionBody} from "aws-cdk-lib/aws-stepfunctions";
+import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
 import {LogGroup} from "aws-cdk-lib/aws-logs";
@@ -32,8 +32,22 @@ export default class SesionScraperSubStack extends NestedStack {
     bucket.grantReadWrite(sfRole);
     senadorQueue.grantSendMessages(sfRole);
     proyectoQueue.grantSendMessages(sfRole);
-    logGroup.grantRead(sfRole);
-    logGroup.grantWrite(sfRole);
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        resources: [logGroup.logGroupArn],
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:GetLogDelivery',
+          'logs:UpdateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:PutResourcePolicy',
+          'logs:DescribeResourcePolicies',
+          'logs:DescribeLogGroups',
+        ],
+        effect: Effect.ALLOW,
+      })
+    );
 
     const definition = fs.readFileSync('./lib/scraper/asl/sesion.asl.json', 'utf8');
 

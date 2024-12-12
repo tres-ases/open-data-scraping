@@ -29,8 +29,22 @@ export default class SenadorScraperSubStack extends NestedStack {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
     bucket.grantReadWrite(sfRole);
-    logGroup.grantRead(sfRole);
-    logGroup.grantWrite(sfRole);
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        resources: [logGroup.logGroupArn],
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:GetLogDelivery',
+          'logs:UpdateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:PutResourcePolicy',
+          'logs:DescribeResourcePolicies',
+          'logs:DescribeLogGroups',
+        ],
+        effect: Effect.ALLOW,
+      })
+    );
 
     let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.json', 'utf8');
 
