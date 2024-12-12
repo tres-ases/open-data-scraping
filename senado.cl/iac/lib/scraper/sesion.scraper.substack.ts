@@ -47,7 +47,7 @@ export default class SesionScraperSubStack extends NestedStack {
     });
     sfRole.addToPolicy(
       new PolicyStatement({
-        sid: `${id}-ps-InvokeHttpEndpoint1`,
+        sid: 'InvokeHttpEndpoint',
         effect: Effect.ALLOW,
         actions: ["states:InvokeHTTPEndpoint"],
         resources: [this.stateMachine.attrArn]

@@ -20,7 +20,6 @@ export default class SenadorScraperSubStack extends NestedStack {
     super(scope, id);
 
     const sfRole = new Role(this, `${id}-smRole`, {
-      roleName: `${id}-smRole`,
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
     bucket.grantReadWrite(sfRole);
@@ -42,7 +41,7 @@ export default class SenadorScraperSubStack extends NestedStack {
     });
     sfRole.addToPolicy(
       new PolicyStatement({
-        sid: `${id}-ps-InvokeHttpEndpoint1`,
+        sid: 'InvokeHttpEndpoint',
         effect: Effect.ALLOW,
         actions: ["states:InvokeHTTPEndpoint"],
         resources: [sm.attrArn]

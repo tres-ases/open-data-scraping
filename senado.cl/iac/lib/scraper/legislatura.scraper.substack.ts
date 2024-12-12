@@ -32,13 +32,13 @@ export default class LegislaturaScraperSubStack extends NestedStack {
       new Policy(this, `${id}-EventBridgeRetrieveConnectionCredentialsScopedAccessPolicy`, {
         statements: [
           new PolicyStatement({
-            sid: `${id}-ps-RetrieveConnectionCredentials`,
+            sid: 'RetrieveConnectionCredentials',
             effect: Effect.ALLOW,
             actions: ["events:RetrieveConnectionCredentials"],
             resources: [connection.connectionArn]
           }),
           new PolicyStatement({
-            sid: `${id}-ps-GetAndDescribeSecretValue`,
+            sid: 'GetAndDescribeSecretValue',
             effect: Effect.ALLOW,
             actions: [
               "secretsmanager:GetSecretValue",
@@ -68,7 +68,7 @@ export default class LegislaturaScraperSubStack extends NestedStack {
     });
     sfRole.addToPolicy(
       new PolicyStatement({
-        sid: `${id}-ps-InvokeHttpEndpoint1`,
+        sid: 'InvokeHttpEndpoint',
         effect: Effect.ALLOW,
         actions: ["states:InvokeHTTPEndpoint"],
         resources: [sm.attrArn]
