@@ -57,7 +57,7 @@ export default class SenadorScraperSubStack extends NestedStack {
       })
     );
 
-π    const pipeRole = new Role(this, `${id}-pipe-role`, {
+    const pipeRole = new Role(this, `${id}-pipe-role`, {
       assumedBy: new ServicePrincipal('pipes.amazonaws.com'),
       inlinePolicies: {
         AppPolicy: new PolicyDocument({
