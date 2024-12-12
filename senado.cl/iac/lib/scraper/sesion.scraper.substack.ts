@@ -6,7 +6,7 @@ import {Queue} from "aws-cdk-lib/aws-sqs";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
-import {LogGroup} from "aws-cdk-lib/aws-logs";
+import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
@@ -23,7 +23,8 @@ export default class SesionScraperSubStack extends NestedStack {
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
       logGroupName: `/aws/vendedlogs/states/${id}-sm`,
-      removalPolicy: RemovalPolicy.DESTROY
+      removalPolicy: RemovalPolicy.DESTROY,
+      retention: RetentionDays.THREE_MONTHS
     });
 
     const sfRole = new Role(this, `${id}-role`, {
@@ -34,7 +35,7 @@ export default class SesionScraperSubStack extends NestedStack {
     proyectoQueue.grantSendMessages(sfRole);
     sfRole.addToPolicy(
       new PolicyStatement({
-        resources: [logGroup.logGroupArn],
+        resources: ['*'],
         actions: [
           'logs:CreateLogDelivery',
           'logs:GetLogDelivery',
