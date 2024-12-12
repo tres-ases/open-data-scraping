@@ -20,10 +20,16 @@ export default class SenadorScraperSubStack extends NestedStack {
   constructor(scope: Construct, id: string, {bucket, connection, senadorQueue}: Props) {
     super(scope, id);
 
+    const logGroup = new LogGroup(this, `${id}-smLogs`, {
+      logGroupName: `/aws/vendedlogs/states/${id}-sm`,
+      removalPolicy: RemovalPolicy.DESTROY
+    });
+
     const sfRole = new Role(this, `${id}-smRole`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
     bucket.grantReadWrite(sfRole);
+    logGroup.grantWrite(sfRole);
 
     let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.json', 'utf8');
 
@@ -42,10 +48,7 @@ export default class SenadorScraperSubStack extends NestedStack {
       loggingConfiguration: {
         destinations: [{
           cloudWatchLogsLogGroup: {
-            logGroupArn: new LogGroup(this, `${id}-smLogs`, {
-              logGroupName: `/aws/vendedlogs/states/${id}-sm`,
-              removalPolicy: RemovalPolicy.DESTROY
-            }).logGroupArn,
+            logGroupArn: logGroup.logGroupArn
           },
         }],
         includeExecutionData: true,
