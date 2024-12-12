@@ -1,8 +1,8 @@
 import {CfnOutput, NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
-import {PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
+import {Effect, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
-import {CfnStateMachine, StateMachine, StateMachineType, StringDefinitionBody} from "aws-cdk-lib/aws-stepfunctions";
+import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
 
@@ -26,6 +26,14 @@ export default class LegislaturaScraperSubStack extends NestedStack {
       new PolicyStatement({
         actions: ['states:StartSyncExecution'],
         resources: [sesionStateMachine.attrArn]
+      })
+    );
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['sts:AssumeRole'],
+        principals: [new ServicePrincipal('pipes.amazonaws.com')],
+        resources: [connection.connectionArn]
       })
     );
 

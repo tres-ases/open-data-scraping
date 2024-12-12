@@ -24,6 +24,14 @@ export default class SenadorScraperSubStack extends NestedStack {
     });
 
     bucket.grantReadWrite(sfRole);
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['sts:AssumeRole'],
+        principals: [new ServicePrincipal('pipes.amazonaws.com')],
+        resources: [connection.connectionArn]
+      })
+    );
 
     let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.json', 'utf8');
 

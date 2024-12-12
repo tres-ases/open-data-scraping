@@ -1,6 +1,6 @@
 import {CfnOutput, NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
-import {Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
+import {Effect, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import {CfnStateMachine, StateMachine, StateMachineType, StringDefinitionBody} from "aws-cdk-lib/aws-stepfunctions";
@@ -27,6 +27,14 @@ export default class SesionScraperSubStack extends NestedStack {
     bucket.grantReadWrite(sfRole);
     senadorQueue.grantSendMessages(sfRole);
     proyectoQueue.grantSendMessages(sfRole);
+    sfRole.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['sts:AssumeRole'],
+        principals: [new ServicePrincipal('pipes.amazonaws.com')],
+        resources: [connection.connectionArn]
+      })
+    );
 
     const definition = fs.readFileSync('./lib/scraper/asl/sesion.asl.json', 'utf8');
 
