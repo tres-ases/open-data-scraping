@@ -32,6 +32,7 @@ export default class SesionScraperSubStack extends NestedStack {
     bucket.grantReadWrite(sfRole);
     senadorQueue.grantSendMessages(sfRole);
     proyectoQueue.grantSendMessages(sfRole);
+    logGroup.grantRead(sfRole);
     logGroup.grantWrite(sfRole);
 
     const definition = fs.readFileSync('./lib/scraper/asl/sesion.asl.json', 'utf8');

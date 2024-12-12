@@ -29,6 +29,7 @@ export default class SenadorScraperSubStack extends NestedStack {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
     bucket.grantReadWrite(sfRole);
+    logGroup.grantRead(sfRole);
     logGroup.grantWrite(sfRole);
 
     let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.json', 'utf8');
