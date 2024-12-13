@@ -1,6 +1,6 @@
 {
   "QueryLanguage": "JSONata",
-  "Comment": "A description of my state machine",
+  "Comment": "Extracción de información de Votaciones y Asistencia a Sesiones a partir de su id",
   "StartAt": "Assign sesId",
   "States": {
     "Assign sesId": {
@@ -174,7 +174,7 @@
                             "Type": "Task",
                             "Resource": "arn:aws:states:::sqs:sendMessage",
                             "Arguments": {
-                              "QueueUrl": "${proyecto_queue_url}",
+                              "QueueUrl": "${boletin_queue_url}",
                               "MessageBody": "{% $boletin %}"
                             },
                             "End": true,

@@ -6,6 +6,7 @@ import {Authorization, Connection} from 'aws-cdk-lib/aws-events';
 import SesionScraperSubStack from "./scraper/sesion.scraper.substack";
 import LegislaturaScraperSubStack from "./scraper/legislatura.scraper.substack";
 import SenadorScraperSubStack from "./scraper/senador.scraper.substack";
+import ProyectoScraperSubStack from "./scraper/proyecto.scraper.substack";
 
 export default class ScraperStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -21,7 +22,7 @@ export default class ScraperStack extends Stack {
       visibilityTimeout: Duration.hours(12),
     });
 
-    const proyectoQueue = new Queue(this, `${id}-proyecto-queue`, {
+    const boletinQueue = new Queue(this, `${id}-proyecto-queue`, {
       queueName: `${id}-proyecto-queue`,
       visibilityTimeout: Duration.hours(12),
     });
@@ -32,7 +33,7 @@ export default class ScraperStack extends Stack {
     });
 
     const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
-      bucket, connection, senadorQueue, proyectoQueue
+      bucket, connection, senadorQueue, boletinQueue
     });
 
     new LegislaturaScraperSubStack(this, `${id}-legislatura`, {
@@ -41,6 +42,10 @@ export default class ScraperStack extends Stack {
 
     new SenadorScraperSubStack(this, `${id}-senador`, {
       bucket, connection, senadorQueue
+    });
+
+    new ProyectoScraperSubStack(this, `${id}-proyecto`, {
+      bucket, connection, boletinQueue
     });
   }
 

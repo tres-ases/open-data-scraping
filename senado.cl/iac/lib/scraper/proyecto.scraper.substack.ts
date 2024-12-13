@@ -2,23 +2,22 @@ import {CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-l
 import {Connection} from "aws-cdk-lib/aws-events";
 import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
-import {Queue} from "aws-cdk-lib/aws-sqs";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
+import {CfnPipe} from "aws-cdk-lib/aws-pipes";
+import {Queue} from "aws-cdk-lib/aws-sqs";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
   connection: Connection
-  senadorQueue: Queue
   boletinQueue: Queue
 }
 
-export default class SesionScraperSubStack extends NestedStack {
-  readonly stateMachine: CfnStateMachine;
+export default class ProyectoScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket, connection, senadorQueue, boletinQueue}: Props) {
+  constructor(scope: Construct, id: string, {bucket, connection, boletinQueue}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -27,7 +26,7 @@ export default class SesionScraperSubStack extends NestedStack {
       retention: RetentionDays.THREE_MONTHS
     });
 
-    const smRole = new Role(this, `${id}-role`, {
+    const smRole = new Role(this, `${id}-smRole`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
     const smRolePolicy = new Policy(this, 'smPolicy', {
@@ -51,13 +50,6 @@ export default class SesionScraperSubStack extends NestedStack {
             bucket.bucketArn,
             `${bucket.bucketArn}/*`
           ]
-        }),
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: [
-            'sqs:SendMessage'
-          ],
-          resources: [senadorQueue.queueArn, boletinQueue.queueArn]
         }),
         new PolicyStatement({
           sid: 'RetrieveConnectionCredentials',
@@ -92,18 +84,16 @@ export default class SesionScraperSubStack extends NestedStack {
     });
     smRole.attachInlinePolicy(smRolePolicy);
 
-    const definition = fs.readFileSync('./lib/scraper/asl/sesion.asl.json', 'utf8');
+    let definition = fs.readFileSync('./lib/scraper/asl/proyecto.asl.json', 'utf8');
 
-    this.stateMachine = new CfnStateMachine(this, `${id}-sm`, {
+    const sm = new CfnStateMachine(this, `${id}-sm`, {
+      stateMachineName: `${id}-sm`,
       roleArn: smRole.roleArn,
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
-        bucket_name: bucket.bucketName,
-        senador_queue_url: senadorQueue.queueUrl,
-        boletin_queue_url: boletinQueue.queueUrl
+        bucket_name: bucket.bucketName
       },
-      stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.EXPRESS,
       tracingConfiguration: {
         enabled: true
@@ -112,7 +102,7 @@ export default class SesionScraperSubStack extends NestedStack {
         destinations: [{
           cloudWatchLogsLogGroup: {
             logGroupArn: logGroup.logGroupArn
-          }
+          },
         }],
         includeExecutionData: true,
         level: 'ALL',
@@ -124,22 +114,39 @@ export default class SesionScraperSubStack extends NestedStack {
           sid: 'InvokeHttpEndpoint',
           effect: Effect.ALLOW,
           actions: ["states:InvokeHTTPEndpoint"],
-          resources: [this.stateMachine.attrArn]
+          resources: [sm.attrArn]
         })
       ]
     }));
+
+    const pipeRole = new Role(this, `${id}-pipeRole`, {
+      roleName: `${id}-pipeRole`,
+      assumedBy: new ServicePrincipal('pipes.amazonaws.com')
+    });
+    boletinQueue.grantConsumeMessages(pipeRole);
+    pipeRole.addToPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ["states:StartExecution"],
+      resources: [sm.attrArn]
+    }));
+
+    new CfnPipe(this, `${id}-pipe`, {
+      name: `${id}-pipe`,
+      roleArn: pipeRole.roleArn,
+      source: boletinQueue.queueArn,
+      target: sm.attrArn,
+      targetParameters: {
+        stepFunctionStateMachineParameters: {
+          invocationType: 'FIRE_AND_FORGET'
+        },
+      },
+    });
 
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,
     });
     new CfnOutput(this, '${bucket_name}', {
       value: bucket.bucketName,
-    });
-    new CfnOutput(this, '${senador_queue_url}', {
-      value: senadorQueue.queueUrl,
-    });
-    new CfnOutput(this, '${proyecto_queue_url}', {
-      value: boletinQueue.queueUrl,
     });
   }
 }

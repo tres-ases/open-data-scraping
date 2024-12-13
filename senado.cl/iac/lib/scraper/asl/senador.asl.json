@@ -1,12 +1,12 @@
 {
   "QueryLanguage": "JSONata",
-  "Comment": "A description of my state machine",
+  "Comment": "Extracción de Senadores a partir de mensajes SQS con slugs de senadores",
   "StartAt": "Extract senSlugs",
   "States": {
     "Extract senSlugs": {
       "Type": "Pass",
       "Next": "Foreach senSlug",
-      "Output": "{% $states.input.body %}"
+      "Output": "{% $states.input.body[] %}"
     },
     "Foreach senSlug": {
       "Type": "Map",

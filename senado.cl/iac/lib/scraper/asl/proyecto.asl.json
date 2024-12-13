@@ -1,0 +1,68 @@
+{
+  "QueryLanguage": "JSONata",
+  "Comment": "Extracción de Proyectos a partir de mensajes SQS con boletines",
+  "StartAt": "Extract boletines",
+  "States": {
+    "Extract boletines": {
+      "Type": "Pass",
+      "Output": "{% $states.input.body[] %}",
+      "Next": "Foreach boletin"
+    },
+    "Foreach boletin": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "Assign boletin",
+        "States": {
+          "Assign boletin": {
+            "Type": "Pass",
+            "Assign": {
+              "boletin": "{% $states.input %}"
+            },
+            "Next": "Call HTTPS APIs"
+          },
+          "Call HTTPS APIs": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::http:invoke",
+            "Arguments": {
+              "Method": "GET",
+              "InvocationConfig": {
+                "ConnectionArn": "${events_connection_arn}"
+              },
+              "ApiEndpoint": "https://tramitacion.senado.cl/wspublico/tramitacion.php",
+              "QueryParameters": {
+                "boletin": "{% $boletin %}"
+              }
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "States.ALL"
+                ],
+                "BackoffRate": 2,
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "JitterStrategy": "FULL"
+              }
+            ],
+            "Next": "Save Proyecto By boletin",
+            "Output": "{% $states.result.ResponseBody %}"
+          },
+          "Save Proyecto By boletin": {
+            "Type": "Task",
+            "Arguments": {
+              "Body": "{% $states.input %}",
+              "Bucket": "open-data-cl-bucket",
+              "Key": "{% 'raw/proyecto/boletin=' & $boletin & '/data.xml' %}"
+            },
+            "Resource": "${bucket_name}",
+            "End": true
+          }
+        }
+      },
+      "End": true
+    }
+  }
+}
