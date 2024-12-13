@@ -6,7 +6,7 @@
     "Assign senSlug": {
       "Type": "Pass",
       "Assign": {
-        "senSlug": "{% $states.input.senSlug %}"
+        "senSlug": "{% $states.input.body %}"
       },
       "Next": "Call HTTPS APIs"
     },
