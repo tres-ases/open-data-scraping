@@ -17,43 +17,72 @@ export default class LegislaturaScraperSubStack extends NestedStack {
   constructor(scope: Construct, id: string, {bucket, connection, sesionStateMachine}: Props) {
     super(scope, id);
 
-    const sfRole = new Role(this, `${id}-role`, {
+    const smRole = new Role(this, `${id}-role`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
-
-    bucket.grantReadWrite(sfRole);
-    sfRole.addToPolicy(
-      new PolicyStatement({
-        actions: ['states:StartSyncExecution'],
-        resources: [sesionStateMachine.attrArn]
-      })
-    );
-    sfRole.attachInlinePolicy(
-      new Policy(this, `${id}-EventBridgeRetrieveConnectionCredentialsScopedAccessPolicy`, {
-        statements: [
-          new PolicyStatement({
-            sid: 'RetrieveConnectionCredentials',
-            effect: Effect.ALLOW,
-            actions: ["events:RetrieveConnectionCredentials"],
-            resources: [connection.connectionArn]
-          }),
-          new PolicyStatement({
-            sid: 'GetAndDescribeSecretValue',
-            effect: Effect.ALLOW,
-            actions: [
-              "secretsmanager:GetSecretValue",
-              "secretsmanager:DescribeSecret"
-            ],
-            resources: [connection.connectionSecretArn]
-          })
-        ]
-      })
-    );
+    const smRolePolicy = new Policy(this, 'smPolicy', {
+      policyName: `${id}-smPolicy`,
+      statements: [
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            's3:Abort*',
+            's3:DeleteObject*',
+            's3:GetBucket*',
+            's3:GetObject*',
+            's3:List*',
+            's3:PutObject',
+            's3:PutObjectLegalHold',
+            's3:PutObjectRetention',
+            's3:PutObjectTagging',
+            's3:PutObjectVersionTagging'
+          ],
+          resources: [
+            bucket.bucketArn,
+            `${bucket.bucketArn}/*`
+          ]
+        }),
+        new PolicyStatement({
+          sid: 'RetrieveConnectionCredentials',
+          effect: Effect.ALLOW,
+          actions: ["events:RetrieveConnectionCredentials"],
+          resources: [connection.connectionArn]
+        }),
+        new PolicyStatement({
+          sid: 'GetAndDescribeSecretValueForConnection',
+          effect: Effect.ALLOW,
+          actions: [
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret"
+          ],
+          resources: [connection.connectionSecretArn]
+        }),
+        new PolicyStatement({
+          actions: ['states:StartSyncExecution'],
+          resources: [sesionStateMachine.attrArn]
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'logs:CreateLogDelivery',
+            'logs:GetLogDelivery',
+            'logs:UpdateLogDelivery',
+            'logs:DeleteLogDelivery',
+            'logs:ListLogDeliveries',
+            'logs:PutResourcePolicy',
+            'logs:DescribeResourcePolicies',
+            'logs:DescribeLogGroups'
+          ],
+          resources: ['*'],
+        })
+      ]
+    });
+    smRole.attachInlinePolicy(smRolePolicy);
 
     let definition = fs.readFileSync('./lib/scraper/asl/legislatura.asl.json', 'utf8');
 
     const sm = new CfnStateMachine(this, `${id}-sm`, {
-      roleArn: sfRole.roleArn,
+      roleArn: smRole.roleArn,
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
@@ -66,7 +95,7 @@ export default class LegislaturaScraperSubStack extends NestedStack {
         enabled: true
       },
     });
-    sfRole.addToPolicy(
+    smRole.addToPolicy(
       new PolicyStatement({
         sid: 'InvokeHttpEndpoint',
         effect: Effect.ALLOW,

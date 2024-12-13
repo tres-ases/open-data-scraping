@@ -67,6 +67,21 @@ export default class SesionScraperSubStack extends NestedStack {
           resources: [proyectoQueue.queueArn]
         }),
         new PolicyStatement({
+          sid: 'RetrieveConnectionCredentials',
+          effect: Effect.ALLOW,
+          actions: ["events:RetrieveConnectionCredentials"],
+          resources: [connection.connectionArn]
+        }),
+        new PolicyStatement({
+          sid: 'GetAndDescribeSecretValueForConnection',
+          effect: Effect.ALLOW,
+          actions: [
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret"
+          ],
+          resources: [connection.connectionSecretArn]
+        }),
+        new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
             'logs:CreateLogDelivery',
