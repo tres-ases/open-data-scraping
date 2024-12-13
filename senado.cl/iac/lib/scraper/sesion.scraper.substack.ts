@@ -35,20 +35,11 @@ export default class SesionScraperSubStack extends NestedStack {
     proyectoQueue.grantSendMessages(sfRole);
     sfRole.addToPolicy(
       new PolicyStatement({
+        effect: Effect.ALLOW,
         resources: ['*'],
         actions: [
-          'logs:CreateLogDelivery',
-          'logs:CreateLogStream',
-          'logs:GetLogDelivery',
-          'logs:UpdateLogDelivery',
-          'logs:DeleteLogDelivery',
-          'logs:ListLogDeliveries',
-          'logs:PutLogEvents',
-          'logs:PutResourcePolicy',
-          'logs:DescribeResourcePolicies',
-          'logs:DescribeLogGroups'
+          'logs:*'
         ],
-        effect: Effect.ALLOW,
       })
     );
 
@@ -71,8 +62,8 @@ export default class SesionScraperSubStack extends NestedStack {
       loggingConfiguration: {
         destinations: [{
           cloudWatchLogsLogGroup: {
-            logGroupArn: logGroup.logGroupArn,
-          },
+            logGroupArn: logGroup.logGroupArn
+          }
         }],
         includeExecutionData: true,
         level: 'ALL',
