@@ -35,13 +35,15 @@ export default class SenadorScraperSubStack extends NestedStack {
         resources: ['*'],
         actions: [
           'logs:CreateLogDelivery',
+          'logs:CreateLogStream',
           'logs:GetLogDelivery',
           'logs:UpdateLogDelivery',
           'logs:DeleteLogDelivery',
           'logs:ListLogDeliveries',
+          'logs:PutLogEvents',
           'logs:PutResourcePolicy',
           'logs:DescribeResourcePolicies',
-          'logs:DescribeLogGroups',
+          'logs:DescribeLogGroups'
         ],
         effect: Effect.ALLOW,
       })
