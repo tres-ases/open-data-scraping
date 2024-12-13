@@ -63,7 +63,7 @@ export default class SenadorScraperSubStack extends NestedStack {
             'logs:DescribeResourcePolicies',
             'logs:DescribeLogGroups'
           ],
-          resources: [logGroup.logGroupArn],
+          resources: ['*'],
         })
       ]
     });

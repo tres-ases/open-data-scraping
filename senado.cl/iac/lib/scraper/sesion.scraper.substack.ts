@@ -78,7 +78,7 @@ export default class SesionScraperSubStack extends NestedStack {
             'logs:DescribeResourcePolicies',
             'logs:DescribeLogGroups'
           ],
-          resources: [logGroup.logGroupArn],
+          resources: ['*'],
         })
       ]
     });
