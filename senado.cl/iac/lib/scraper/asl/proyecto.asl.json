@@ -54,10 +54,10 @@
             "Type": "Task",
             "Arguments": {
               "Body": "{% $states.input %}",
-              "Bucket": "open-data-cl-bucket",
+              "Bucket": "${bucket_name}",
               "Key": "{% 'raw/proyecto/boletin=' & $boletin & '/data.xml' %}"
             },
-            "Resource": "${bucket_name}",
+            "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
             "End": true
           }
         }
