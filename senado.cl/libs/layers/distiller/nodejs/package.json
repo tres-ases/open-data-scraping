@@ -1,0 +1,19 @@
+{
+  "name": "@odata-senado.cl/distiller-layer",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "package": "pnpm install -P",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-lambda-powertools/commons": "^2.10.0",
+    "@aws-lambda-powertools/logger": "^2.8.0",
+    "@aws-lambda-powertools/tracer": "^2.10.0",
+    "cheerio": "^1.0.0",
+    "@odata-senado.cl/model": "workspace:*"
+  }
+}

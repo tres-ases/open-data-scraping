@@ -3,10 +3,9 @@ on:
   push:
     branches: [ master ]
     paths:
-      - 'layers/**'
       - 'senado.cl/**'
       - '.github/workflows/senado-cl.yml'
-      - '!**/README.md'
+      - '!senado.cl/**/README.md'
 
   workflow_dispatch:
 
@@ -32,9 +31,7 @@ jobs:
               - 'senado.cl/admin/front/**'
             infra:
               - '.github/workflows/senado-cl.yml'
-              - 'commons/**'
               - 'senado.cl/**'
-              - 'layers/**'
 
   infra:
     runs-on: ubuntu-latest
@@ -62,7 +59,7 @@ jobs:
 
       - name: Build Layers
         run: |
-          pnpm layers:build
+          pnpm @senado.cl/layers:build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -101,39 +98,39 @@ jobs:
       - run: pnpm cdk deploy --require-approval never --all
         working-directory: ./senado.cl/iac
 
-  admin-front:
-    runs-on: ubuntu-latest
-    needs: [changes, infra]
-    if: ${{ needs.changes.outputs.admin-front == 'true' }}
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: admin-front
-          path: dist
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: 'us-east-1'
-
-      - name: Deploy Admin SPA to S3
-        run: aws s3 sync ./dist s3://senado-admin.open-data.cl
-
-      - name: Get AWS SSM Parameters
-        uses: dkershner6/aws-ssm-getparameters-action@v2
-        with:
-          parameterPairs: "
-            /openData/senadoCl/admin/distributionId = DISTRIBUTION"
-          withDecryption: "true"
-
-      - name: Invalidate CloudFront Admin SPA
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: ${{ env.DISTRIBUTION }}
-          PATHS: "/*"
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'us-east-1'
+#  admin-front:
+#    runs-on: ubuntu-latest
+#    needs: [changes, infra]
+#    if: ${{ needs.changes.outputs.admin-front == 'true' }}
+#    steps:
+#      - name: Download artifact from build job
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: admin-front
+#          path: dist
+#
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: 'us-east-1'
+#
+#      - name: Deploy Admin SPA to S3
+#        run: aws s3 sync ./dist s3://senado-admin.open-data.cl
+#
+#      - name: Get AWS SSM Parameters
+#        uses: dkershner6/aws-ssm-getparameters-action@v2
+#        with:
+#          parameterPairs: "
+#            /openData/senadoCl/admin/distributionId = DISTRIBUTION"
+#          withDecryption: "true"
+#
+#      - name: Invalidate CloudFront Admin SPA
+#        uses: chetan/invalidate-cloudfront-action@v2
+#        env:
+#          DISTRIBUTION: ${{ env.DISTRIBUTION }}
+#          PATHS: "/*"
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_REGION: 'us-east-1'

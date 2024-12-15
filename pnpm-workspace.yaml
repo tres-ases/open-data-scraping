@@ -1,9 +1,10 @@
 packages:
   - "commons"
   - "senado.cl/global"
-  - "senado.cl/scraper/*"
-  - "senado.cl/admin/front"
-  - "senado.cl/admin/api/*"
+  - "senado.cl/libs/layers/**"
+  - "senado.cl/libs/*"
+  - "senado.cl/distiller"
+  - "senado.cl/admin"
   - "senado.cl/iac"
   - "servel.cl/libs"
   - "servel.cl/processor/*"
