@@ -108,19 +108,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: distiller-layer
-          path: artifact/distiller-layer
+          path: ~/artifact/distiller-layer
 
       - name: Download artifact distiller-dist
         uses: actions/download-artifact@v4
         with:
           name: distiller-dist
-          path: artifact/distiller-dist
+          path: ~/artifact/distiller-dist
 
       - name: Download artifact admin-dist
         uses: actions/download-artifact@v4
         with:
           name: admin-dist
-          path: artifact/admin-dist
+          path: ~/artifact/admin-dist
 
 #      - name: Get AWS SSM Parameters
 #        uses: dkershner6/aws-ssm-getparameters-action@v2
