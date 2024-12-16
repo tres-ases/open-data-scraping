@@ -14,6 +14,6 @@ export default class MainStack extends Stack {
     });
 
     new ScraperSubstack(this, `${id}-scraper`, {bucket});
-    new DistillerSubstack(this, `${id}-scraper`, {bucket});
+    new DistillerSubstack(this, `${id}-distiller`, {bucket});
   }
 }
