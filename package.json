@@ -5,7 +5,7 @@
     "@senado.cl/libs:package": "turbo package --filter=\"./senado.cl/libs/**\"",
     "@senado.cl/iac:build": "turbo build --filter=@odata-senado.cl/iac",
     "@senado.cl/distiller:build": "turbo build --filter=@odata-senado.cl/distiller",
-    "@senado.cl/distiller:package": "turbo build --filter=@odata-senado.cl/distiller",
+    "@senado.cl/distiller-layer:package": "turbo build --filter=@odata-senado.cl/distiller-layer",
     "@senado.cl/admin:package": "turbo package --filter=@odata-senado.cl/admin"
   },
   "devDependencies": {
