@@ -14,7 +14,7 @@
     },
     "package": {
       "dependsOn": ["^package", "build"],
-      "outputs": ["dist/**", "layer/**"]
+      "outputs": ["dist/**", "layer/**", "node_modules/**"]
     },
     "deploy": {
       "dependsOn": ["^deploy"]

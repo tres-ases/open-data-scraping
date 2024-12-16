@@ -34,7 +34,7 @@ export default class ProyectoDistillerSubStack extends NestedStack {
     bucket.addEventNotification(
       EventType.OBJECT_CREATED_PUT,
       new LambdaDestination(xml2jsonLambda),
-      { prefix: '/raw/proyecto/'}
+      { prefix: 'raw/proyecto/'}
     );
   }
 }

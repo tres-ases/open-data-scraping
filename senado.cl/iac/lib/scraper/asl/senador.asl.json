@@ -67,7 +67,7 @@
         }
       },
       "End": true,
-      "MaxConcurrency": 2
+      "MaxConcurrency": 1
     }
   }
 }

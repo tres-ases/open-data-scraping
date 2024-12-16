@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "package": "pnpm install -P",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "package": "pnpm install -P && cp -rL node_modules node_modules2 && rm -rf node_modules && mv node_modules2 node_modules"
   },
   "keywords": [],
   "author": "",
