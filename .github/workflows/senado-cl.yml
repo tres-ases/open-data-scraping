@@ -93,12 +93,12 @@ jobs:
       - name: Build layers
         working-directory: ./senado.cl/libs/layers/distiller/nodejs
         run: |
-          npm install --production
+          npm install --omit=dev
 
       - name: CDK deploy
         working-directory: ./senado.cl/iac
         run: |
-          npm install --production
+          npm install
           cdk deploy --require-approval never --all
 
 #  admin-front:
