@@ -15,6 +15,9 @@
     "package": {
       "dependsOn": ["^package", "build"],
       "outputs": ["dist/**", "layer/**"]
+    },
+    "deploy": {
+      "dependsOn": ["^deploy"]
     }
   }
 }

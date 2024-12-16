@@ -6,6 +6,7 @@ on:
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
+      - 'turbo.json'
       - 'senado.cl/**'
       - '.github/workflows/senado-cl.yml'
       - '!senado.cl/**/README.md'
