@@ -61,8 +61,17 @@ jobs:
       - name: Install Dependencies
         run: |
           pnpm install
+
+      - name: Build distiller
+        run: |
           pnpm @senado.cl/distiller:build
+
+      - name: Package distiller layer
+        run: |
           pnpm @senado.cl/distiller-layer:package
+
+      - name: Package admin webapp
+        run: |
           pnpm @senado.cl/admin:package
 
       - name: Upload distiller-layer
