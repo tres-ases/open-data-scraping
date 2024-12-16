@@ -82,7 +82,7 @@ jobs:
             /openData/senadoCl/admin/cognitoUserPool/clientId = USER_POOL_CLIENT_ID"
           withDecryption: "true"
 
-      - name: 'Create admin env file'
+      - name: Create admin env file
         working-directory: ./senado.cl/admin
         run: |
           touch .env.production
@@ -97,12 +97,18 @@ jobs:
           name: admin-front
           path: senado.cl/admin/front/dist
 
-      - name: CDK deploy
+      - name: CDK deploy .env
         working-directory: ./senado.cl/iac
         run: |
           touch .env
           echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-          pnpm deploy
+          cat .env
+
+      - name: CDK deploy
+        run: |
+          touch .env
+          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
+          pnpm @senado.cl/iac:deploy
 
 #  admin-front:
 #    runs-on: ubuntu-latest
