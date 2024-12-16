@@ -41,6 +41,8 @@ jobs:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.infra == 'true' }}
     env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CDK_DEFAULT_ACCOUNT: ${{ vars.CDK_DEFAULT_ACCOUNT }}
       CDK_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
     steps:
@@ -102,13 +104,11 @@ jobs:
         run: |
           touch .env
           echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-          cat .env
+          cdk deploy --require-approval never --all
 
-      - name: CDK deploy
-        run: |
-          touch .env
-          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-          pnpm @senado.cl/iac:deploy
+#      - name: CDK deploy
+#        run: |
+#          pnpm @senado.cl/iac:deploy
 
 #  admin-front:
 #    runs-on: ubuntu-latest
