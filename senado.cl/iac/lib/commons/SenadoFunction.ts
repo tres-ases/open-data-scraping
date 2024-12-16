@@ -15,7 +15,7 @@ interface SenadoNodejsFunctionProps {
 }
 
 function codeFromPackage(folder?: string) {
-  return Code.fromInline(`~/artifact/distiller-dist/${folder ? `${folder}/` : ''}dist`);
+  return Code.fromAsset(`../../../../../artifact/distiller-dist/${folder ? `${folder}/` : ''}dist`);
 }
 
 export default class SenadoFunction extends nodejs.NodejsFunction {
