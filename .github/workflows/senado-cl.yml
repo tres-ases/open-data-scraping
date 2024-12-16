@@ -95,19 +95,17 @@ jobs:
 #          name: admin-front
 #          path: senado.cl/admin/front/dist
 
-      - name: CDK deploy
+      - name: CDK deploy prepare
         working-directory: ./senado.cl/iac
         run: |
           touch .env
           echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
           npm install
-          cdk deploy --require-approval never --all
 
       - name: AWS CDK Actions
-        uses: hg-jarlinghaus/aws-cdk-github-actions@v1.2.3
+        uses: tj-actions/aws-cdk@v4
         with:
           cdk_subcommand: deploy
-          actions_comment: false
           args: '--require-approval never'
           working_dir: ./senado.cl/iac
         env:
