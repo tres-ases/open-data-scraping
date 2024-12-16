@@ -19,7 +19,7 @@ export default class ProyectoDistillerSubStack extends NestedStack {
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
-      code: Code.fromAsset('../../artifact/distiller-layer'),
+      code: Code.fromAsset('../../../artifact/distiller-layer'),
       compatibleArchitectures: [
         Architecture.X86_64
       ]
