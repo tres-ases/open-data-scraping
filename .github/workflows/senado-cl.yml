@@ -34,9 +34,9 @@ jobs:
               - 'senado.cl/admin/front/**'
             infra:
               - '.github/workflows/senado-cl.yml'
-              - 'senado.cl/iac'
-              - 'senado.cl/libs'
-              - 'senado.cl/distiller'
+              - 'senado.cl/iac/**'
+              - 'senado.cl/libs/**'
+              - 'senado.cl/distiller/**'
 
   infra:
     runs-on: ubuntu-latest
