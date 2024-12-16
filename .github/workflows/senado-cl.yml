@@ -96,10 +96,10 @@ jobs:
 
       - name: CDK deploy
         #working-directory: ./senado.cl/iac
+        env:
+          CDK_DEFAULT_ACCOUNT: ${{ vars.CDK_DEFAULT_ACCOUNT }}
+          CDK_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
         run: |
-          touch .env
-          echo CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }} >> .env
-          echo CDK_DEFAULT_REGION=${{ vars.CDK_DEFAULT_REGION }} >> .env
           pnpm @senado.cl/iac:deploy
 
 #  admin-front:
