@@ -90,6 +90,11 @@ jobs:
           name: admin-front
           path: senado.cl/admin/front/dist
 
+      - name: Build layers
+        working-directory: ./senado.cl/libs/layers/distiller/nodejs
+        run: |
+          pnpm install -P
+
       - name: CDK deploy
         working-directory: ./senado.cl/iac
         run: |

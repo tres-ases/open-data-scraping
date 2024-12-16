@@ -1,6 +1,5 @@
 packages:
-  - "senado.cl/libs/layers/**"
-  - "senado.cl/libs/*"
+  - "senado.cl/libs/model"
   - "senado.cl/distiller"
   - "senado.cl/admin"
   - "servel.cl/libs"
