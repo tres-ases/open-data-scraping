@@ -98,10 +98,11 @@ jobs:
           path: senado.cl/admin/front/dist
 
       - name: CDK deploy
+        working-directory: ./senado.cl/iac
         run: |
           touch .env
           echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-          pnpm @senado.cl/iac:deploy
+          pnpm deploy
 
 #  admin-front:
 #    runs-on: ubuntu-latest
