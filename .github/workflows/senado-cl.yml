@@ -102,7 +102,7 @@ jobs:
           cdk deploy --require-approval never --all
 
       - name: CDK deploy
-        uses: youyo/aws-cdk-github-actions@v1
+        uses: youyo/aws-cdk-github-actions@v1.2.3
         with:
           working-dir: ./senado.cl/iac
           cdk_subcommand: 'deploy'
