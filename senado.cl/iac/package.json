@@ -1,8 +1,8 @@
 {
-  "name": "iac2",
+  "name": "@odata-senado.cl/iac",
   "version": "0.1.0",
   "bin": {
-    "iac2": "bin/iac2.js"
+    "iac2": "bin/senado.cl.js"
   },
   "scripts": {
     "build": "tsc",

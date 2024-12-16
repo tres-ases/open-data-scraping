@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "@senado.cl/libs:package": "turbo package --filter=\"./senado.cl/libs/**\"",
-    "@senado.cl/iac:build": "turbo build --filter=@senado.cl/iac",
+    "@senado.cl/iac:build": "turbo build --filter=@odata-senado.cl/iac",
     "@senado.cl/distiller:build": "turbo build --filter=@odata-senado.cl/distiller",
     "@senado.cl/admin:package": "turbo package --filter=@odata-senado.cl/admin"
   },
