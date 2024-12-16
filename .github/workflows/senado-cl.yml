@@ -99,7 +99,7 @@ jobs:
 
       - name: CDK deploy
         run: |
-          pnpm @senado.cl/iac:deploy
+          CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }} pnpm @senado.cl/iac:deploy
 
 #  admin-front:
 #    runs-on: ubuntu-latest
