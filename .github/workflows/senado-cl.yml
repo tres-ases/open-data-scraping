@@ -3,10 +3,12 @@ on:
   push:
     branches: [ master ]
     paths:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
       - 'senado.cl/**'
       - '.github/workflows/senado-cl.yml'
       - '!senado.cl/**/README.md'
-
   workflow_dispatch:
 
 concurrency:
