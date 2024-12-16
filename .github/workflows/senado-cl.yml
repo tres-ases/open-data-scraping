@@ -99,19 +99,12 @@ jobs:
         run: |
           touch .env
           echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-          cdk deploy --require-approval never --all
 
       - name: CDK deploy
-        uses: youyo/aws-cdk-github-actions@v1.2.3
-        with:
-          working-dir: ./senado.cl/iac
-          cdk_subcommand: 'deploy'
-          actions_comment: false
-          args: '--require-approval never'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
+        run: |
+          touch .env
+          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
+          pnpm @senado.cl/iac:deploy
 
 #      - name: CDK deploy
 #        run: |
