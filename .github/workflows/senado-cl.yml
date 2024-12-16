@@ -59,7 +59,7 @@ jobs:
 
       - name: Build Layers
         run: |
-          pnpm @senado.cl/layers:build
+          pnpm @senado.cl/libs:package
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
