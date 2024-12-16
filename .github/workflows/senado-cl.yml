@@ -70,7 +70,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: 'us-east-1'
+          aws-region: ${{ var.CDK_DEFAULT_REGION }}
 
 #      - name: Get AWS SSM Parameters
 #        uses: dkershner6/aws-ssm-getparameters-action@v2
@@ -95,13 +95,25 @@ jobs:
 #          name: admin-front
 #          path: senado.cl/admin/front/dist
 
-      - name: CDK deploy .env
+      - name: CDK deploy
         working-directory: ./senado.cl/iac
         run: |
           touch .env
           echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
           npm install
           cdk deploy --require-approval never --all
+
+      - name: AWS CDK Actions
+        uses: hg-jarlinghaus/aws-cdk-github-actions@v1.2.3
+        with:
+          cdk_subcommand: deploy
+          actions_comment: false
+          args: '--require-approval never'
+          working_dir: ./senado.cl/iac
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ var.CDK_DEFAULT_REGION }}
 
 #      - name: CDK deploy
 #        run: |
