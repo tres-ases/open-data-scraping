@@ -94,9 +94,9 @@ jobs:
           path: senado.cl/admin/front/dist
 
       - name: CDK deploy
-        working-directory: ./senado.cl/iac
+        #working-directory: ./senado.cl/iac
         run: |
-          pnpm cdk deploy --require-approval never --all
+          pnpm @senado.cl/iac:deploy
 
 #  admin-front:
 #    runs-on: ubuntu-latest

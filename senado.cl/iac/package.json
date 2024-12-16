@@ -1,14 +1,13 @@
 {
   "name": "@odata-senado.cl/iac",
   "version": "0.1.0",
-  "bin": {
-    "iac2": "bin/senado.cl.js"
-  },
+  "bin": "bin/senado.cl.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy": "cdk deploy --require-approval never --all"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
