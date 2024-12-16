@@ -38,7 +38,7 @@ jobs:
               - 'senado.cl/distiller/**'
               - 'senado.cl/iac/**'
 
-  iac-modules:
+  iac-artifacts:
     runs-on: ubuntu-latest
     needs: [ changes ]
     if: ${{ needs.changes.outputs.iac == 'true' }}
@@ -85,7 +85,7 @@ jobs:
 
   iac:
     runs-on: ubuntu-latest
-    needs: [ changes, iac-modules ]
+    needs: [ changes, iac-artifacts ]
     if: ${{ needs.changes.outputs.iac == 'true' }}
     steps:
       - name: Checkout
@@ -156,7 +156,8 @@ jobs:
         uses: tj-actions/aws-cdk@v4
         with:
           cdk_subcommand: deploy
-          args: '--require-approval never'
+          cdk_extra_args: >-
+            --require-approval never
           working_dir: ./senado.cl/iac
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
