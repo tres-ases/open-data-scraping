@@ -47,19 +47,18 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 20π
           cache: 'pnpm'
 
       - name: Cache for turbo
         uses: rharkor/caching-for-turbo@v1.5
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           pnpm install
-
-      - name: Build Layers
-        run: |
+          pnpm @senado.cl/admin:package
           pnpm @senado.cl/libs:package
+          pnpm @senado.cl/distiller:build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -83,11 +82,6 @@ jobs:
           echo VITE_COGNITO_USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env.production
           echo VITE_COGNITO_USER_POOL_CLIENT_ID=${{ env.USER_POOL_CLIENT_ID }} >> .env.production
           cat .env.production
-
-      - name: Build SRC
-        run: |
-          pnpm @senado.cl/admin:package
-          pnpm @senado.cl/distiller:build
 
       - name: Upload admin-front build
         if: ${{ needs.changes.outputs.admin-front == 'true' }}
