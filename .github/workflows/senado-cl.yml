@@ -77,7 +77,7 @@ jobs:
           withDecryption: "true"
 
       - name: 'Create admin env file'
-        working-directory: ./senado.cl/admin/front
+        working-directory: ./senado.cl/admin
         run: |
           touch .env.production
           echo VITE_COGNITO_USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env.production
