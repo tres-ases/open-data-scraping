@@ -96,8 +96,11 @@ jobs:
           name: admin-front
           path: senado.cl/admin/front/dist
 
-      - run: pnpm cdk deploy --require-approval never --all
+      - name: CDK deploy
         working-directory: ./senado.cl/iac
+        run: |
+          pnpm install
+          pnpm cdk deploy --require-approval never --all
 
 #  admin-front:
 #    runs-on: ubuntu-latest

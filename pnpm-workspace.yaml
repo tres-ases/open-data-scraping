@@ -1,10 +1,7 @@
 packages:
-  - "commons"
-  - "senado.cl/global"
   - "senado.cl/libs/layers/**"
   - "senado.cl/libs/*"
   - "senado.cl/distiller"
   - "senado.cl/admin"
-  - "senado.cl/iac"
   - "servel.cl/libs"
   - "servel.cl/processor/*"
