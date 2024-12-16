@@ -93,13 +93,13 @@ jobs:
       - name: Build layers
         working-directory: ./senado.cl/libs/layers/distiller/nodejs
         run: |
-          pnpm install -P
+          npm install --production
 
       - name: CDK deploy
         working-directory: ./senado.cl/iac
         run: |
-          pnpm install
-          pnpm cdk deploy --require-approval never --all
+          npm install --production
+          cdk deploy --require-approval never --all
 
 #  admin-front:
 #    runs-on: ubuntu-latest
