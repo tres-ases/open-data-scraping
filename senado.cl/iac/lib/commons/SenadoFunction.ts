@@ -3,7 +3,7 @@ import {aws_lambda_nodejs as nodejs, Duration} from "aws-cdk-lib";
 import {Construct} from "constructs";
 
 interface SenadoNodejsFunctionProps {
-  folder: string,
+  folder?: string,
   handler: string,
   layers?: LayerVersion[],
   timeout?: number,
@@ -14,8 +14,8 @@ interface SenadoNodejsFunctionProps {
   reservedConcurrentExecutions?: number
 }
 
-function codeFromPackage(folder: string) {
-  return Code.fromAsset(`../${folder}/dist`);
+function codeFromPackage(folder?: string) {
+  return Code.fromAsset(`../../artifact/distiller-dist/${folder ? `${folder}/` : ''}dist`);
 }
 
 export default class SenadoFunction extends nodejs.NodejsFunction {

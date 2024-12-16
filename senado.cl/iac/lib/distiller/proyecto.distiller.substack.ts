@@ -19,14 +19,13 @@ export default class ProyectoDistillerSubStack extends NestedStack {
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
-      code: Code.fromAsset('../libs/layers/distiller'),
+      code: Code.fromAsset('../../artifact/distiller-layer'),
       compatibleArchitectures: [
         Architecture.X86_64
       ]
     });
 
     const xml2jsonLambda = new SenadoFunction(this, `${id}Fn`, {
-      folder: 'distiller',
       handler: 'proyectos-xml2json.ts',
       layers: [distillerLy],
       timeout: 120,

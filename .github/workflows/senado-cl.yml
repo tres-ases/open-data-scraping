@@ -32,16 +32,62 @@ jobs:
           filters: |
             admin-front:
               - 'senado.cl/admin/front/**'
-            infra:
-              - '.github/workflows/senado-cl.yml'
-              - 'senado.cl/iac/**'
+            iac-modules:
               - 'senado.cl/libs/**'
               - 'senado.cl/distiller/**'
+            iac:
+              - '.github/workflows/senado-cl.yml'
+              - 'senado.cl/iac/**'
 
-  infra:
+  iac-modules:
     runs-on: ubuntu-latest
     needs: [ changes ]
-    if: ${{ needs.changes.outputs.infra == 'true' }}
+    if: ${{ needs.changes.outputs.iac-modules == 'true' || needs.changes.outputs.iac == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Cache for turbo
+        uses: rharkor/caching-for-turbo@v1.5
+
+      - name: Install Dependencies
+        run: |
+          pnpm install
+          pnpm @senado.cl/distiller:build
+          pnpm @senado.cl/distiller-layer:package
+          pnpm @senado.cl/admin:package
+
+      - name: Upload distiller-layer
+        uses: actions/upload-artifact@v4
+        with:
+          name: distiller-layer
+          path: senado.cl/libs/layers/distiller
+
+      - name: Upload distiller-dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: distiller-dist
+          path: senado.cl/distiller/dist
+
+      - name: Upload admin-dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-dist
+          path: senado.cl/admin/dist
+
+  iac:
+    runs-on: ubuntu-latest
+    needs: [ changes, iac-modules ]
+    if: ${{ needs.changes.outputs.iac-modules == 'true' || needs.changes.outputs.iac == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,31 +98,30 @@ jobs:
           cache: 'npm'
           cache-dependency-path: senado.cl/iac/package-lock.json
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Cache for turbo
-        uses: rharkor/caching-for-turbo@v1.5
-
-      - name: Install Dependencies
-        run: |
-          pnpm install
-          pnpm @senado.cl/libs:package
-          pnpm @senado.cl/distiller:build
-          pnpm @senado.cl/distiller-layer:package
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.CDK_DEFAULT_REGION }}
+
+      - name: Download artifact distiller-layer
+        uses: actions/download-artifact@v4
+        with:
+          name: distiller-layer
+          path: artifact/distiller-layer
+
+      - name: Download artifact distiller-dist
+        uses: actions/download-artifact@v4
+        with:
+          name: distiller-dist
+          path: artifact/distiller-dist
+
+      - name: Download artifact admin-dist
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-dist
+          path: artifact/admin-dist
 
 #      - name: Get AWS SSM Parameters
 #        uses: dkershner6/aws-ssm-getparameters-action@v2
