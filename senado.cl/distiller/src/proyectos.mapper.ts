@@ -1,4 +1,4 @@
-import {ProyectoDtl, ProyectoRaw} from "@senado-cl/global/model";
+import {ProyectoDtl, ProyectoRaw} from "@odata-senado.cl/model";
 
 export const proyectoRaw2ProyectoDtl: (raw: ProyectoRaw) => ProyectoDtl = ({
                                                                              descripcion: {

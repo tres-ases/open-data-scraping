@@ -59,7 +59,7 @@ jobs:
 
       - name: Build Layers
         run: |
-          pnpm @senado.cl/libs:package
+          pnpm @senado.cl/libs:build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -86,7 +86,7 @@ jobs:
 
       - name: Build SRC
         run: |
-          pnpm @senado.cl/admin:build
+          pnpm @senado.cl/admin:package
 
       - name: Upload admin-front build
         if: ${{ needs.changes.outputs.admin-front == 'true' }}
