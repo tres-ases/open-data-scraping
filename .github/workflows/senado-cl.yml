@@ -86,7 +86,7 @@ jobs:
 
       - name: Build SRC
         run: |
-          pnpm @senado.cl/admin-front:build
+          pnpm @senado.cl/admin:build
 
       - name: Upload admin-front build
         if: ${{ needs.changes.outputs.admin-front == 'true' }}

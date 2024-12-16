@@ -4,8 +4,8 @@
   "scripts": {
     "@senado.cl/libs:package": "turbo package --filter=\"./senado.cl/libs/**\"",
     "@senado.cl/iac:build": "turbo build --filter=@senado.cl/iac",
-    "@senado.cl/distiller:package": "turbo package --filter=@senado.cl/distiller",
-    "@senado.cl/admin-front:build": "turbo build --filter=@senado-cl/admin-front"
+    "@senado.cl/distiller:package": "turbo package --filter=@odata-senado.cl/distiller",
+    "@senado.cl/admin:build": "turbo build --filter=@odata-senado.cl/admin"
   },
   "devDependencies": {
     "turbo": "^2.0.5",
