@@ -34,7 +34,9 @@ jobs:
               - 'senado.cl/admin/front/**'
             infra:
               - '.github/workflows/senado-cl.yml'
-              - 'senado.cl/**'
+              - 'senado.cl/iac'
+              - 'senado.cl/libs'
+              - 'senado.cl/distiller'
 
   infra:
     runs-on: ubuntu-latest
@@ -59,7 +61,6 @@ jobs:
       - name: Install Dependencies
         run: |
           pnpm install
-          pnpm @senado.cl/admin:package
           pnpm @senado.cl/libs:package
           pnpm @senado.cl/distiller:build
           pnpm @senado.cl/distiller-layer:package
@@ -71,40 +72,36 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'us-east-1'
 
-      - name: Get AWS SSM Parameters
-        uses: dkershner6/aws-ssm-getparameters-action@v2
-        with:
-          parameterPairs: "
-            /openData/senadoCl/admin/cognitoUserPool/id = USER_POOL_ID,
-            /openData/senadoCl/admin/cognitoUserPool/clientId = USER_POOL_CLIENT_ID"
-          withDecryption: "true"
+#      - name: Get AWS SSM Parameters
+#        uses: dkershner6/aws-ssm-getparameters-action@v2
+#        with:
+#          parameterPairs: "
+#            /openData/senadoCl/admin/cognitoUserPool/id = USER_POOL_ID,
+#            /openData/senadoCl/admin/cognitoUserPool/clientId = USER_POOL_CLIENT_ID"
+#          withDecryption: "true"
 
-      - name: Create admin env file
-        working-directory: ./senado.cl/admin
-        run: |
-          touch .env.production
-          echo VITE_COGNITO_USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env.production
-          echo VITE_COGNITO_USER_POOL_CLIENT_ID=${{ env.USER_POOL_CLIENT_ID }} >> .env.production
-          cat .env.production
+#      - name: Create admin env file
+#        working-directory: ./senado.cl/admin
+#        run: |
+#          touch .env.production
+#          echo VITE_COGNITO_USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env.production
+#          echo VITE_COGNITO_USER_POOL_CLIENT_ID=${{ env.USER_POOL_CLIENT_ID }} >> .env.production
+#          cat .env.production
 
-      - name: Upload admin-front build
-        if: ${{ needs.changes.outputs.admin-front == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: admin-front
-          path: senado.cl/admin/front/dist
+#      - name: Upload admin-front build
+#        if: ${{ needs.changes.outputs.admin-front == 'true' }}
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: admin-front
+#          path: senado.cl/admin/front/dist
 
       - name: CDK deploy .env
         working-directory: ./senado.cl/iac
         run: |
           touch .env
           echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-
-      - name: CDK deploy
-        run: |
-          touch .env
-          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-          pnpm @senado.cl/iac:deploy
+          npm install
+          cdk deploy --require-approval never --all
 
 #      - name: CDK deploy
 #        run: |
