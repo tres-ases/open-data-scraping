@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       admin-front: ${{ steps.changes.outputs.admin-front }}
-      infra: ${{ steps.changes.outputs.infra }}
+      iac: ${{ steps.changes.outputs.iac }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
 
   iac:
     runs-on: ubuntu-latest
-    needs: [ iac-modules ]
+    needs: [ changes, iac-modules ]
     if: ${{ needs.changes.outputs.iac == 'true' }}
     steps:
       - name: Checkout
