@@ -32,7 +32,7 @@ jobs:
           filters: |
             admin-front:
               - 'senado.cl/admin/front/**'
-            iac
+            iac:
               - '.github/workflows/senado-cl.yml'
               - 'senado.cl/libs/**'
               - 'senado.cl/distiller/**'
