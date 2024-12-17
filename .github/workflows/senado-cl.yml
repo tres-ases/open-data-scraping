@@ -62,10 +62,6 @@ jobs:
         run: |
           pnpm install
 
-      - name: Build distiller
-        run: |
-          pnpm @senado.cl/distiller:build
-
       - name: Package admin webapp
         run: |
           pnpm @senado.cl/admin:package
