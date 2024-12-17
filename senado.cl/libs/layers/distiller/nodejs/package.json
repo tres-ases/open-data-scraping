@@ -9,7 +9,8 @@
     "@aws-lambda-powertools/commons": "^2.10.0",
     "@aws-lambda-powertools/logger": "^2.8.0",
     "@aws-lambda-powertools/tracer": "^2.10.0",
+    "@odata-senado.cl/model": "workspace:*",
     "cheerio": "^1.0.0",
-    "@odata-senado.cl/model": "workspace:*"
+    "lodash.merge": "^4.6.2"
   }
 }
