@@ -19,11 +19,17 @@ export class Xml2Json implements LambdaInterface {
   @tracer.captureLambdaHandler()
   public async handler(event: S3Event, _context: any) {
     logger.info('Ejecutando Xml2Json', {event});
+
     for (const {s3: {bucket, object}} of event.Records) {
-      logger.info('Iterando Records', {bucket, object});
-      const xml = await this.readFile(bucket.name, object.key)
+      const bucketName = bucket.name, key = decodeURIComponent(object.key), newKey = key.replace('raw', 'dtl');
+      logger.appendKeys({bucketName, key, newKey});
+      const xml = await this.readFile(bucket.name, key)
       const json = this.transform(xml);
-      await this.saveFile(json, bucket.name, object.key.replace('raw', 'dtl'));
+      logger.debug('XML transformado', {json});
+
+      await this.saveFile(json, bucket.name, newKey);
+      logger.info('Archivo generado');
+      logger.removeKeys(['bucketName', 'key'])
     }
   }
 
