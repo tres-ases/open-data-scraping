@@ -19,7 +19,6 @@ export class Xml2Json implements LambdaInterface {
   @tracer.captureLambdaHandler()
   public async handler(event: S3Event, _context: any) {
     logger.info('Ejecutando Xml2Json', {event});
-
     for (const {s3: {bucket, object}} of event.Records) {
       const bucketName = bucket.name, key = decodeURIComponent(object.key), newKey = key.replace('raw', 'dtl');
       logger.appendKeys({bucketName, key, newKey});

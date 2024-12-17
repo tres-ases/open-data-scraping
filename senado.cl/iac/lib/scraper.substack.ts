@@ -4,9 +4,10 @@ import {Bucket} from 'aws-cdk-lib/aws-s3';
 import {Queue} from 'aws-cdk-lib/aws-sqs';
 import {Authorization, Connection} from 'aws-cdk-lib/aws-events';
 import SesionScraperSubStack from "./scraper/sesion.scraper.substack";
-import LegislaturaScraperSubStack from "./scraper/legislatura.scraper.substack";
-import SenadorScraperSubStack from "./scraper/senador.scraper.substack";
-import ProyectoScraperSubStack from "./scraper/proyecto.scraper.substack";
+import LegislaturaSubStack from "./scraper/legislatura.scraper.substack";
+import SenadorSubStack from "./scraper/senador.scraper.substack";
+import ProyectoSubStack from "./scraper/proyecto.scraper.substack";
+import LegislaturasScraperSubStack from "./scraper/legislaturas.scraper.substack";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
@@ -33,19 +34,23 @@ export default class ScraperSubstack extends NestedStack {
       authorization: Authorization.apiKey('API-KEY', SecretValue.unsafePlainText('DUMMY'))
     });
 
+    new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
+      bucket, connection
+    });
+
     const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
       bucket, connection, senadorQueue, boletinQueue
     });
 
-    new LegislaturaScraperSubStack(this, `${id}-legislatura`, {
+    new LegislaturaSubStack(this, `${id}-legislatura`, {
       bucket, connection, sesionStateMachine: sesionSubStack.stateMachine
     });
 
-    new SenadorScraperSubStack(this, `${id}-senador`, {
+    new SenadorSubStack(this, `${id}-senador`, {
       bucket, connection, senadorQueue
     });
 
-    new ProyectoScraperSubStack(this, `${id}-proyecto`, {
+    new ProyectoSubStack(this, `${id}-proyecto`, {
       bucket, connection, boletinQueue
     });
   }

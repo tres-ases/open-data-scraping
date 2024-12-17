@@ -1,6 +1,6 @@
 {
   "QueryLanguage": "JSONata",
-  "Comment": "Extracción de Legislaturas a partir de su id",
+  "Comment": "Extracción de una Legislatura a partir de su id",
   "StartAt": "Assign legId",
   "States": {
     "Assign legId": {

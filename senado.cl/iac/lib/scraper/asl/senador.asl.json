@@ -21,9 +21,9 @@
             "Assign": {
               "senSlug": "{% $states.input %}"
             },
-            "Next": "Call HTTPS APIs"
+            "Next": "Get Proyecto"
           },
-          "Call HTTPS APIs": {
+          "Get Proyecto": {
             "Type": "Task",
             "Resource": "arn:aws:states:::http:invoke",
             "Arguments": {
