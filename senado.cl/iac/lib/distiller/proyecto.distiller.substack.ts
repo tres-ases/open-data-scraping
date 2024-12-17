@@ -15,7 +15,7 @@ export default class ProyectoDistillerSubStack extends NestedStack {
     super(scope, id);
 
     const modelLy = new LayerVersion(this, `${id}-ModelLy`, {
-      layerVersionName: `${id}-DistillerLy`,
+      layerVersionName: `${id}-ModelLy`,
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
       ],
