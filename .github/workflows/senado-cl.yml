@@ -73,12 +73,12 @@ jobs:
           path: senado.cl/distiller/dist
 
       - name: Package distiller layer
-        working-directory: ./senado.cl/iac
+        working-directory: ./senado.cl/libs/layers/distiller
         run: |
           rm -rf /tmp/distiller-layer
-          mkdir /tmp/distiller-layer
-          cp package.json /tmp/distiller-layer
-          cd /tmp/distiller-layer
+          mkdir -p /tmp/distiller-layer
+          cp -rf nodejs /tmp/distiller-layer
+          cd /tmp/distiller-layer/nodejs
           pnpm install --shamefully-hoist
           cp -rL node_modules node_modules2
           rm -rf node_modules
@@ -94,6 +94,7 @@ jobs:
         run: |
           pnpm @senado.cl/model:build
           mkdir -p dist/model-layer/nodejs/node_modules/@odata-senado.cl/model
+          cp senado.cl/libs/model/package.json dist/model-layer/nodejs/node_modules/@odata-senado.cl/model
           mv senado.cl/libs/model/dist dist/model-layer/nodejs/node_modules/@odata-senado.cl/model
 
       - name: Upload model-layer
