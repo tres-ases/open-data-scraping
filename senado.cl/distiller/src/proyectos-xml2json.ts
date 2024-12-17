@@ -1,9 +1,9 @@
 import {Logger} from "@aws-lambda-powertools/logger";
 import type {LambdaInterface} from "@aws-lambda-powertools/commons/types";
 import {Tracer} from '@aws-lambda-powertools/tracer';
+import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {S3Event} from "aws-lambda";
 import * as cheerio from "cheerio";
-import * as fs from 'fs';
 
 const serviceName = 'ProyectosExtractSaveRawFromQueue';
 const logger = new Logger({
@@ -12,21 +12,43 @@ const logger = new Logger({
 });
 const tracer = new Tracer({serviceName});
 
+const s3Client = tracer.captureAWSv3Client(new S3Client({}));
+
 export class Xml2Json implements LambdaInterface {
 
   @tracer.captureLambdaHandler()
   public async handler(event: S3Event, _context: any) {
     logger.info('Ejecutando Xml2Json', {event});
+    for (const {s3: {bucket, object}} of event.Records) {
+      logger.info('Iterando Records', {bucket, object});
+      const xml = await this.readFile(bucket.name, object.key)
+      const json = this.transform(xml);
+      await this.saveFile(json, bucket.name, object.key.replace('raw', 'dtl'));
+    }
   }
 
   @tracer.captureMethod()
-  public async extract(key: string) {
-    const dLogger = logger.createChild({
-      persistentKeys: {key}
-    });
-    const buffer = fs.readFileSync(key);
+  public async readFile(bucket: string, key: string) {
+    const response = await s3Client.send(new GetObjectCommand({
+      Bucket: bucket,
+      Key: key
+    }));
+    return await response.Body!.transformToString();
+  }
 
-    const $ = cheerio.loadBuffer(buffer, {
+  @tracer.captureMethod()
+  public async saveFile(content: any, bucket: string, key: string) {
+    await s3Client.send(new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: JSON.stringify(content),
+      ContentType: 'application/json'
+    }));
+  }
+
+  @tracer.captureMethod()
+  public transform(xml: string) {
+    const $ = cheerio.load(xml, {
       xml: {
         lowerCaseAttributeNames: true,
         xmlMode: true,
@@ -152,14 +174,14 @@ export class Xml2Json implements LambdaInterface {
     if (data.proyecto && data.proyecto[0]) {
       try {
         const proyecto = data.proyecto[0] as any;
-        dLogger.debug('Proyecto obtenido satisfactoriamente', {proyecto})
+        logger.debug('Proyecto obtenido satisfactoriamente', {proyecto})
         return proyecto;
       } catch (error) {
-        dLogger.error('Error al obtener proyecto', {error});
+        logger.error('Error al obtener proyecto', {error});
         return undefined;
       }
     } else {
-      dLogger.error('No se encontró el proyecto');
+      logger.error('No se encontró el proyecto');
       return undefined;
     }
   }

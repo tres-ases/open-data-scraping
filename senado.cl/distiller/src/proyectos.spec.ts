@@ -4,7 +4,7 @@ describe('Obtener información boletines', () => {
 
   test('Boletin n° 16504', async () => {
     const instance = new Xml2Json();
-    const result = await instance.extract('16504');
+    const result = await instance.transform('16504');
     console.log(JSON.stringify(result, null, 2));
     expect(result).toBeDefined();
     expect(result.proyecto.length).toEqual(1);
@@ -15,7 +15,7 @@ describe('Obtener información boletines', () => {
 
   test('Boletin n° 12465 - Ley de Pesca - Agravar penas', async () => {
     const instance = new Xml2Json();
-    const result = await instance.extract('12465');
+    const result = await instance.transform('12465');
     expect(result).toBeDefined();
     expect(result.proyecto.length).toEqual(1);
     expect(result.proyecto[0].tramitaciones.length).toEqual(23);

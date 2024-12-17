@@ -11,7 +11,7 @@
   "author": "Julio Villane",
   "license": "ISC",
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.609.0",
+    "@aws-sdk/client-s3": "^3.713.0",
     "@aws-sdk/client-sqs": "^3.667.0",
     "@jest/globals": "^29.7.0",
     "@types/aws-lambda": "^8.10.140",
@@ -26,8 +26,8 @@
     "@aws-lambda-powertools/commons": "^2.10.0",
     "@aws-lambda-powertools/logger": "^2.8.0",
     "@aws-lambda-powertools/tracer": "^2.10.0",
-    "cheerio": "1.0.0",
+    "@odata-senado.cl/distiller-layer": "workspace:*",
     "@odata-senado.cl/model": "workspace:*",
-    "@odata-senado.cl/distiller-layer": "workspace:*"
+    "cheerio": "1.0.0"
   }
 }

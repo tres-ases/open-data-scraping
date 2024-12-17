@@ -131,7 +131,7 @@ importers:
         version: 1.0.0
     devDependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.609.0
+        specifier: ^3.713.0
         version: 3.713.0
       '@aws-sdk/client-sqs':
         specifier: ^3.667.0
