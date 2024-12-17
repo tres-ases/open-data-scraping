@@ -7,7 +7,7 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::http:invoke",
       "Arguments": {
-        "ApiEndpoint": "https://www.senado.cl/actividad-legislativa/sala/sesiones-de-sala",
+        "ApiEndpoint": "https://web-back.senado.cl/api/legislatures",
         "Method": "GET",
         "InvocationConfig": {
           "ConnectionArn": "${events_connection_arn}"
@@ -24,17 +24,13 @@
           "JitterStrategy": "FULL"
         }
       ],
-      "Output": "{% $parse( $match($states.result.ResponseBody, /<script id=\"__NEXT_DATA__\" type=\"application\\/json\">([\\s\\S]*?)<\\/script>/).groups[0] ) %}",
-      "Next": "Transform Legislatura"
-    },
-    "Transform Legislatura": {
-      "Type": "Pass",
-      "Next": "Save Legislaturas"
+      "Next": "Save Legislaturas",
+      "Output": "{% $states.result.ResponseBody.data.{\n    \"id\": ID_LEGISLATURA,\n    \"numero\": NUMERO,\n    \"inicio\": INICIO,\n    \"termino\": TERMINO,\n    \"tipo\": TIPO\n} %}"
     },
     "Save Legislaturas": {
       "Type": "Task",
       "Arguments": {
-        "Body": {},
+        "Body": "{% $states.input %}",
         "Bucket": "${bucket_name}",
         "Key": "raw/legislaturas/data.json"
       },
