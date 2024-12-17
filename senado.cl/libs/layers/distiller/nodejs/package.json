@@ -2,6 +2,9 @@
   "name": "@odata-senado.cl/distiller-layer",
   "version": "1.0.0",
   "description": "",
+  "scripts": {
+    "package": "pnpm install -P && cp -rL node_modules node_modules2 && rm -rf node_modules && mv node_modules2 node_modules"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
