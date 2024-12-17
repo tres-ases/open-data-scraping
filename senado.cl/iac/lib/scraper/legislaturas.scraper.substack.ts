@@ -1,10 +1,11 @@
-import {CfnOutput, NestedStack, NestedStackProps} from "aws-cdk-lib";
+import {CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
 import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
+import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
@@ -15,6 +16,12 @@ export default class LegislaturasScraperSubStack extends NestedStack {
 
   constructor(scope: Construct, id: string, {bucket, connection}: Props) {
     super(scope, id);
+
+    const logGroup = new LogGroup(this, `${id}-smLogs`, {
+      logGroupName: `/aws/vendedlogs/states/${id}-sm`,
+      removalPolicy: RemovalPolicy.DESTROY,
+      retention: RetentionDays.THREE_MONTHS
+    });
 
     const smRole = new Role(this, `${id}-role`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
@@ -88,6 +95,15 @@ export default class LegislaturasScraperSubStack extends NestedStack {
       tracingConfiguration: {
         enabled: true
       },
+      loggingConfiguration: {
+        destinations: [{
+          cloudWatchLogsLogGroup: {
+            logGroupArn: logGroup.logGroupArn
+          },
+        }],
+        includeExecutionData: true,
+        level: 'ALL',
+      }
     });
     smRole.addToPolicy(
       new PolicyStatement({
