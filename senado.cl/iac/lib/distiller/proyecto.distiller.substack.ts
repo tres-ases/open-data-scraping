@@ -37,7 +37,7 @@ export default class ProyectoDistillerSubStack extends NestedStack {
     });
 
     const xml2jsonLambda = new SenadoFunction(this, `${id}Fn`, {
-      handler: 'proyectos-xml2json.ts',
+      handler: 'proyectos-xml2json',
       layers: [distillerLy, modelLy],
       timeout: 120,
     });
