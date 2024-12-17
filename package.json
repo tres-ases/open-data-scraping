@@ -4,7 +4,6 @@
   "scripts": {
     "@senado.cl/libs:package": "turbo package --filter=\"./senado.cl/libs/**\"",
     "@senado.cl/distiller:build": "turbo build --filter=@odata-senado.cl/distiller",
-    "@senado.cl/distiller-layer:package": "turbo package --filter=@odata-senado.cl/distiller-layer",
     "@senado.cl/admin:package": "turbo package --filter=@odata-senado.cl/admin",
     "@senado.cl/iac:deploy": "turbo deploy --filter=@odata-senado.cl/iac"
   },
