@@ -14,6 +14,17 @@ export default class ProyectoDistillerSubStack extends NestedStack {
   constructor(scope: Construct, id: string, {bucket}: Props) {
     super(scope, id);
 
+    const modelLy = new LayerVersion(this, `${id}-ModelLy`, {
+      layerVersionName: `${id}-DistillerLy`,
+      compatibleRuntimes: [
+        Runtime.NODEJS_20_X
+      ],
+      code: Code.fromAsset('../../../../../artifact/model-layer'),
+      compatibleArchitectures: [
+        Architecture.X86_64
+      ]
+    });
+
     const distillerLy = new LayerVersion(this, `${id}-DistillerLy`, {
       layerVersionName: `${id}-DistillerLy`,
       compatibleRuntimes: [
@@ -27,7 +38,7 @@ export default class ProyectoDistillerSubStack extends NestedStack {
 
     const xml2jsonLambda = new SenadoFunction(this, `${id}Fn`, {
       handler: 'proyectos-xml2json.ts',
-      layers: [distillerLy],
+      layers: [distillerLy, modelLy],
       timeout: 120,
     });
     bucket.grantReadWrite(xml2jsonLambda);

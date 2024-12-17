@@ -33,6 +33,7 @@ lerna-debug.log*
 .env.local
 
 out/
+dist/
 
 **/deploy.*.sh
 !**/deploy.template.sh

@@ -6,7 +6,7 @@
   "types": "src/index",
   "scripts": {
     "check-types": "tsc --noEmit",
-    "build": "rm -rf dist && rm -rf layer && tsc"
+    "build": "rm -rf dist && tsc && cp package.json dist/package.json"
   },
   "keywords": [],
   "author": "Julio Villane",

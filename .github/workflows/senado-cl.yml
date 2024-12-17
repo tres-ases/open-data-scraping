@@ -66,25 +66,45 @@ jobs:
         run: |
           pnpm @senado.cl/distiller:build
 
-      - name: Package distiller layer
-        run: |
-          pnpm @senado.cl/distiller-layer:package
+      - name: Upload distiller
+        uses: actions/upload-artifact@v4
+        with:
+          name: distiller-dist
+          path: senado.cl/distiller/dist
 
-      - name: Package admin webapp
+      - name: Package distiller layer
+        working-directory: ./senado.cl/iac
         run: |
-          pnpm @senado.cl/admin:package
+          rm -rf /tmp/distiller-layer
+          mkdir /tmp/distiller-layer
+          cp package.json /tmp/distiller-layer
+          cd /tmp/distiller-layer
+          pnpm install --shamefully-hoist
+          cp -rL node_modules node_modules2
+          rm -rf node_modules
+          mv node_modules2 node_modules
 
       - name: Upload distiller-layer
         uses: actions/upload-artifact@v4
         with:
           name: distiller-layer
-          path: senado.cl/libs/layers/distiller
+          path: /tmp/distiller-layer
 
-      - name: Upload distiller-dist
+      - name: Package model-layer
+        run: |
+          pnpm @senado.cl/model:build
+          mkdir -p dist/model-layer/nodejs/node_modules/@odata-senado.cl/model
+          mv senado.cl/libs/model/dist dist/model-layer/nodejs/node_modules/@odata-senado.cl/model
+
+      - name: Upload model-layer
         uses: actions/upload-artifact@v4
         with:
-          name: distiller-dist
-          path: senado.cl/distiller/dist
+          name: model-layer
+          path: dist/model-layer
+
+      - name: Package admin webapp
+        run: |
+          pnpm @senado.cl/admin:package
 
       - name: Upload admin-dist
         uses: actions/upload-artifact@v4
@@ -112,6 +132,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.CDK_DEFAULT_REGION }}
+
+      - name: Download artifact model-layer
+        uses: actions/download-artifact@v4
+        with:
+          name: model-layer
+          path: ~/artifact/model-layer
 
       - name: Download artifact distiller-layer
         uses: actions/download-artifact@v4
