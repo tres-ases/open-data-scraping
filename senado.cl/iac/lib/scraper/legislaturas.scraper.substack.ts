@@ -6,15 +6,17 @@ import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
+import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
   connection: Connection
+  legislaturasTable: Table
 }
 
 export default class LegislaturasScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket, connection}: Props) {
+  constructor(scope: Construct, id: string, {bucket, connection, legislaturasTable}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -76,6 +78,14 @@ export default class LegislaturasScraperSubStack extends NestedStack {
             'logs:DescribeLogGroups'
           ],
           resources: ['*'],
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'dynamodb:PutItem',
+            'dynamodb:UpdateItem',
+          ],
+          resources: [legislaturasTable.tableArn]
         })
       ]
     });

@@ -8,6 +8,7 @@ import LegislaturaSubStack from "./scraper/legislatura.scraper.substack";
 import SenadorSubStack from "./scraper/senador.scraper.substack";
 import ProyectoSubStack from "./scraper/proyecto.scraper.substack";
 import LegislaturasScraperSubStack from "./scraper/legislaturas.scraper.substack";
+import ModelScraperSubStack from "./scraper/model.scraper.substack";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
@@ -34,8 +35,10 @@ export default class ScraperSubstack extends NestedStack {
       authorization: Authorization.apiKey('API-KEY', SecretValue.unsafePlainText('DUMMY'))
     });
 
+    const rawModel = new ModelScraperSubStack(this, `${id}-model`);
+
     new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
-      bucket, connection
+      bucket, connection, legislaturasTable: rawModel.legislaturas
     });
 
     const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
