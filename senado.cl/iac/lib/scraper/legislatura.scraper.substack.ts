@@ -1,7 +1,6 @@
 import {CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
 import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {Bucket} from "aws-cdk-lib/aws-s3";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
@@ -9,7 +8,6 @@ import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
-  bucket: Bucket
   connection: Connection
   sesionStateMachine: CfnStateMachine
   legislaturasTable: Table
@@ -18,7 +16,7 @@ interface Props extends NestedStackProps {
 
 export default class LegislaturaScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket, connection, sesionStateMachine, legislaturasTable, sesionesTable}: Props) {
+  constructor(scope: Construct, id: string, {connection, sesionStateMachine, legislaturasTable, sesionesTable}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -89,12 +87,11 @@ export default class LegislaturaScraperSubStack extends NestedStack {
 
     let definition = fs.readFileSync('./lib/scraper/asl/legislatura.asl.json', 'utf8');
 
-    const sm = new CfnStateMachine(this, `${id}-sm`, {
+    new CfnStateMachine(this, `${id}-sm`, {
       roleArn: smRole.roleArn,
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
-        bucket_name: bucket.bucketName,
         sesion_state_machine: sesionStateMachine.attrArn,
         legislaturas_table_name: legislaturasTable.tableName,
         sesiones_table_name: sesionesTable.tableName,
@@ -118,11 +115,14 @@ export default class LegislaturaScraperSubStack extends NestedStack {
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,
     });
-    new CfnOutput(this, '${bucket_name}', {
-      value: bucket.bucketName,
-    });
     new CfnOutput(this, '${sesion_state_machine}', {
       value: sesionStateMachine.attrArn,
+    });
+    new CfnOutput(this, '${legislaturas_table_name}', {
+      value: legislaturasTable.tableName,
+    });
+    new CfnOutput(this, '${sesiones_table_name}', {
+      value: sesionesTable.tableName,
     });
   }
 }

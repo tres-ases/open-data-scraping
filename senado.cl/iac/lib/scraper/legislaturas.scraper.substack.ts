@@ -79,7 +79,7 @@ export default class LegislaturasScraperSubStack extends NestedStack {
 
     let definition = fs.readFileSync('./lib/scraper/asl/legislaturas.asl.json', 'utf8');
 
-    const sm = new CfnStateMachine(this, `${id}-sm`, {
+    new CfnStateMachine(this, `${id}-sm`, {
       roleArn: smRole.roleArn,
       definitionString: definition,
       definitionSubstitutions: {

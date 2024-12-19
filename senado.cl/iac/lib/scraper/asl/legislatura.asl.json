@@ -48,7 +48,7 @@
               "Type": "Task",
               "Resource": "arn:aws:states:::dynamodb:updateItem",
               "Arguments": {
-                "TableName": "senado-raw-legislaturas",
+                "TableName": "${legislaturas_table_name}",
                 "Key": {
                   "id": {
                     "N": "{% $legId %}"
@@ -101,7 +101,7 @@
                             "Type": "Task",
                             "Resource": "arn:aws:states:::dynamodb:updateItem",
                             "Arguments": {
-                              "TableName": "senado-raw-sesiones",
+                              "TableName": "${sesiones_table_name}",
                               "Key": {
                                 "id": {
                                   "N": "{% $sesId %}"
@@ -127,7 +127,7 @@
                           "ExtractVotacionAndAsistencia": {
                             "Type": "Task",
                             "Arguments": {
-                              "StateMachineArn": "arn:aws:states:us-east-1:886436935193:stateMachine:SenadoCl-scraper-sesion-sm",
+                              "StateMachineArn": "${sesion_state_machine}",
                               "Input": {
                                 "sesId": "{% $sesId %}"
                               },

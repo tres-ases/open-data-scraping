@@ -46,7 +46,7 @@ export default class ScraperSubstack extends NestedStack {
     });
 
     new LegislaturaSubStack(this, `${id}-legislatura`, {
-      bucket, connection,
+      connection,
       sesionStateMachine: sesionSubStack.stateMachine,
       legislaturasTable: rawModel.legislaturas,
       sesionesTable: rawModel.sesiones
