@@ -6,16 +6,18 @@ import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
+import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
   connection: Connection
   sesionStateMachine: CfnStateMachine
+  legislaturasTable: Table
 }
 
 export default class LegislaturaScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket, connection, sesionStateMachine}: Props) {
+  constructor(scope: Construct, id: string, {bucket, connection, sesionStateMachine, legislaturasTable}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -30,25 +32,6 @@ export default class LegislaturaScraperSubStack extends NestedStack {
     const smRolePolicy = new Policy(this, 'smPolicy', {
       policyName: `${id}-smPolicy`,
       statements: [
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: [
-            's3:Abort*',
-            's3:DeleteObject*',
-            's3:GetBucket*',
-            's3:GetObject*',
-            's3:List*',
-            's3:PutObject',
-            's3:PutObjectLegalHold',
-            's3:PutObjectRetention',
-            's3:PutObjectTagging',
-            's3:PutObjectVersionTagging'
-          ],
-          resources: [
-            bucket.bucketArn,
-            `${bucket.bucketArn}/*`
-          ]
-        }),
         new PolicyStatement({
           sid: 'RetrieveConnectionCredentials',
           effect: Effect.ALLOW,
@@ -83,6 +66,14 @@ export default class LegislaturaScraperSubStack extends NestedStack {
           resources: ['*'],
         }),
         new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'dynamodb:PutItem',
+            'dynamodb:UpdateItem',
+          ],
+          resources: [legislaturasTable.tableArn]
+        }),
+        new PolicyStatement({
           sid: 'InvokeHttpEndpoint',
           effect: Effect.ALLOW,
           actions: ["states:InvokeHTTPEndpoint"],
@@ -100,7 +91,8 @@ export default class LegislaturaScraperSubStack extends NestedStack {
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
         bucket_name: bucket.bucketName,
-        sesion_state_machine: sesionStateMachine.attrArn
+        sesion_state_machine: sesionStateMachine.attrArn,
+        legislaturas_table_name: legislaturasTable.tableName,
       },
       stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.STANDARD,

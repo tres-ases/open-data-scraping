@@ -1,13 +1,14 @@
 {
   "QueryLanguage": "JSONata",
   "Comment": "Extracción de una Legislatura a partir de su id",
-  "StartAt": "Assign legId",
+  "StartAt": "Assign legId & fechaModificacion",
   "States": {
-    "Assign legId": {
+    "Assign legId & fechaModificacion": {
       "Type": "Pass",
       "Next": "Get Sesiones",
       "Assign": {
-        "legId": "{% $states.input.legId %}"
+        "legId": "{% $string($states.input.legId) %}",
+        "fechaModificacion": "{% $now() %}"
       }
     },
     "Get Sesiones": {
@@ -41,16 +42,28 @@
       "Type": "Parallel",
       "Branches": [
         {
-          "StartAt": "Save Sesiones By LegId",
+          "StartAt": "Update Legislatura",
           "States": {
-            "Save Sesiones By LegId": {
+            "Update Legislatura": {
               "Type": "Task",
+              "Resource": "arn:aws:states:::dynamodb:updateItem",
               "Arguments": {
-                "Body": "{% $states.input %}",
-                "Bucket": "${bucket_name}",
-                "Key": "{% 'raw/sesiones/legId=' & $legId & '/data.json' %}"
+                "TableName": "${legislaturas_table_name}",
+                "Key": {
+                  "id": {
+                    "N": "{% $legId %}"
+                  }
+                },
+                "UpdateExpression": "SET fechaModificacion = :fechaModificacion, sesiones = :sesiones",
+                "ExpressionAttributeValues": {
+                  ":fechaModificacion": {
+                    "S": "{% $fechaModificacion %}"
+                  },
+                  ":sesiones": {
+                    "N": "{% $states.input[] ~> $count() ~> $string() %}"
+                  }
+                }
               },
-              "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
               "End": true
             }
           }

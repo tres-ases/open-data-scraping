@@ -60,12 +60,12 @@
                   "N": "{% $id %}"
                 }
               },
-              "UpdateExpression": "SET fechaModificacion = :fechaModificacion, datos = :datos",
+              "UpdateExpression": "SET fechaModificacion = :fechaModificacion, info = :info",
               "ExpressionAttributeValues": {
                 ":fechaModificacion": {
                   "S": "{% $fechaModificacion %}"
                 },
-                ":datos": {
+                ":info": {
                   "M": "{% $states.input %}"
                 }
               }
