@@ -12,7 +12,7 @@ export default class ModelScraperSubStack extends NestedStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this.legislaturas = new Table(this, `${id}-legislaturas`, {
+    this.legislaturas = new Table(this, `${id}-legislaturas-table`, {
       tableName: 'senado-raw-legislaturas',
       partitionKey: {
         name: 'id',
@@ -22,7 +22,7 @@ export default class ModelScraperSubStack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.sesiones = new Table(this, `${id}-sesiones`, {
+    this.sesiones = new Table(this, `${id}-sesiones-table`, {
       tableName: 'senado-raw-sesiones',
       partitionKey: {
         name: 'id',
@@ -32,7 +32,7 @@ export default class ModelScraperSubStack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.senadores = new Table(this, `${id}-senadores`, {
+    this.senadores = new Table(this, `${id}-senadores-table`, {
       tableName: 'senado-raw-senadores',
       partitionKey: {
         name: 'slug',
@@ -42,7 +42,7 @@ export default class ModelScraperSubStack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.votaciones = new Table(this, `${id}-votaciones`, {
+    this.votaciones = new Table(this, `${id}-votaciones-table`, {
       tableName: 'senado-raw-votaciones',
       partitionKey: {
         name: 'sesId',
@@ -52,7 +52,7 @@ export default class ModelScraperSubStack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.asistencia = new Table(this, `${id}-asistencia`, {
+    this.asistencia = new Table(this, `${id}-asistencia-table`, {
       tableName: 'senado-raw-asistencia',
       partitionKey: {
         name: 'sesId',
