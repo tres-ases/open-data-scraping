@@ -35,32 +35,32 @@ export default class ScraperSubstack extends NestedStack {
       authorization: Authorization.apiKey('API-KEY', SecretValue.unsafePlainText('DUMMY'))
     });
 
-    //const tables = new TablesScraperSubStack(this, `${id}-model`);
-//
-    //new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
-    //  connection,
-    //  legislaturasTable: tables.legislaturas
-    //});
-//
-    //const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
-    //  connection, senadorQueue, boletinQueue,
-    //  sesionesTable: tables.sesiones
-    //});
-//
-    //new LegislaturaSubStack(this, `${id}-legislatura`, {
-    //  connection,
-    //  sesionStateMachine: sesionSubStack.stateMachine,
-    //  legislaturasTable: tables.legislaturas,
-    //  sesionesTable: tables.sesiones
-    //});
-//
-    //new SenadorSubStack(this, `${id}-senador`, {
-    //  bucket, connection, senadorQueue
-    //});
-//
-    //new ProyectoSubStack(this, `${id}-proyecto`, {
-    //  bucket, connection, boletinQueue
-    //});
+    const tables = new TablesScraperSubStack(this, `${id}-model`);
+
+    new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
+      connection,
+      legislaturasTable: tables.legislaturas
+    });
+
+    const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
+      connection, senadorQueue, boletinQueue,
+      sesionesTable: tables.sesiones
+    });
+
+    new LegislaturaSubStack(this, `${id}-legislatura`, {
+      connection,
+      sesionStateMachine: sesionSubStack.stateMachine,
+      legislaturasTable: tables.legislaturas,
+      sesionesTable: tables.sesiones
+    });
+
+    new SenadorSubStack(this, `${id}-senador`, {
+      bucket, connection, senadorQueue
+    });
+
+    new ProyectoSubStack(this, `${id}-proyecto`, {
+      bucket, connection, boletinQueue
+    });
   }
 
   getLogicalId(element: CfnElement): string {
