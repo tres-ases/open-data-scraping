@@ -1,8 +1,15 @@
 {
   "QueryLanguage": "JSONata",
   "Comment": "Extracción del listado de Legislaturas",
-  "StartAt": "Get Legislaturas",
+  "StartAt": "Assign fechaModificacion",
   "States": {
+    "Assign fechaModificacion": {
+      "Type": "Pass",
+      "Next": "Get Legislaturas",
+      "Assign": {
+        "fechaModificacion": "{% $now() %}"
+      }
+    },
     "Get Legislaturas": {
       "Type": "Task",
       "Resource": "arn:aws:states:::http:invoke",
@@ -24,17 +31,49 @@
           "JitterStrategy": "FULL"
         }
       ],
-      "Next": "Save Legislaturas",
-      "Output": "{% $states.result.ResponseBody.data.{\n    \"id\": ID_LEGISLATURA,\n    \"numero\": NUMERO,\n    \"inicio\": INICIO,\n    \"termino\": TERMINO,\n    \"tipo\": TIPO\n} %}"
+      "Next": "Foreach Legislatura",
+      "Output": "{% $states.result.ResponseBody.data %}"
     },
-    "Save Legislaturas": {
-      "Type": "Task",
-      "Arguments": {
-        "Body": "{% $states.input %}",
-        "Bucket": "${bucket_name}",
-        "Key": "raw/legislaturas/data.json"
+    "Foreach Legislatura": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "Assign & Transform",
+        "States": {
+          "Assign & Transform": {
+            "Type": "Pass",
+            "Next": "Update Legislatura",
+            "Assign": {
+              "id": "{% $string($states.input.ID_LEGISLATURA) %}"
+            },
+            "Output": "{% $states.input.{\n    \"id\": {\n        \"N\": $string(ID_LEGISLATURA)\n    },\n    \"numero\": {\n        \"N\": $string(NUMERO)\n    },\n    \"inicio\": {\n        \"S\": INICIO\n    },\n    \"termino\": {\n        \"S\": TERMINO\n    },\n    \"tipo\": TIPO != null ? {\n        \"S\": $string(TIPO)\n    } : undefined\n} %}"
+          },
+          "Update Legislatura": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::dynamodb:updateItem",
+            "Arguments": {
+              "TableName": "${legislaturas_table_name}",
+              "Key": {
+                "id": {
+                  "N": "{% $id %}"
+                }
+              },
+              "UpdateExpression": "SET fechaModificacion = :fechaModificacion, datos = :datos",
+              "ExpressionAttributeValues": {
+                ":fechaModificacion": {
+                  "S": "{% $fechaModificacion %}"
+                },
+                ":datos": {
+                  "M": "{% $states.input %}"
+                }
+              }
+            },
+            "End": true
+          }
+        }
       },
-      "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
       "End": true
     }
   }
