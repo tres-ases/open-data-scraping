@@ -35,11 +35,11 @@ export default class ScraperSubstack extends NestedStack {
       authorization: Authorization.apiKey('API-KEY', SecretValue.unsafePlainText('DUMMY'))
     });
 
-    const rawModel = new ModelScraperSubStack(this, `${id}-model`);
-
-    new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
-      connection, legislaturasTable: rawModel.legislaturas
-    });
+    //const rawModel = new ModelScraperSubStack(this, `${id}-model`);
+//
+    //new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
+    //  connection, legislaturasTable: rawModel.legislaturas
+    //});
 
     const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
       bucket, connection, senadorQueue, boletinQueue
