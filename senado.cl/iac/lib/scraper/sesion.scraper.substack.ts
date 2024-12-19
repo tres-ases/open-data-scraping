@@ -1,24 +1,24 @@
 import {CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
 import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
+import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
-  bucket: Bucket
   connection: Connection
   senadorQueue: Queue
   boletinQueue: Queue
+  sesionesTable: Table
 }
 
 export default class SesionScraperSubStack extends NestedStack {
   readonly stateMachine: CfnStateMachine;
 
-  constructor(scope: Construct, id: string, {bucket, connection, senadorQueue, boletinQueue}: Props) {
+  constructor(scope: Construct, id: string, {connection, senadorQueue, boletinQueue, sesionesTable}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -33,25 +33,6 @@ export default class SesionScraperSubStack extends NestedStack {
     const smRolePolicy = new Policy(this, 'smPolicy', {
       policyName: `${id}-smPolicy`,
       statements: [
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: [
-            's3:Abort*',
-            's3:DeleteObject*',
-            's3:GetBucket*',
-            's3:GetObject*',
-            's3:List*',
-            's3:PutObject',
-            's3:PutObjectLegalHold',
-            's3:PutObjectRetention',
-            's3:PutObjectTagging',
-            's3:PutObjectVersionTagging'
-          ],
-          resources: [
-            bucket.bucketArn,
-            `${bucket.bucketArn}/*`
-          ]
-        }),
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
@@ -89,6 +70,16 @@ export default class SesionScraperSubStack extends NestedStack {
           resources: ['*'],
         }),
         new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'dynamodb:PutItem',
+            'dynamodb:UpdateItem',
+          ],
+          resources: [
+            sesionesTable.tableArn
+          ]
+        }),
+        new PolicyStatement({
           sid: 'InvokeHttpEndpoint',
           effect: Effect.ALLOW,
           actions: ["states:InvokeHTTPEndpoint"],
@@ -105,9 +96,9 @@ export default class SesionScraperSubStack extends NestedStack {
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
-        bucket_name: bucket.bucketName,
         senador_queue_url: senadorQueue.queueUrl,
-        boletin_queue_url: boletinQueue.queueUrl
+        boletin_queue_url: boletinQueue.queueUrl,
+        sesiones_table_name: sesionesTable.tableName,
       },
       stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.EXPRESS,
@@ -128,14 +119,14 @@ export default class SesionScraperSubStack extends NestedStack {
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,
     });
-    new CfnOutput(this, '${bucket_name}', {
-      value: bucket.bucketName,
-    });
     new CfnOutput(this, '${senador_queue_url}', {
       value: senadorQueue.queueUrl,
     });
     new CfnOutput(this, '${proyecto_queue_url}', {
       value: boletinQueue.queueUrl,
+    });
+    new CfnOutput(this, '${sesiones_table_name}', {
+      value: sesionesTable.tableName,
     });
   }
 }

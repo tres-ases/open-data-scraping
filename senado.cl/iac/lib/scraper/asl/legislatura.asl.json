@@ -7,7 +7,7 @@
       "Type": "Pass",
       "Next": "Get Sesiones",
       "Assign": {
-        "legId": "{% $string($states.input.legId) %}",
+        "legId": "{% $states.input.legId ~> $string() %}",
         "fechaModificacion": "{% $now() %}"
       }
     },
@@ -21,7 +21,8 @@
           "ConnectionArn": "arn:aws:events:us-east-1:886436935193:connection/SenadoCl-scraper-connection/f65e78e8-bb41-421f-98f4-2df03941b4eb"
         },
         "QueryParameters": {
-          "id_legislatura=": "{% $legId %}"
+          "id_legislatura": "{% $legId %}",
+          "limit": 1000
         }
       },
       "Retry": [
@@ -83,7 +84,7 @@
                     "Type": "Pass",
                     "Next": "Parallel",
                     "Assign": {
-                      "sesId": "{% $states.input.id %}"
+                      "sesId": "{% $states.input.id ~> $string() %}"
                     }
                   },
                   "Parallel": {
@@ -95,7 +96,7 @@
                           "Transform": {
                             "Type": "Pass",
                             "Next": "Update Sesion",
-                            "Output": "{% $states.input.{\n    \"id\": {\n        \"N\": id ~> $string()\n    },\n    \"numero\": {\n        \"N\": numero\n    },\n    \"legId\": {\n        \"N\": legId ~> $string()\n    },\n    \"legNumero\": {\n        \"N\": legNumero ~> $string()\n    },\n    \"fecha\": {\n        \"S\": fecha\n    },\n    \"horaInicio\": {\n        \"S\": horaInicio\n    },\n    \"horaTermino\": {\n        \"S\": horaTermino\n    },\n    \"tipo\": {\n        \"S\": tipo\n    },\n    \"cuenta\": {\n        \"N\": cuenta\n    }\n} %}"
+                            "Output": "{% $states.input.{\n    \"id\": {\n        \"N\": id ~> $string()\n    },\n    \"numero\": numero != null ? {\n        \"N\": numero\n    }: undefined,\n    \"legId\": {\n        \"N\": legId ~> $string()\n    },\n    \"legNumero\": {\n        \"N\": legNumero ~> $string()\n    },\n    \"fecha\": {\n        \"S\": fecha\n    },\n    \"horaInicio\": {\n        \"S\": horaInicio\n    },\n    \"horaTermino\": {\n        \"S\": horaTermino\n    },\n    \"tipo\": {\n        \"S\": tipo\n    },\n    \"cuenta\": {\n        \"N\": cuenta ~> $string()\n    }\n} %}"
                           },
                           "Update Sesion": {
                             "Type": "Task",
@@ -105,6 +106,9 @@
                               "Key": {
                                 "id": {
                                   "N": "{% $sesId %}"
+                                },
+                                "leg_id": {
+                                  "N": "{% $legId %}"
                                 }
                               },
                               "UpdateExpression": "SET fechaModificacion = :fechaModificacion, info = :info",
@@ -147,7 +151,7 @@
                   }
                 }
               },
-              "MaxConcurrency": 5,
+              "MaxConcurrency": 3,
               "End": true
             }
           }

@@ -8,7 +8,7 @@ import LegislaturaSubStack from "./scraper/legislatura.scraper.substack";
 import SenadorSubStack from "./scraper/senador.scraper.substack";
 import ProyectoSubStack from "./scraper/proyecto.scraper.substack";
 import LegislaturasScraperSubStack from "./scraper/legislaturas.scraper.substack";
-import ModelScraperSubStack from "./scraper/model.scraper.substack";
+import TablesScraperSubStack from "./scraper/tables.scraper.subStack";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
@@ -35,30 +35,32 @@ export default class ScraperSubstack extends NestedStack {
       authorization: Authorization.apiKey('API-KEY', SecretValue.unsafePlainText('DUMMY'))
     });
 
-    const rawModel = new ModelScraperSubStack(this, `${id}-model`);
-
-    new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
-      connection, legislaturasTable: rawModel.legislaturas
-    });
-
-    const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
-      bucket, connection, senadorQueue, boletinQueue
-    });
-
-    new LegislaturaSubStack(this, `${id}-legislatura`, {
-      connection,
-      sesionStateMachine: sesionSubStack.stateMachine,
-      legislaturasTable: rawModel.legislaturas,
-      sesionesTable: rawModel.sesiones
-    });
-
-    new SenadorSubStack(this, `${id}-senador`, {
-      bucket, connection, senadorQueue
-    });
-
-    new ProyectoSubStack(this, `${id}-proyecto`, {
-      bucket, connection, boletinQueue
-    });
+    //const tables = new TablesScraperSubStack(this, `${id}-model`);
+//
+    //new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
+    //  connection,
+    //  legislaturasTable: tables.legislaturas
+    //});
+//
+    //const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
+    //  connection, senadorQueue, boletinQueue,
+    //  sesionesTable: tables.sesiones
+    //});
+//
+    //new LegislaturaSubStack(this, `${id}-legislatura`, {
+    //  connection,
+    //  sesionStateMachine: sesionSubStack.stateMachine,
+    //  legislaturasTable: tables.legislaturas,
+    //  sesionesTable: tables.sesiones
+    //});
+//
+    //new SenadorSubStack(this, `${id}-senador`, {
+    //  bucket, connection, senadorQueue
+    //});
+//
+    //new ProyectoSubStack(this, `${id}-proyecto`, {
+    //  bucket, connection, boletinQueue
+    //});
   }
 
   getLogicalId(element: CfnElement): string {

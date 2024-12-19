@@ -2,7 +2,7 @@ import {NestedStack, RemovalPolicy} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {AttributeType, BillingMode, Table} from "aws-cdk-lib/aws-dynamodb";
 
-export default class ModelScraperSubStack extends NestedStack {
+export default class TablesScraperSubStack extends NestedStack {
   readonly legislaturas: Table;
   readonly sesiones: Table;
   readonly senadores: Table;
@@ -15,7 +15,7 @@ export default class ModelScraperSubStack extends NestedStack {
     this.legislaturas = new Table(this, `${id}-legislaturas-dyn`, {
       tableName: 'senado-raw-legislaturas',
       partitionKey: {
-        name: 'id',
+        name: 'legId',
         type: AttributeType.NUMBER,
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
@@ -25,11 +25,11 @@ export default class ModelScraperSubStack extends NestedStack {
     this.sesiones = new Table(this, `${id}-sesiones-dyn`, {
       tableName: 'senado-raw-sesiones',
       partitionKey: {
-        name: 'leg_id',
+        name: 'legId',
         type: AttributeType.NUMBER,
       },
       sortKey: {
-        name: 'id',
+        name: 'sesId',
         type: AttributeType.NUMBER,
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
@@ -47,27 +47,9 @@ export default class ModelScraperSubStack extends NestedStack {
     });
 
     this.votaciones = new Table(this, `${id}-votaciones-dyn`, {
-      tableName: 'senado-raw-votaciones',
+      tableName: 'senado-raw-proyectos',
       partitionKey: {
-        name: 'sesId',
-        type: AttributeType.NUMBER,
-      },
-      sortKey: {
-        name: 'id',
-        type: AttributeType.NUMBER,
-      },
-      billingMode: BillingMode.PAY_PER_REQUEST,
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
-
-    this.asistencia = new Table(this, `${id}-asistencia-dyn`, {
-      tableName: 'senado-raw-asistencia',
-      partitionKey: {
-        name: 'sesId',
-        type: AttributeType.NUMBER,
-      },
-      sortKey: {
-        name: 'inicio',
+        name: 'boletin',
         type: AttributeType.NUMBER,
       },
       billingMode: BillingMode.PAY_PER_REQUEST,

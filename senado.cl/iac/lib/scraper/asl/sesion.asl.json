@@ -1,12 +1,13 @@
 {
   "QueryLanguage": "JSONata",
   "Comment": "Extracción de información de Votaciones y Asistencia a Sesiones a partir de su id",
-  "StartAt": "Assign sesId",
+  "StartAt": "Assign legId & sesId",
   "States": {
-    "Assign sesId": {
+    "Assign legId & sesId": {
       "Type": "Pass",
       "Next": "Parallel Sesion",
       "Assign": {
+        "legId": "{% $states.input.legId %}",
         "sesId": "{% $states.input.sesId %}"
       }
     },
@@ -47,16 +48,35 @@
               "Type": "Parallel",
               "Branches": [
                 {
-                  "StartAt": "Save Asistencia By SesId",
+                  "StartAt": "Transform asistencia",
                   "States": {
-                    "Save Asistencia By SesId": {
+                    "Transform asistencia": {
+                      "Type": "Pass",
+                      "Next": "Update Sesion - asistencia"
+                    },
+                    "Update Sesion - asistencia": {
                       "Type": "Task",
+                      "Resource": "arn:aws:states:::dynamodb:updateItem",
                       "Arguments": {
-                        "Body": "{% $states.input %}",
-                        "Bucket": "${bucket_name}",
-                        "Key": "{% 'raw/sesion/asistencia/sesId=' & $sesId & '/data.json' %}"
+                        "TableName": "${sesiones_table_name}",
+                        "Key": {
+                          "sesId": {
+                            "N": "{% $sesId %}"
+                          },
+                          "legId": {
+                            "N": "{% $legId %}"
+                          }
+                        },
+                        "UpdateExpression": "SET fechaModificacion = :fechaModificacion, info = :info",
+                        "ExpressionAttributeValues": {
+                          ":fechaModificacion": {
+                            "S": "{% $now() %}"
+                          },
+                          ":info": {
+                            "M": "{% $states.input %}"
+                          }
+                        }
                       },
-                      "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                       "End": true
                     }
                   }
@@ -138,16 +158,29 @@
               "Type": "Parallel",
               "Branches": [
                 {
-                  "StartAt": "Save Votacion By SesId",
+                  "StartAt": "Transform votacion",
                   "States": {
-                    "Save Votacion By SesId": {
+                    "Transform votacion": {
+                      "Type": "Pass",
+                      "Next": "Update sesion - votaciones"
+                    },
+                    "Update sesion - votaciones": {
                       "Type": "Task",
+                      "Resource": "arn:aws:states:::dynamodb:updateItem",
                       "Arguments": {
-                        "Body": "{% $states.input %}",
-                        "Bucket": "${bucket_name}",
-                        "Key": "{% 'raw/sesion/votacion/sesId=' & $sesId & '/data.json' %}"
+                        "TableName": "${sesiones_table_name}",
+                        "Key": {
+                          "Column": {
+                            "S": "MyEntry"
+                          }
+                        },
+                        "UpdateExpression": "SET MyKey = :myValueRef",
+                        "ExpressionAttributeValues": {
+                          ":myValueRef": {
+                            "S": "MyValue"
+                          }
+                        }
                       },
-                      "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                       "End": true
                     }
                   }
