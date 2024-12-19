@@ -87,6 +87,12 @@ export default class SesionScraperSubStack extends NestedStack {
             'logs:DescribeLogGroups'
           ],
           resources: ['*'],
+        }),
+        new PolicyStatement({
+          sid: 'InvokeHttpEndpoint',
+          effect: Effect.ALLOW,
+          actions: ["states:InvokeHTTPEndpoint"],
+          resources: ['*']
         })
       ]
     });
@@ -118,16 +124,6 @@ export default class SesionScraperSubStack extends NestedStack {
         level: 'ALL',
       }
     });
-    smRole.attachInlinePolicy(new Policy(this, 'smPolicyInvokeHTTPEndpoint', {
-      statements: [
-        new PolicyStatement({
-          sid: 'InvokeHttpEndpoint',
-          effect: Effect.ALLOW,
-          actions: ["states:InvokeHTTPEndpoint"],
-          resources: [this.stateMachine.attrArn]
-        })
-      ]
-    }));
 
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,

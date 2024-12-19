@@ -66,8 +66,14 @@ export default class LegislaturasScraperSubStack extends NestedStack {
             'dynamodb:UpdateItem',
           ],
           resources: [legislaturasTable.tableArn]
+        }),
+        new PolicyStatement({
+          sid: 'InvokeHttpEndpoint',
+          effect: Effect.ALLOW,
+          actions: ["states:InvokeHTTPEndpoint"],
+          resources: ['*']
         })
-      ]
+      ],
     });
     smRole.attachInlinePolicy(smRolePolicy);
 
@@ -95,14 +101,6 @@ export default class LegislaturasScraperSubStack extends NestedStack {
         level: 'ALL',
       }
     });
-    smRole.addToPolicy(
-      new PolicyStatement({
-        sid: 'InvokeHttpEndpoint',
-        effect: Effect.ALLOW,
-        actions: ["states:InvokeHTTPEndpoint"],
-        resources: [sm.attrArn]
-      })
-    );
 
 
     new CfnOutput(this, '${events_connection_arn}', {

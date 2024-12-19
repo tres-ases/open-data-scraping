@@ -81,6 +81,12 @@ export default class LegislaturaScraperSubStack extends NestedStack {
             'logs:DescribeLogGroups'
           ],
           resources: ['*'],
+        }),
+        new PolicyStatement({
+          sid: 'InvokeHttpEndpoint',
+          effect: Effect.ALLOW,
+          actions: ["states:InvokeHTTPEndpoint"],
+          resources: ['*']
         })
       ]
     });
@@ -111,15 +117,6 @@ export default class LegislaturaScraperSubStack extends NestedStack {
         level: 'ALL',
       }
     });
-    smRole.addToPolicy(
-      new PolicyStatement({
-        sid: 'InvokeHttpEndpoint',
-        effect: Effect.ALLOW,
-        actions: ["states:InvokeHTTPEndpoint"],
-        resources: [sm.attrArn]
-      })
-    );
-
 
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,

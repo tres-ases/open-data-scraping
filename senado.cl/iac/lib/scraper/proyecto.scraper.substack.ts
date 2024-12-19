@@ -79,6 +79,12 @@ export default class ProyectoScraperSubStack extends NestedStack {
             'logs:DescribeLogGroups'
           ],
           resources: ['*'],
+        }),
+        new PolicyStatement({
+          sid: 'InvokeHttpEndpoint',
+          effect: Effect.ALLOW,
+          actions: ["states:InvokeHTTPEndpoint"],
+          resources: ['*']
         })
       ]
     });
@@ -108,16 +114,6 @@ export default class ProyectoScraperSubStack extends NestedStack {
         level: 'ALL',
       }
     });
-    smRole.attachInlinePolicy(new Policy(this, 'smPolicyInvokeHTTPEndpoint', {
-      statements: [
-        new PolicyStatement({
-          sid: 'InvokeHttpEndpoint',
-          effect: Effect.ALLOW,
-          actions: ["states:InvokeHTTPEndpoint"],
-          resources: [sm.attrArn]
-        })
-      ]
-    }));
 
     const pipeRole = new Role(this, `${id}-pipeRole`, {
       roleName: `${id}-pipeRole`,
