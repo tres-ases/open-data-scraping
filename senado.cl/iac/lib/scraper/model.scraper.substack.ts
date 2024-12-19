@@ -18,10 +18,6 @@ export default class ModelScraperSubStack extends NestedStack {
         name: 'id',
         type: AttributeType.NUMBER,
       },
-      sortKey: {
-        name: 'fechaModificacion',
-        type: AttributeType.STRING,
-      },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -31,10 +27,6 @@ export default class ModelScraperSubStack extends NestedStack {
       partitionKey: {
         name: 'id',
         type: AttributeType.NUMBER,
-      },
-      sortKey: {
-        name: 'fechaModificacion',
-        type: AttributeType.STRING,
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -46,10 +38,6 @@ export default class ModelScraperSubStack extends NestedStack {
         name: 'slug',
         type: AttributeType.NUMBER,
       },
-      sortKey: {
-        name: 'fechaModificacion',
-        type: AttributeType.STRING,
-      },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -60,10 +48,6 @@ export default class ModelScraperSubStack extends NestedStack {
         name: 'sesId',
         type: AttributeType.NUMBER,
       },
-      sortKey: {
-        name: 'fechaModificacion',
-        type: AttributeType.STRING,
-      },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -73,10 +57,6 @@ export default class ModelScraperSubStack extends NestedStack {
       partitionKey: {
         name: 'sesId',
         type: AttributeType.NUMBER,
-      },
-      sortKey: {
-        name: 'fechaModificacion',
-        type: AttributeType.STRING,
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
