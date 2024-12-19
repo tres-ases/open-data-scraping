@@ -13,11 +13,12 @@ interface Props extends NestedStackProps {
   connection: Connection
   sesionStateMachine: CfnStateMachine
   legislaturasTable: Table
+  sesionesTable: Table
 }
 
 export default class LegislaturaScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket, connection, sesionStateMachine, legislaturasTable}: Props) {
+  constructor(scope: Construct, id: string, {bucket, connection, sesionStateMachine, legislaturasTable, sesionesTable}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -71,7 +72,10 @@ export default class LegislaturaScraperSubStack extends NestedStack {
             'dynamodb:PutItem',
             'dynamodb:UpdateItem',
           ],
-          resources: [legislaturasTable.tableArn]
+          resources: [
+            legislaturasTable.tableArn,
+            sesionesTable.tableArn
+          ]
         }),
         new PolicyStatement({
           sid: 'InvokeHttpEndpoint',
@@ -93,6 +97,7 @@ export default class LegislaturaScraperSubStack extends NestedStack {
         bucket_name: bucket.bucketName,
         sesion_state_machine: sesionStateMachine.attrArn,
         legislaturas_table_name: legislaturasTable.tableName,
+        sesiones_table_name: sesionesTable.tableName,
       },
       stateMachineName: `${id}-sm`,
       stateMachineType: StateMachineType.STANDARD,

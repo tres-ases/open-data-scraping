@@ -18,7 +18,7 @@
         "ApiEndpoint": "https://web-back.senado.cl/api/sessions",
         "Method": "GET",
         "InvocationConfig": {
-          "ConnectionArn": "${events_connection_arn}"
+          "ConnectionArn": "arn:aws:events:us-east-1:886436935193:connection/SenadoCl-scraper-connection/f65e78e8-bb41-421f-98f4-2df03941b4eb"
         },
         "QueryParameters": {
           "id_legislatura=": "{% $legId %}"
@@ -48,7 +48,7 @@
               "Type": "Task",
               "Resource": "arn:aws:states:::dynamodb:updateItem",
               "Arguments": {
-                "TableName": "${legislaturas_table_name}",
+                "TableName": "senado-raw-legislaturas",
                 "Key": {
                   "id": {
                     "N": "{% $legId %}"
@@ -81,47 +81,73 @@
                 "States": {
                   "Assign sesId": {
                     "Type": "Pass",
-                    "Next": "ExtractVotacionAndAsistencia",
+                    "Next": "Parallel",
                     "Assign": {
                       "sesId": "{% $states.input.id %}"
                     }
                   },
-                  "ExtractVotacionAndAsistencia": {
-                    "Type": "Task",
-                    "Arguments": {
-                      "StateMachineArn": "${sesion_state_machine}",
-                      "Input": {
-                        "sesId": "{% $sesId %}"
+                  "Parallel": {
+                    "Type": "Parallel",
+                    "Branches": [
+                      {
+                        "StartAt": "Transform",
+                        "States": {
+                          "Transform": {
+                            "Type": "Pass",
+                            "Next": "Update Sesion",
+                            "Output": "{% $states.input.{\n    \"id\": {\n        \"N\": id ~> $string()\n    },\n    \"numero\": {\n        \"N\": numero\n    },\n    \"legId\": {\n        \"N\": legId ~> $string()\n    },\n    \"legNumero\": {\n        \"N\": legNumero ~> $string()\n    },\n    \"fecha\": {\n        \"S\": fecha\n    },\n    \"horaInicio\": {\n        \"S\": horaInicio\n    },\n    \"horaTermino\": {\n        \"S\": horaTermino\n    },\n    \"tipo\": {\n        \"S\": tipo\n    },\n    \"cuenta\": {\n        \"N\": cuenta\n    }\n} %}"
+                          },
+                          "Update Sesion": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::dynamodb:updateItem",
+                            "Arguments": {
+                              "TableName": "senado-raw-sesiones",
+                              "Key": {
+                                "id": {
+                                  "N": "{% $sesId %}"
+                                }
+                              },
+                              "UpdateExpression": "SET fechaModificacion = :fechaModificacion, info = :info",
+                              "ExpressionAttributeValues": {
+                                ":fechaModificacion": {
+                                  "S": "{% $fechaModificacion %}"
+                                },
+                                ":info": {
+                                  "M": "{% $states.input %}"
+                                }
+                              }
+                            },
+                            "End": true
+                          }
+                        }
                       },
-                      "Name": "{% 'sesId-' & $sesId & '-' & $millis() %}"
-                    },
-                    "Resource": "arn:aws:states:::aws-sdk:sfn:startSyncExecution",
-                    "End": true,
-                    "Output": {
-                      "sesId": "{% $sesId %}",
-                      "status": "{% $states.result.Status %}"
-                    }
+                      {
+                        "StartAt": "ExtractVotacionAndAsistencia",
+                        "States": {
+                          "ExtractVotacionAndAsistencia": {
+                            "Type": "Task",
+                            "Arguments": {
+                              "StateMachineArn": "arn:aws:states:us-east-1:886436935193:stateMachine:SenadoCl-scraper-sesion-sm",
+                              "Input": {
+                                "sesId": "{% $sesId %}"
+                              },
+                              "Name": "{% 'sesId-' & $sesId & '-' & $millis() %}"
+                            },
+                            "Resource": "arn:aws:states:::aws-sdk:sfn:startSyncExecution",
+                            "End": true,
+                            "Output": {
+                              "sesId": "{% $sesId %}",
+                              "status": "{% $states.result.Status %}"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "End": true
                   }
                 }
               },
               "MaxConcurrency": 5,
-              "Next": "Al menos 1 error"
-            },
-            "Al menos 1 error": {
-              "Type": "Choice",
-              "Choices": [
-                {
-                  "Next": "Error",
-                  "Condition": "{% $count($states.input[status = \"FAILED\"]) > 0 %}"
-                }
-              ],
-              "Default": "Pass"
-            },
-            "Error": {
-              "Type": "Fail"
-            },
-            "Pass": {
-              "Type": "Pass",
               "End": true
             }
           }
