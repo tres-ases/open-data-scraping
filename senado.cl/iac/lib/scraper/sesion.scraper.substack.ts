@@ -10,7 +10,7 @@ import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   connection: Connection
-  senadorQueue: Queue
+  parlamentarioQueue: Queue
   boletinQueue: Queue
   sesionesTable: Table
 }
@@ -18,7 +18,7 @@ interface Props extends NestedStackProps {
 export default class SesionScraperSubStack extends NestedStack {
   readonly stateMachine: CfnStateMachine;
 
-  constructor(scope: Construct, id: string, {connection, senadorQueue, boletinQueue, sesionesTable}: Props) {
+  constructor(scope: Construct, id: string, {connection, parlamentarioQueue, boletinQueue, sesionesTable}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -38,7 +38,7 @@ export default class SesionScraperSubStack extends NestedStack {
           actions: [
             'sqs:SendMessage'
           ],
-          resources: [senadorQueue.queueArn, boletinQueue.queueArn]
+          resources: [parlamentarioQueue.queueArn, boletinQueue.queueArn]
         }),
         new PolicyStatement({
           sid: 'RetrieveConnectionCredentials',
@@ -96,7 +96,7 @@ export default class SesionScraperSubStack extends NestedStack {
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
-        senador_queue_url: senadorQueue.queueUrl,
+        senador_queue_url: parlamentarioQueue.queueUrl,
         boletin_queue_url: boletinQueue.queueUrl,
         sesiones_table_name: sesionesTable.tableName,
       },
@@ -120,7 +120,7 @@ export default class SesionScraperSubStack extends NestedStack {
       value: connection.connectionArn,
     });
     new CfnOutput(this, '${senador_queue_url}', {
-      value: senadorQueue.queueUrl,
+      value: parlamentarioQueue.queueUrl,
     });
     new CfnOutput(this, '${proyecto_queue_url}', {
       value: boletinQueue.queueUrl,
