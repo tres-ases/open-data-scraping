@@ -8,16 +8,18 @@ import * as fs from "fs";
 import {CfnPipe} from "aws-cdk-lib/aws-pipes";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
+import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
   connection: Connection
   parlamentarioQueue: Queue
+  parlamentariosTable: Table
 }
 
 export default class ParlamentarioScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket, connection, parlamentarioQueue}: Props) {
+  constructor(scope: Construct, id: string, {bucket, connection, parlamentarioQueue, parlamentariosTable}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -81,6 +83,14 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
           resources: ['*'],
         }),
         new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'dynamodb:PutItem',
+            'dynamodb:UpdateItem',
+          ],
+          resources: [parlamentariosTable.tableArn]
+        }),
+        new PolicyStatement({
           sid: 'InvokeHttpEndpoint',
           effect: Effect.ALLOW,
           actions: ["states:InvokeHTTPEndpoint"],
@@ -98,7 +108,8 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
-        bucket_name: bucket.bucketName
+        bucket_name: bucket.bucketName,
+        parlamentarios_table_name: parlamentariosTable.tableName,
       },
       stateMachineType: StateMachineType.EXPRESS,
       tracingConfiguration: {
