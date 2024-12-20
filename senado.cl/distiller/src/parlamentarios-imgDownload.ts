@@ -1,9 +1,9 @@
 import {Logger} from "@aws-lambda-powertools/logger";
 import type {LambdaInterface} from "@aws-lambda-powertools/commons/types";
 import {Tracer} from '@aws-lambda-powertools/tracer';
-import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import {S3Event, SQSEvent} from "aws-lambda";
-import * as cheerio from "cheerio";
+import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {SQSEvent} from "aws-lambda";
+import * as https from 'https';
 
 const serviceName = 'ParlamentariosDownloadImageFromQueue';
 const logger = new Logger({
@@ -19,17 +19,29 @@ export class ImgDownload implements LambdaInterface {
   @tracer.captureLambdaHandler()
   public async handler(event: SQSEvent, _context: any) {
     logger.info('Ejecutando ImgDownload', {event});
-
   }
 
   @tracer.captureMethod()
-  public async saveFile(content: any, bucket: string, key: string) {
+  public async downloadAndSaveImg(slug: string, url: string, tipo: string) {
+    const imageData = await this.downloadImage(url);
     await s3Client.send(new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: JSON.stringify(content),
-      ContentType: 'application/json'
+      Bucket: process.env.BUCKET_NAME,
+      Key: `img/parlametarios/slug=${slug}/${tipo}.jpg`,
+      Body: imageData,
+      ContentType: 'image/jpeg'
     }));
+  }
+
+  @tracer.captureMethod()
+  private downloadImage(url: string): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      https.get(url, (response) => {
+        const chunks: Uint8Array[] = [];
+        response.on('data', (chunk) => chunks.push(chunk));
+        response.on('end', () => resolve(Buffer.concat(chunks)));
+        response.on('error', (err) => reject(err));
+      });
+    });
   }
 }
 

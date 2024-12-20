@@ -21,6 +21,9 @@ export default class ParlamentarioImagenDistillerSubStack extends NestedStack {
       handler: 'parlamentarios-imgDownload.handler',
       layers,
       timeout: 120,
+      environment: {
+        BUCKET_NAME: bucket.bucketName, // Variable de entorno con el nombre del bucket
+      },
     });
     lambda.addEventSource(
       new SqsEventSource(parlamentarioImagenQueue, {
