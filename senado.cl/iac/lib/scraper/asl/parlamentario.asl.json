@@ -89,8 +89,17 @@
                 "States": {
                   "Parse Image List": {
                     "Type": "Pass",
-                    "End": true,
-                    "Output": "{% $states.input.senData.props.pageProps.resource.data.parliamentarianSenadoData.data[0]{\n    \"imagenes\": [\n        {\n            \"tipo\": \"DEFAULT\",\n            \"url\": $exists(IMAGEN) ? IMAGEN : undefined\n        },\n        {\n            \"tipo\": \"120\",\n            \"url\": $exists(IMAGEN_120) ? IMAGEN_120 : undefined\n        },\n        {\n            \"tipo\": \"450\",\n            \"url\": $exists(IMAGEN_450) ? IMAGEN_450 : undefined\n        },\n        {\n            \"tipo\": \"600\",\n            \"url\": $exists(IMAGEN_600) ? IMAGEN_600 : undefined\n        }\n    ]\n} %}"
+                    "Output": "{% $states.input.senData.props.pageProps.resource.data.parliamentarianSenadoData.data[0].[\n    $append(\n        $append(\n            $exists(IMAGEN) ? {\n                \"Id\": $join( [\"slug_\", \"DEFAULT\"] ),\n                \"MessageBody\": {\n                    \"slug\": \"slug\",\n                    \"tipo\": \"DEFAULT\",\n                    \"url\": IMAGEN\n                }\n            } : [],\n            $exists(IMAGEN_120) ? {\n                \"Id\": $join( [\"slug_\", \"120\"] ),\n                \"MessageBody\": {\n                    \"slug\": \"slug\",\n                    \"tipo\": \"120\",\n                    \"url\": IMAGEN_120\n                }\n            } : []\n        ),\n        $append(\n            {\n                \"Id\": $join( [\"slug_\", \"450\"] ),\n                \"MessageBody\": {\n                    \"slug\": \"slug\",\n                    \"tipo\": \"450\",\n                    \"url\": IMAGEN_450\n                }\n            },\n            {\n                \"Id\": $join( [\"slug_\", \"600\"] ),\n                \"MessageBody\": {\n                    \"slug\": \"slug\",\n                    \"tipo\": \"600\",\n                    \"url\": IMAGEN_600\n                }\n            }\n        )\n    )\n] %}",
+                    "Next": "Parlamentario download image SQS"
+                  },
+                  "Parlamentario download image SQS": {
+                    "Type": "Task",
+                    "Arguments": {
+                      "Entries": "{% $states.input %}",
+                      "QueueUrl": "${parlamentario_imagen_queue}"
+                    },
+                    "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessageBatch",
+                    "End": true
                   }
                 }
               }

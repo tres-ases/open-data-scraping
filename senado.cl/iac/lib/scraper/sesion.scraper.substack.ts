@@ -36,7 +36,8 @@ export default class SesionScraperSubStack extends NestedStack {
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
-            'sqs:SendMessage'
+            'sqs:SendMessage',
+            'sqs:SendMessageBatch',
           ],
           resources: [parlamentarioQueue.queueArn, boletinQueue.queueArn]
         }),

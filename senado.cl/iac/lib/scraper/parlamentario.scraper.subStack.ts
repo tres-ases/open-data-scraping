@@ -1,7 +1,6 @@
 import {CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
 import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {Bucket} from "aws-cdk-lib/aws-s3";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
@@ -11,15 +10,15 @@ import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
-  bucket: Bucket
   connection: Connection
   parlamentarioQueue: Queue
+  parlamentarioImagenQueue: Queue
   parlamentariosTable: Table
 }
 
 export default class ParlamentarioScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket, connection, parlamentarioQueue, parlamentariosTable}: Props) {
+  constructor(scope: Construct, id: string, {connection, parlamentarioQueue, parlamentarioImagenQueue, parlamentariosTable}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -37,21 +36,10 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
-            's3:Abort*',
-            's3:DeleteObject*',
-            's3:GetBucket*',
-            's3:GetObject*',
-            's3:List*',
-            's3:PutObject',
-            's3:PutObjectLegalHold',
-            's3:PutObjectRetention',
-            's3:PutObjectTagging',
-            's3:PutObjectVersionTagging'
+            'sqs:SendMessage',
+            'sqs:SendMessageBatch',
           ],
-          resources: [
-            bucket.bucketArn,
-            `${bucket.bucketArn}/*`
-          ]
+          resources: [parlamentarioImagenQueue.queueArn]
         }),
         new PolicyStatement({
           sid: 'RetrieveConnectionCredentials',
@@ -108,8 +96,8 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
-        bucket_name: bucket.bucketName,
         parlamentarios_table_name: parlamentariosTable.tableName,
+        parlamentario_imagen_queue: parlamentarioImagenQueue.queueArn,
       },
       stateMachineType: StateMachineType.EXPRESS,
       tracingConfiguration: {
@@ -152,8 +140,11 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,
     });
-    new CfnOutput(this, '${bucket_name}', {
-      value: bucket.bucketName,
+    new CfnOutput(this, '${parlamentarios_table_name}', {
+      value: parlamentariosTable.tableName,
+    });
+    new CfnOutput(this, '${parlamentario_imagen_queue}', {
+      value: parlamentarioImagenQueue.queueArn,
     });
   }
 }

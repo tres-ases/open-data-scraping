@@ -7,38 +7,17 @@ import {LambdaDestination} from "aws-cdk-lib/aws-s3-notifications";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
+  layers: LayerVersion[]
 }
 
 export default class ProyectoDistillerSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket}: Props) {
+  constructor(scope: Construct, id: string, {bucket, layers}: Props) {
     super(scope, id);
-
-    const modelLy = new LayerVersion(this, `${id}-ModelLy`, {
-      layerVersionName: `${id}-ModelLy`,
-      compatibleRuntimes: [
-        Runtime.NODEJS_20_X
-      ],
-      code: Code.fromAsset('../../../../../artifact/model-layer'),
-      compatibleArchitectures: [
-        Architecture.X86_64
-      ]
-    });
-
-    const distillerLy = new LayerVersion(this, `${id}-DistillerLy`, {
-      layerVersionName: `${id}-DistillerLy`,
-      compatibleRuntimes: [
-        Runtime.NODEJS_20_X
-      ],
-      code: Code.fromAsset('../../../../../artifact/distiller-layer'),
-      compatibleArchitectures: [
-        Architecture.X86_64
-      ]
-    });
 
     const xml2jsonLambda = new SenadoFunction(this, `${id}Fn`, {
       handler: 'proyectos-xml2json.handler',
-      layers: [distillerLy, modelLy],
+      layers,
       timeout: 120,
     });
     bucket.grantReadWrite(xml2jsonLambda);

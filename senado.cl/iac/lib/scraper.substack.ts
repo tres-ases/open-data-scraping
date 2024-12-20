@@ -12,13 +12,12 @@ import TablesScraperSubStack from "./scraper/tables.scraper.subStack";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
+  parlamentarioImagenQueue: Queue
 }
 
 export default class ScraperSubstack extends NestedStack {
-  constructor(scope: Construct, id: string, props: Props) {
+  constructor(scope: Construct, id: string, {bucket, parlamentarioImagenQueue, ...props}: Props) {
     super(scope, id, props);
-
-    const {bucket} = props;
 
     const parlamentarioQueue = new Queue(this, `${id}-parlamentario-queue`, {
       queueName: `${id}-parlamentario-queue`,
@@ -55,7 +54,7 @@ export default class ScraperSubstack extends NestedStack {
     });
 
     new ParlamentarioSubStack(this, `${id}-parlamentario`, {
-      bucket, connection, parlamentarioQueue, parlamentariosTable: tables.parlamentarios
+      connection, parlamentarioQueue, parlamentarioImagenQueue, parlamentariosTable: tables.parlamentarios
     });
 
     new ProyectoSubStack(this, `${id}-proyecto`, {
