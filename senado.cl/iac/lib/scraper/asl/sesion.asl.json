@@ -42,7 +42,7 @@
                 }
               ],
               "Next": "Parallel Asistencia",
-              "Output": "{% $states.result.ResponseBody.data.{\n    \"sesId\": ID_SESION, \n    \"sesNumero\": NUMERO_SESION,\n    \"totalSenadores\": TOTAL_SENADORES,\n    \"totalSesiones\": TOTAL_SESIONES,\n    \"inicio\": FECHA_HORA_INICIO,\n    \"termino\": FECHA_HORA_TERMINO,\n    \"detalle\": DATA[].{\n        \"sesId\": ID_SESION,\n        \"sesNumero\": NUMERO_SESION,\n        \"parId\": ID_PARLAMENTARIO,\n        \"parNombre\": NOMBRE,\n        \"parApellidoPaterno\": APELLIDO_PATERNO,\n        \"parApellidoMaterno\": APELLIDO_MATERNO,\n        \"slug\": SLUG,\n        \"asistencia\": ASISTENCIA,\n        \"justificacion\": JUSTIFICACION\n    }\n} %}"
+              "Output": "{% $states.result.ResponseBody.data %}"
             },
             "Parallel Asistencia": {
               "Type": "Parallel",
@@ -52,7 +52,8 @@
                   "States": {
                     "Transform asistencia": {
                       "Type": "Pass",
-                      "Next": "Update Sesion - asistencia"
+                      "Next": "Update Sesion - asistencia",
+                      "Output": "{% $states.input.{\n    \"sesId\": {\n        \"N\": ID_SESION ~> $string\n    },\n    \"sesNumero\": {\n        \"N\": NUMERO_SESION ~> $string\n    },\n    \"totalSenadores\": {\n        \"N\": TOTAL_SENADORES ~> $string\n    },\n    \"totalSesiones\": {\n        \"N\": TOTAL_SESIONES ~> $string\n    },\n    \"inicio\": {\n        \"S\": FECHA_HORA_INICIO\n    },\n    \"termino\": {\n        \"S\": FECHA_HORA_TERMINO\n    },\n    \"detalle\": {\n        \"L\": DATA[].{\n            \"M\": {\n                \"parId\": {\n                    \"N\": ID_PARLAMENTARIO ~> $string\n                },\n                \"parSlug\": {\n                    \"S\": SLUG\n                },\n                \"nombre\": {\n                    \"S\": NOMBRE\n                },\n                \"apellidoPaterno\": {\n                    \"S\": APELLIDO_PATERNO\n                },\n                \"apellidoMaterno\": {\n                    \"S\": APELLIDO_MATERNO\n                },\n                \"sesId\": {\n                    \"N\": ID_SESION ~> $string\n                },\n                \"sesNumero\": {\n                    \"N\": NUMERO_SESION ~> $string\n                },\n                \"asistencia\": {\n                    \"S\": ASISTENCIA\n                },\n                \"justificacion\": JUSTIFICACION != null ? {\n                    \"S\": JUSTIFICACION\n                } : undefined\n            }\n        }\n    } \n} %}"
                     },
                     "Update Sesion - asistencia": {
                       "Type": "Task",
@@ -67,12 +68,12 @@
                             "N": "{% $legId %}"
                           }
                         },
-                        "UpdateExpression": "SET fechaModificacion = :fechaModificacion, info = :info",
+                        "UpdateExpression": "SET fechaModificacion = :fechaModificacion, asistencia = :asistencia",
                         "ExpressionAttributeValues": {
                           ":fechaModificacion": {
                             "S": "{% $now() %}"
                           },
-                          ":info": {
+                          ":asistencia": {
                             "M": "{% $states.input %}"
                           }
                         }
@@ -82,8 +83,13 @@
                   }
                 },
                 {
-                  "StartAt": "Senadores",
+                  "StartAt": "Extract senSlug's",
                   "States": {
+                    "Extract senSlug's": {
+                      "Type": "Pass",
+                      "Next": "Senadores",
+                      "Output": "{% $states.input.DATA[].SLUG ~> $distinct %}"
+                    },
                     "Senadores": {
                       "Type": "Map",
                       "ItemProcessor": {
@@ -114,7 +120,6 @@
                         }
                       },
                       "End": true,
-                      "Items": "{% $append( $distinct($states.input.detalle[].slug), [] ) %}",
                       "MaxConcurrency": 10
                     }
                   }
@@ -125,9 +130,9 @@
           }
         },
         {
-          "StartAt": "Get Votacion",
+          "StartAt": "Get Votaciones",
           "States": {
-            "Get Votacion": {
+            "Get Votaciones": {
               "Type": "Task",
               "Resource": "arn:aws:states:::http:invoke",
               "Arguments": {
@@ -152,17 +157,18 @@
                 }
               ],
               "Next": "Parallel Votacion",
-              "Output": "{% $states.result.ResponseBody.data.data.{\n    \"id\": ID_VOTACION,\n    \"sesId\": ID_SESION, \n    \"sesNumero\": NUMERO_SESION,\n    \"fecha\": FECHA_VOTACION,\n    \"hora\": HORA,\n    \"tema\": TEMA,\n    \"quorum\": QUORUM,\n    \"boletin\": BOLETIN,\n    \"resultado\": {\n        \"si\": SI,\n        \"no\": NO,\n        \"abs\": ABS,\n        \"pareo\": PAREO\n    },\n    \"detalle\": {\n        \"si\": VOTACIONES.SI[].{\n            \"uuid\": UUID,\n            \"parlId\": PARLID,\n            \"parSlug\": SLUG,\n            \"parNombre\": NOMBRE,\n            \"parApellidoPaterno\": APELLIDO_PATERNO,\n            \"parApellidoMaterno\": APELLIDO_MATERNO\n        },\n        \"no\": VOTACIONES.NO[].{\n            \"uuid\": UUID,\n            \"parlId\": PARLID,\n            \"parSlug\": SLUG,\n            \"parNombre\": NOMBRE,\n            \"parApellidoPaterno\": APELLIDO_PATERNO,\n            \"parApellidoMaterno\": APELLIDO_MATERNO\n        },\n        \"abs\": VOTACIONES.ABSTENCION[].{\n            \"uuid\": UUID,\n            \"parlId\": PARLID,\n            \"parSlug\": SLUG,\n            \"parNombre\": NOMBRE,\n            \"parApellidoPaterno\": APELLIDO_PATERNO,\n            \"parApellidoMaterno\": APELLIDO_MATERNO\n        },\n        \"pareo\": VOTACIONES.PAREO[].{\n            \"uuid\": UUID,\n            \"parlId\": PARLID,\n            \"parSlug\": SLUG,\n            \"parNombre\": NOMBRE,\n            \"parApellidoPaterno\": APELLIDO_PATERNO,\n            \"parApellidoMaterno\": APELLIDO_MATERNO\n        }\n    },\n    \"detalle2\": DATA.{\n        \"sesId\": ID_SESION,\n        \"sesNumero\": NUMERO_SESION,\n        \"parId\": ID_PARLAMENTARIO,\n        \"parNombre\": NOMBRE,\n        \"parApellidoPaterno\": APELLIDO_PATERNO,\n        \"parApellidoMaterno\": APELLIDO_MATERNO,\n        \"slug\": SLUG,\n        \"asistencia\": ASISTENCIA,\n        \"justificacion\": JUSTIFICACION\n    }\n} %}"
+              "Output": "{% $states.result.ResponseBody %}"
             },
             "Parallel Votacion": {
               "Type": "Parallel",
               "Branches": [
                 {
-                  "StartAt": "Transform votacion",
+                  "StartAt": "Transform votaciones",
                   "States": {
-                    "Transform votacion": {
+                    "Transform votaciones": {
                       "Type": "Pass",
-                      "Next": "Update sesion - votaciones"
+                      "Next": "Update sesion - votaciones",
+                      "Output": "{% $states.input.data.data[].{\n    \"M\": {\n        \"votId\": {\n            \"N\": ID_VOTACION ~> $string\n        },\n        \"sesId\": {\n            \"N\": ID_SESION ~> $string\n        },\n        \"sesNumero\": {\n            \"N\": NUMERO_SESION ~> $string\n        },\n        \"fecha\": {\n            \"S\": FECHA_VOTACION\n        },\n        \"hora\": {\n            \"S\": HORA\n        },\n        \"tema\": {\n            \"S\": TEMA\n        },\n        \"quorum\": {\n            \"S\": QUORUM\n        },\n        \"boletin\": {\n            \"S\": QUORUM\n        },\n        \"resultado\": {\n            \"M\": {\n                \"si\": {\n                    \"N\": SI ~> $string\n                },\n                \"no\": {\n                    \"N\": NO ~> $string\n                },\n                \"abs\": {\n                    \"N\": ABS ~> $string\n                },\n                \"pareo\": {\n                    \"N\": PAREO ~> $string\n                }\n            }\n        },\n        \"detalle\": {\n            \"M\": {\n                \"SI\": {\n                    \"L\": VOTACIONES.SI != 0 ? VOTACIONES.SI[].{\n                        \"M\": {\n                            \"parId\": {\n                                \"N\": PARLID ~> $string\n                            },\n                            \"parSlug\": {\n                                \"S\": SLUG\n                            }\n                        }\n                    } : []\n                },\n                \"NO\": {\n                    \"L\": VOTACIONES.NO != 0 ? VOTACIONES.NO[].{\n                        \"M\": {\n                            \"parId\": {\n                                \"N\": PARLID ~> $string\n                            },\n                            \"parSlug\": {\n                                \"S\": SLUG\n                            }\n                        }\n                    } : []\n                },\n                \"ABSTENCION\": {\n                    \"L\": VOTACIONES.ABSTENCION != 0 ? VOTACIONES.ABSTENCION[].{\n                        \"M\": {\n                            \"parId\": {\n                                \"N\": PARLID ~> $string\n                            },\n                            \"parSlug\": {\n                                \"S\": SLUG\n                            }\n                        }\n                    } : []\n                },\n                \"PAREO\": {\n                    \"L\": VOTACIONES.PAREO != 0 ? VOTACIONES.PAREO[].{\n                        \"M\": {\n                            \"parId\": {\n                                \"N\": PARLID ~> $string\n                            },\n                            \"parSlug\": {\n                                \"S\": SLUG\n                            }\n                        }\n                    } : []\n                }\n            }\n        }\n    }\n} %}"
                     },
                     "Update sesion - votaciones": {
                       "Type": "Task",
@@ -170,14 +176,20 @@
                       "Arguments": {
                         "TableName": "${sesiones_table_name}",
                         "Key": {
-                          "Column": {
-                            "S": "MyEntry"
+                          "sesId": {
+                            "N": "{% $sesId %}"
+                          },
+                          "legId": {
+                            "N": "{% $legId %}"
                           }
                         },
-                        "UpdateExpression": "SET MyKey = :myValueRef",
+                        "UpdateExpression": "SET fechaModificacion = :fechaModificacion, votaciones = :votaciones",
                         "ExpressionAttributeValues": {
-                          ":myValueRef": {
-                            "S": "MyValue"
+                          ":fechaModificacion": {
+                            "S": "{% $now() %}"
+                          },
+                          ":votaciones": {
+                            "L": "{% $states.input %}"
                           }
                         }
                       },
@@ -186,8 +198,13 @@
                   }
                 },
                 {
-                  "StartAt": "Boletines",
+                  "StartAt": "Extract boletines",
                   "States": {
+                    "Extract boletines": {
+                      "Type": "Pass",
+                      "Next": "Boletines",
+                      "Output": "{% \n$map(\n    $states.input.data.data[].BOLETIN, \n    function($v) { \n        $split($v, \"-\")[0] \n    }\n) ~> $distinct \n%}"
+                    },
                     "Boletines": {
                       "Type": "Map",
                       "ItemProcessor": {
@@ -218,7 +235,6 @@
                         }
                       },
                       "End": true,
-                      "Items": "{% $append( $distinct( $map( $states.input[boletin != null].boletin[], function($v) { $replace($v, /-\\d+$/, \"\") } )[] ), []) %}",
                       "MaxConcurrency": 10
                     }
                   }

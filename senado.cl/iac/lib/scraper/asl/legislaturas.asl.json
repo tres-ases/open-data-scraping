@@ -56,7 +56,7 @@
             "Arguments": {
               "TableName": "${legislaturas_table_name}",
               "Key": {
-                "id": {
+                "legId": {
                   "N": "{% $id %}"
                 }
               },

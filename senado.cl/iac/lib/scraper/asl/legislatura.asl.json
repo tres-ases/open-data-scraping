@@ -18,7 +18,7 @@
         "ApiEndpoint": "https://web-back.senado.cl/api/sessions",
         "Method": "GET",
         "InvocationConfig": {
-          "ConnectionArn": "arn:aws:events:us-east-1:886436935193:connection/SenadoCl-scraper-connection/f65e78e8-bb41-421f-98f4-2df03941b4eb"
+          "ConnectionArn": "${events_connection_arn}"
         },
         "QueryParameters": {
           "id_legislatura": "{% $legId %}",
@@ -51,7 +51,7 @@
               "Arguments": {
                 "TableName": "${legislaturas_table_name}",
                 "Key": {
-                  "id": {
+                  "legId": {
                     "N": "{% $legId %}"
                   }
                 },
@@ -82,12 +82,12 @@
                 "States": {
                   "Assign sesId": {
                     "Type": "Pass",
-                    "Next": "Parallel",
+                    "Next": "Parallel Sesion",
                     "Assign": {
                       "sesId": "{% $states.input.id ~> $string() %}"
                     }
                   },
-                  "Parallel": {
+                  "Parallel Sesion": {
                     "Type": "Parallel",
                     "Branches": [
                       {
@@ -104,10 +104,10 @@
                             "Arguments": {
                               "TableName": "${sesiones_table_name}",
                               "Key": {
-                                "id": {
+                                "sesId": {
                                   "N": "{% $sesId %}"
                                 },
-                                "leg_id": {
+                                "legId": {
                                   "N": "{% $legId %}"
                                 }
                               },
@@ -133,6 +133,7 @@
                             "Arguments": {
                               "StateMachineArn": "${sesion_state_machine}",
                               "Input": {
+                                "legId": "{% $legId %}",
                                 "sesId": "{% $sesId %}"
                               },
                               "Name": "{% 'sesId-' & $sesId & '-' & $millis() %}"
