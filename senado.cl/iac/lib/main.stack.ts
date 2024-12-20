@@ -15,7 +15,7 @@ export default class MainStack extends Stack {
     });
 
     const parlamentarioImagenQueue = new Queue(this, `${id}-parlamentario-imagen-queue`, {
-      queueName: `${id}-parlamentario-imagen.queue`,
+      queueName: `${id}-parlamentario-imagen-queue`,
       visibilityTimeout: Duration.minutes(15),
     });
 
