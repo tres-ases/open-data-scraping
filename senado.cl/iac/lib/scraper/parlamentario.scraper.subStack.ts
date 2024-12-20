@@ -97,7 +97,7 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
         parlamentarios_table_name: parlamentariosTable.tableName,
-        parlamentario_imagen_queue: parlamentarioImagenQueue.queueArn,
+        parlamentario_imagen_queue: parlamentarioImagenQueue.queueUrl,
       },
       stateMachineType: StateMachineType.EXPRESS,
       tracingConfiguration: {
