@@ -55,7 +55,7 @@ export default class ScraperSubstack extends NestedStack {
     });
 
     new ParlamentarioSubStack(this, `${id}-parlamentario`, {
-      bucket, connection, parlamentarioQueue
+      bucket, connection, parlamentarioQueue, parlamentariosTable: tables.parlamentarios
     });
 
     new ProyectoSubStack(this, `${id}-proyecto`, {
