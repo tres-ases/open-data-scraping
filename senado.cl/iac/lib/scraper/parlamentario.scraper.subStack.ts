@@ -12,12 +12,12 @@ import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 interface Props extends NestedStackProps {
   bucket: Bucket
   connection: Connection
-  senadorQueue: Queue
+  parlamentarioQueue: Queue
 }
 
-export default class SenadorScraperSubStack extends NestedStack {
+export default class ParlamentarioScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {bucket, connection, senadorQueue}: Props) {
+  constructor(scope: Construct, id: string, {bucket, connection, parlamentarioQueue}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -90,7 +90,7 @@ export default class SenadorScraperSubStack extends NestedStack {
     });
     smRole.attachInlinePolicy(smRolePolicy);
 
-    let definition = fs.readFileSync('./lib/scraper/asl/senador.asl.json', 'utf8');
+    let definition = fs.readFileSync('./lib/scraper/asl/parlamentario.asl.json', 'utf8');
 
     const sm = new CfnStateMachine(this, `${id}-sm`, {
       stateMachineName: `${id}-sm`,
@@ -119,7 +119,7 @@ export default class SenadorScraperSubStack extends NestedStack {
       roleName: `${id}-pipeRole`,
       assumedBy: new ServicePrincipal('pipes.amazonaws.com')
     });
-    senadorQueue.grantConsumeMessages(pipeRole);
+    parlamentarioQueue.grantConsumeMessages(pipeRole);
     pipeRole.addToPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ["states:StartExecution"],
@@ -129,7 +129,7 @@ export default class SenadorScraperSubStack extends NestedStack {
     new CfnPipe(this, `${id}-pipe`, {
       name: `${id}-pipe`,
       roleArn: pipeRole.roleArn,
-      source: senadorQueue.queueArn,
+      source: parlamentarioQueue.queueArn,
       target: sm.attrArn,
       targetParameters: {
         stepFunctionStateMachineParameters: {

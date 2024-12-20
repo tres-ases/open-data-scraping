@@ -96,7 +96,7 @@ export default class SesionScraperSubStack extends NestedStack {
       definitionString: definition,
       definitionSubstitutions: {
         events_connection_arn: connection.connectionArn,
-        senador_queue_url: parlamentarioQueue.queueUrl,
+        parlamentario_queue_url: parlamentarioQueue.queueUrl,
         boletin_queue_url: boletinQueue.queueUrl,
         sesiones_table_name: sesionesTable.tableName,
       },
@@ -119,7 +119,7 @@ export default class SesionScraperSubStack extends NestedStack {
     new CfnOutput(this, '${events_connection_arn}', {
       value: connection.connectionArn,
     });
-    new CfnOutput(this, '${senador_queue_url}', {
+    new CfnOutput(this, '${parlamentario_queue_url}', {
       value: parlamentarioQueue.queueUrl,
     });
     new CfnOutput(this, '${proyecto_queue_url}', {

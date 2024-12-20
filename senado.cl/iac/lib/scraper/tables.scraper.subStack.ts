@@ -5,7 +5,7 @@ import {AttributeType, BillingMode, Table} from "aws-cdk-lib/aws-dynamodb";
 export default class TablesScraperSubStack extends NestedStack {
   readonly legislaturas: Table;
   readonly sesiones: Table;
-  readonly senadores: Table;
+  readonly parlamentarios: Table;
   readonly asistencia: Table;
   readonly votaciones: Table;
 
@@ -36,8 +36,8 @@ export default class TablesScraperSubStack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.senadores = new Table(this, `${id}-senadores-dyn`, {
-      tableName: 'senado-raw-senadores',
+    this.parlamentarios = new Table(this, `${id}-parlamentarios-dyn`, {
+      tableName: 'senado-raw-parlamentarios',
       partitionKey: {
         name: 'slug',
         type: AttributeType.STRING,
