@@ -20,14 +20,14 @@ export default class MainStack extends Stack {
       visibilityTimeout: Duration.minutes(15),
     });
 
-    const tables = new TablesSubStack(this, `${id}-model`);
-
-    new ScraperSubstack(this, `${id}-scraper`, {
-      bucket, parlamentarioImagenQueue,
-      legislaturasTable: tables.legislaturas,
-      sesionesTable: tables.sesiones,
-      parlamentariosTable: tables.parlamentarios,
-    });
+    //const tables = new TablesSubStack(this, `${id}-model`);
+//
+    //new ScraperSubstack(this, `${id}-scraper`, {
+    //  bucket, parlamentarioImagenQueue,
+    //  legislaturasTable: tables.legislaturas,
+    //  sesionesTable: tables.sesiones,
+    //  parlamentariosTable: tables.parlamentarios,
+    //});
     //new DistillerSubstack(this, `${id}-distiller`, {
     //  bucket, parlamentarioImagenQueue,
     //  proyectosTable: tables.proyectos
