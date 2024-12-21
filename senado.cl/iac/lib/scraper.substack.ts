@@ -8,15 +8,18 @@ import LegislaturaSubStack from "./scraper/legislatura.scraper.substack";
 import ParlamentarioSubStack from "./scraper/parlamentario.scraper.subStack";
 import ProyectoSubStack from "./scraper/proyecto.scraper.substack";
 import LegislaturasScraperSubStack from "./scraper/legislaturas.scraper.substack";
-import TablesScraperSubStack from "./scraper/tables.scraper.subStack";
+import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
   parlamentarioImagenQueue: Queue
+  legislaturasTable: Table
+  sesionesTable: Table
+  parlamentariosTable: Table
 }
 
 export default class ScraperSubstack extends NestedStack {
-  constructor(scope: Construct, id: string, {bucket, parlamentarioImagenQueue, ...props}: Props) {
+  constructor(scope: Construct, id: string, {bucket, parlamentarioImagenQueue, legislaturasTable, sesionesTable, parlamentariosTable, ...props}: Props) {
     super(scope, id, props);
 
     const parlamentarioQueue = new Queue(this, `${id}-parlamentario-queue`, {
@@ -34,27 +37,21 @@ export default class ScraperSubstack extends NestedStack {
       authorization: Authorization.apiKey('API-KEY', SecretValue.unsafePlainText('DUMMY'))
     });
 
-    const tables = new TablesScraperSubStack(this, `${id}-model`);
-
     new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
-      connection,
-      legislaturasTable: tables.legislaturas
+      connection, legislaturasTable
     });
 
     const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
-      connection, parlamentarioQueue, boletinQueue,
-      sesionesTable: tables.sesiones
+      connection, parlamentarioQueue, boletinQueue, sesionesTable
     });
 
     new LegislaturaSubStack(this, `${id}-legislatura`, {
-      connection,
+      connection, legislaturasTable, sesionesTable,
       sesionStateMachine: sesionSubStack.stateMachine,
-      legislaturasTable: tables.legislaturas,
-      sesionesTable: tables.sesiones
     });
 
     new ParlamentarioSubStack(this, `${id}-parlamentario`, {
-      connection, parlamentarioQueue, parlamentarioImagenQueue, parlamentariosTable: tables.parlamentarios
+      connection, parlamentarioQueue, parlamentarioImagenQueue, parlamentariosTable,
     });
 
     new ProyectoSubStack(this, `${id}-proyecto`, {

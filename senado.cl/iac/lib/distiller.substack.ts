@@ -5,14 +5,16 @@ import ProyectoDistillerSubStack from "./distiller/proyecto.distiller.substack";
 import {Architecture, Code, LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda";
 import ParlamentarioImagenDistillerSubStack from "./distiller/parlamentario-imagen.distiller.subStack";
 import {Queue} from "aws-cdk-lib/aws-sqs";
+import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
   parlamentarioImagenQueue: Queue
+  proyectosTable: Table
 }
 
 export default class DistillerSubstack extends NestedStack {
-  constructor(scope: Construct, id: string, {bucket, parlamentarioImagenQueue, ...props}: Props) {
+  constructor(scope: Construct, id: string, {bucket, parlamentarioImagenQueue, proyectosTable, ...props}: Props) {
     super(scope, id, props);
 
     const modelLy = new LayerVersion(this, `${id}-ModelLy`, {
@@ -39,7 +41,11 @@ export default class DistillerSubstack extends NestedStack {
 
     const layers = [modelLy, distillerLy];
 
-    new ProyectoDistillerSubStack(this, `${id}-proyecto`, {bucket, layers});
-    new ParlamentarioImagenDistillerSubStack(this,`${id}-parlamentario-imagen`, {bucket, parlamentarioImagenQueue, layers});
+    new ProyectoDistillerSubStack(this, `${id}-proyecto`, {
+      bucket, layers,
+    });
+    new ParlamentarioImagenDistillerSubStack(this,`${id}-parlamentario-imagen`, {
+      bucket, parlamentarioImagenQueue, layers, proyectosTable,
+    });
   }
 }

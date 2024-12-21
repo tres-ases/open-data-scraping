@@ -2,7 +2,7 @@ import {NestedStack, RemovalPolicy} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {AttributeType, BillingMode, Table} from "aws-cdk-lib/aws-dynamodb";
 
-export default class TablesScraperSubStack extends NestedStack {
+export default class TablesSubStack extends NestedStack {
   readonly legislaturas: Table;
   readonly sesiones: Table;
   readonly parlamentarios: Table;

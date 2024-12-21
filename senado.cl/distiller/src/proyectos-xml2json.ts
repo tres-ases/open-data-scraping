@@ -1,9 +1,11 @@
 import {Logger} from "@aws-lambda-powertools/logger";
 import type {LambdaInterface} from "@aws-lambda-powertools/commons/types";
 import {Tracer} from '@aws-lambda-powertools/tracer';
-import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {DynamoDBDocumentClient, PutCommand} from "@aws-sdk/lib-dynamodb";
 import {S3Event} from "aws-lambda";
 import * as cheerio from "cheerio";
+import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 
 const serviceName = 'ProyectosExtractSaveRawFromQueue';
 const logger = new Logger({
@@ -13,6 +15,8 @@ const logger = new Logger({
 const tracer = new Tracer({serviceName});
 
 const s3Client = tracer.captureAWSv3Client(new S3Client({}));
+const ddbClient = tracer.captureAWSv3Client(new DynamoDBClient({}));
+const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 export class Xml2Json implements LambdaInterface {
 
@@ -20,14 +24,21 @@ export class Xml2Json implements LambdaInterface {
   public async handler(event: S3Event, _context: any) {
     logger.info('Ejecutando Xml2Json', {event});
     for (const {s3: {bucket, object}} of event.Records) {
-      const bucketName = bucket.name, key = decodeURIComponent(object.key), newKey = key.replace('raw', 'dtl');
-      logger.appendKeys({bucketName, key, newKey});
+      const key = decodeURIComponent(object.key);
+      const boletin = key.match(/boletin=(\d+)/)![1];
+      logger.appendKeys({bucketName: bucket.name, key, boletin});
       const xml = await this.readFile(bucket.name, key)
-      const json = this.transform(xml);
-      logger.debug('XML transformado', {json});
+      const info = this.transform(xml);
+      logger.debug('XML transformado', {json: info});
 
-      await this.saveFile(json, bucket.name, newKey);
-      logger.info('Archivo generado');
+      await docClient.send(new PutCommand({
+        TableName: process.env.PROYECTOS_TABLE as string,
+        Item: {
+          boletin,
+          info,
+          fechaModificacion: new Date().toISOString()
+        },
+      }));
       logger.removeKeys(['bucketName', 'key'])
     }
   }
@@ -39,16 +50,6 @@ export class Xml2Json implements LambdaInterface {
       Key: key
     }));
     return await response.Body!.transformToString();
-  }
-
-  @tracer.captureMethod()
-  public async saveFile(content: any, bucket: string, key: string) {
-    await s3Client.send(new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: JSON.stringify(content),
-      ContentType: 'application/json'
-    }));
   }
 
   @tracer.captureMethod()
