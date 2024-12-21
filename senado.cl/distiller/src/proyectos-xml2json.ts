@@ -9,7 +9,7 @@ import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 
 const serviceName = 'ProyectosExtractSaveRawFromQueue';
 const logger = new Logger({
-  logLevel: 'INFO',
+  logLevel: 'DEBUG',
   serviceName
 });
 const tracer = new Tracer({serviceName});
@@ -28,7 +28,8 @@ export class Xml2Json implements LambdaInterface {
       const boletin = key.match(/boletin=(\d+)/)![1];
       logger.appendKeys({bucketName: bucket.name, key, boletin});
       const xml = await this.readFile(bucket.name, key)
-      const info = this.transform(xml);
+      logger.debug('XML', {xml});
+      const info = await this.transform(xml);
       logger.debug('XML transformado', {json: info});
 
       await docClient.send(new PutCommand({
@@ -53,7 +54,7 @@ export class Xml2Json implements LambdaInterface {
   }
 
   @tracer.captureMethod()
-  public transform(xml: string) {
+  public async transform(xml: string) {
     const $ = cheerio.load(xml, {
       xml: {
         lowerCaseAttributeNames: true,
