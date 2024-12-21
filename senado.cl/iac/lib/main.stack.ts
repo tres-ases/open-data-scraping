@@ -28,9 +28,9 @@ export default class MainStack extends Stack {
       sesionesTable: tables.sesiones,
       parlamentariosTable: tables.parlamentarios,
     });
-    new DistillerSubstack(this, `${id}-distiller`, {
-      bucket, parlamentarioImagenQueue,
-      proyectosTable: tables.proyectos
-    });
+    //new DistillerSubstack(this, `${id}-distiller`, {
+    //  bucket, parlamentarioImagenQueue,
+    //  proyectosTable: tables.proyectos
+    //});
   }
 }

@@ -6,7 +6,7 @@ export default class TablesSubStack extends NestedStack {
   readonly legislaturas: Table;
   readonly sesiones: Table;
   readonly parlamentarios: Table;
-  readonly proyectos: Table;
+  //readonly proyectos: Table;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -45,14 +45,14 @@ export default class TablesSubStack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.proyectos = new Table(this, `${id}-proyectos-dyn`, {
-      tableName: 'senado-raw-proyectos',
-      partitionKey: {
-        name: 'boletin',
-        type: AttributeType.NUMBER,
-      },
-      billingMode: BillingMode.PAY_PER_REQUEST,
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
+    //this.proyectos = new Table(this, `${id}-proyectos-dyn`, {
+    //  tableName: 'senado-raw-proyectos',
+    //  partitionKey: {
+    //    name: 'boletin',
+    //    type: AttributeType.NUMBER,
+    //  },
+    //  billingMode: BillingMode.PAY_PER_REQUEST,
+    //  removalPolicy: RemovalPolicy.DESTROY,
+    //});
   }
 }
