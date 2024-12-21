@@ -3,7 +3,8 @@ import type {LambdaInterface} from "@aws-lambda-powertools/commons/types";
 import {Tracer} from '@aws-lambda-powertools/tracer';
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {SQSEvent} from "aws-lambda";
-import * as https from 'https';
+import axios from "axios";
+import {Readable} from "stream";
 
 const serviceName = 'ParlamentariosDownloadImageFromQueue';
 const logger = new Logger({
@@ -25,7 +26,7 @@ export class ImgDownload implements LambdaInterface {
   @tracer.captureLambdaHandler()
   public async handler(event: SQSEvent, _context: any) {
     logger.info('Ejecutando ImgDownload', {event});
-    for(const {body} of event.Records) {
+    for (const {body} of event.Records) {
       const data = JSON.parse(body) as Data;
       await this.downloadAndSaveImg(data)
     }
@@ -33,25 +34,23 @@ export class ImgDownload implements LambdaInterface {
 
   @tracer.captureMethod()
   public async downloadAndSaveImg({slug, tipo, url}: Data) {
-    const imageData = await this.downloadImage(url);
-    await s3Client.send(new PutObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
-      Key: `img/parlametarios/slug=${slug}/${tipo}.jpg`,
-      Body: imageData,
-      ContentType: 'image/jpeg'
-    }));
-  }
-
-  @tracer.captureMethod()
-  private downloadImage(url: string): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      https.get(url, (response) => {
-        const chunks: Uint8Array[] = [];
-        response.on('data', (chunk) => chunks.push(chunk));
-        response.on('end', () => resolve(Buffer.concat(chunks)));
-        response.on('error', (err) => reject(err));
-      });
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer',
+      timeout: 10000
     });
+    const buffer = Buffer.from(response.data);
+    const Key = `img/parlametarios/slug=${slug}/${tipo}.jpg`;
+
+    const putCommand = new PutObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key,
+      Body: Readable.from(buffer),
+      ContentType: 'image/jpeg',
+      ContentLength: buffer.length
+    });
+
+    await s3Client.send(putCommand);
+    console.log('File saved to S3', {Key});
   }
 }
 

@@ -28,6 +28,7 @@
     "@aws-lambda-powertools/tracer": "^2.10.0",
     "@odata-senado.cl/distiller-layer": "workspace:*",
     "@odata-senado.cl/model": "workspace:*",
+    "axios": "^1.7.9",
     "cheerio": "1.0.0"
   }
 }

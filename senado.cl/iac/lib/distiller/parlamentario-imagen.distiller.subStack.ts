@@ -20,7 +20,7 @@ export default class ParlamentarioImagenDistillerSubStack extends NestedStack {
     const lambda = new SenadoFunction(this, `${id}Fn`, {
       handler: 'parlamentarios-imgDownload.handler',
       layers,
-      timeout: 120,
+      timeout: 10,
       environment: {
         BUCKET_NAME: bucket.bucketName, // Variable de entorno con el nombre del bucket
       },

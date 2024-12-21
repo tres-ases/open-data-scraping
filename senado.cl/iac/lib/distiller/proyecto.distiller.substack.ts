@@ -18,7 +18,7 @@ export default class ProyectoDistillerSubStack extends NestedStack {
     const xml2jsonLambda = new SenadoFunction(this, `${id}Fn`, {
       handler: 'proyectos-xml2json.handler',
       layers,
-      timeout: 120,
+      timeout: 20,
     });
     bucket.grantReadWrite(xml2jsonLambda);
     bucket.addEventNotification(
