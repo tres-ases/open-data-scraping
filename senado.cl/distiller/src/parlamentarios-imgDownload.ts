@@ -14,15 +14,25 @@ const tracer = new Tracer({serviceName});
 
 const s3Client = tracer.captureAWSv3Client(new S3Client({}));
 
+interface Data {
+  slug: string
+  tipo: string
+  url: string
+}
+
 export class ImgDownload implements LambdaInterface {
 
   @tracer.captureLambdaHandler()
   public async handler(event: SQSEvent, _context: any) {
     logger.info('Ejecutando ImgDownload', {event});
+    for(const {body} of event.Records) {
+      const data = JSON.parse(body) as Data;
+      await this.downloadAndSaveImg(data)
+    }
   }
 
   @tracer.captureMethod()
-  public async downloadAndSaveImg(slug: string, url: string, tipo: string) {
+  public async downloadAndSaveImg({slug, tipo, url}: Data) {
     const imageData = await this.downloadImage(url);
     await s3Client.send(new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME,
