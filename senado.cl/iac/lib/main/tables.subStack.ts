@@ -6,8 +6,7 @@ export default class TablesSubStack extends NestedStack {
   readonly legislaturas: Table;
   readonly sesiones: Table;
   readonly parlamentarios: Table;
-  readonly asistencia: Table;
-  readonly votaciones: Table;
+  readonly proyectos: Table;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -46,7 +45,7 @@ export default class TablesSubStack extends NestedStack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.votaciones = new Table(this, `${id}-votaciones-dyn`, {
+    this.proyectos = new Table(this, `${id}-proyectos-dyn`, {
       tableName: 'senado-raw-proyectos',
       partitionKey: {
         name: 'boletin',
