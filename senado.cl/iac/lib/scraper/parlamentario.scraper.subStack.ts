@@ -60,10 +60,12 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
           effect: Effect.ALLOW,
           actions: [
             'logs:CreateLogDelivery',
+            'logs:CreateLogStream',
             'logs:GetLogDelivery',
             'logs:UpdateLogDelivery',
             'logs:DeleteLogDelivery',
             'logs:ListLogDeliveries',
+            'logs:PutLogEvents',
             'logs:PutResourcePolicy',
             'logs:DescribeResourcePolicies',
             'logs:DescribeLogGroups'
