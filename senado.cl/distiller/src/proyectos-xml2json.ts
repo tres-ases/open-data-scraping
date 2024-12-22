@@ -16,7 +16,11 @@ const tracer = new Tracer({serviceName});
 
 const s3Client = tracer.captureAWSv3Client(new S3Client({}));
 const ddbClient = tracer.captureAWSv3Client(new DynamoDBClient({}));
-const docClient = DynamoDBDocumentClient.from(ddbClient);
+const docClient = DynamoDBDocumentClient.from(ddbClient, {
+  marshallOptions: {
+    removeUndefinedValues: true
+  }
+});
 
 export class Xml2Json implements LambdaInterface {
 
