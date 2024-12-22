@@ -152,7 +152,7 @@
                   }
                 }
               },
-              "MaxConcurrency": 3,
+              "MaxConcurrency": 5,
               "End": true
             }
           }
