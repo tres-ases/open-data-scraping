@@ -2,7 +2,7 @@ import {Logger} from "@aws-lambda-powertools/logger";
 import type {LambdaInterface} from "@aws-lambda-powertools/commons/types";
 import {Tracer} from '@aws-lambda-powertools/tracer';
 import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import {DynamoDBDocumentClient, PutCommand} from "@aws-sdk/lib-dynamodb";
+import {DynamoDBDocumentClient, UpdateCommand} from "@aws-sdk/lib-dynamodb";
 import {S3Event} from "aws-lambda";
 import * as cheerio from "cheerio";
 import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
@@ -32,13 +32,16 @@ export class Xml2Json implements LambdaInterface {
       const info = await this.transform(xml);
       logger.debug('XML transformado', {json: info});
 
-      await docClient.send(new PutCommand({
+      await docClient.send(new UpdateCommand({
         TableName: process.env.PROYECTOS_TABLE as string,
-        Item: {
+        Key: {
           boletin: +boletin,
-          info,
-          fechaModificacion: new Date().toISOString()
         },
+        UpdateExpression: 'set info = :info, fechaModificacion = :fechaModificacion',
+        ExpressionAttributeValues: {
+          ':info': info,
+          ':fechaModificacion': new Date().toISOString()
+        }
       }));
       logger.removeKeys(['bucketName', 'key'])
     }
