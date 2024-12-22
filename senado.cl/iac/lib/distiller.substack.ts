@@ -42,10 +42,10 @@ export default class DistillerSubstack extends NestedStack {
     const layers = [modelLy, distillerLy];
 
     new ProyectoDistillerSubStack(this, `${id}-proyecto`, {
-      bucket, layers,
+      bucket, layers, proyectosTable
     });
     new ParlamentarioImagenDistillerSubStack(this,`${id}-parlamentario-imagen`, {
-      bucket, parlamentarioImagenQueue, layers, proyectosTable,
+      bucket, parlamentarioImagenQueue, layers,
     });
   }
 }

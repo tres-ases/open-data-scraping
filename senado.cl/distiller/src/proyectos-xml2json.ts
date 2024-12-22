@@ -35,7 +35,7 @@ export class Xml2Json implements LambdaInterface {
       await docClient.send(new PutCommand({
         TableName: process.env.PROYECTOS_TABLE as string,
         Item: {
-          boletin,
+          boletin: +boletin,
           info,
           fechaModificacion: new Date().toISOString()
         },
