@@ -19,6 +19,7 @@ export default class TablesSubStack extends NestedStack {
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true
     });
 
     this.sesiones = new Table(this, `${id}-sesiones-dyn`, {
@@ -33,6 +34,7 @@ export default class TablesSubStack extends NestedStack {
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true
     });
 
     this.parlamentarios = new Table(this, `${id}-parlamentarios-dyn`, {
@@ -43,6 +45,7 @@ export default class TablesSubStack extends NestedStack {
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true
     });
 
     this.proyectos = new Table(this, `${id}-proyectos-dyn`, {
@@ -53,6 +56,7 @@ export default class TablesSubStack extends NestedStack {
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true
     });
   }
 }
