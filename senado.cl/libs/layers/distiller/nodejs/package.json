@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "package": "rm -rf /tmp/distiller-layer && mkdir /tmp/distiller-layer && cp package.json /tmp/distiller-layer &&  -P && cp -rL node_modules node_modules2 && rm -rf node_modules && mv node_modules2 node_modules"
+    "package": "rm -rf /tmp/distiller-layer && mkdir /tmp/distiller-layer && cp package.json /tmp/distiller-layer && cp -rL node_modules node_modules2 && rm -rf node_modules && mv node_modules2 node_modules"
   },
   "keywords": [],
   "author": "",
