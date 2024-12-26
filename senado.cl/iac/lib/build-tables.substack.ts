@@ -12,11 +12,11 @@ export default class BuildTablesSubstack extends NestedStack {
   constructor(scope: Construct, id: string, {bucket, ...props}: Props) {
     super(scope, id, props);
 
-    const deleteFolderSubStack = new DeleteTableFolderSubStack(this, `${id}-deleteFolder`, {
+    const deleteFolderSubStack = new DeleteTableFolderSubStack(this, `${id}-delFolder`, {
       bucket
     });
 
-    new RecreateTablesSubStack(this, `${id}-recreateTable`, {
+    new RecreateTablesSubStack(this, `${id}-recTable`, {
       bucket, deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine
     });
   }

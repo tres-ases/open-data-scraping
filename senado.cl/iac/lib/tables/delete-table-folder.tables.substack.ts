@@ -63,7 +63,6 @@ export default class DeleteTableFolderSubStack extends NestedStack {
           ],
           resources: [`${bucket.bucketArn}/tables/*`],
         }),
-
       ]
     });
     smRole.attachInlinePolicy(smRolePolicy);
