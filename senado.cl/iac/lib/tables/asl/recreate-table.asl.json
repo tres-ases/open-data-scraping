@@ -1,0 +1,82 @@
+{
+  "QueryLanguage": "JSONata",
+  "Comment": "Para la eliminación y re creación de Tablas a partir de la información Raw",
+  "StartAt": "Assign variables",
+  "States": {
+    "Assign variables": {
+      "Type": "Pass",
+      "Next": "Parallel",
+      "Assign": {
+        "catalog": "AwsDataCatalog",
+        "database": "senado_cl",
+        "bucketName": "${bucket_name}",
+        "tableName": "{% $states.input.tableName %}",
+        "createQuery": "{% $states.input.createQuery %}"
+      }
+    },
+    "Parallel": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "Delete Table",
+          "States": {
+            "Delete Table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::athena:startQueryExecution",
+              "Arguments": {
+                "QueryString": "{% 'DROP TABLE `' & $tableName & '`;' %}",
+                "WorkGroup": "primary",
+                "QueryExecutionContext": {
+                  "Catalog": "{% $catalog %}",
+                  "Database": "{% $database %}"
+                },
+                "ResultConfiguration": {
+                  "OutputLocation": "{% 's3://' & $bucketName & '/athena-results/' %}"
+                }
+              },
+              "Next": "Delete S3 Table"
+            },
+            "Delete S3 Table": {
+              "Type": "Task",
+              "Arguments": {
+                "StateMachineArn": "${delete_table_folder_state_machine}",
+                "Input": {
+                  "tableName": "{% $tableName %}"
+                },
+                "Name": "{% 'table-' & $tableName & '-' & $millis() %}"
+              },
+              "Resource": "arn:aws:states:::aws-sdk:sfn:startSyncExecution",
+              "Next": "Create Table"
+            },
+            "Create Table": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+              "Arguments": {
+                "QueryString": "{% $createQuery %}",
+                "WorkGroup": "primary",
+                "QueryExecutionContext": {
+                  "Catalog": "{% $catalog %}",
+                  "Database": "{% $database %}"
+                },
+                "ResultConfiguration": {
+                  "OutputLocation": "{% 's3://' & $bucketName & '/athena-results/' %}"
+                }
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Pass",
+          "States": {
+            "Pass": {
+              "Type": "Pass",
+              "End": true
+            }
+          }
+        }
+      ],
+      "End": true
+    }
+  }
+}

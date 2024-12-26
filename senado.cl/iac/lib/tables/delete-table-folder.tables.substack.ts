@@ -10,7 +10,7 @@ interface Props extends NestedStackProps {
   bucket: Bucket
 }
 
-export default class DeleteFolderSubStack extends NestedStack {
+export default class DeleteTableFolderSubStack extends NestedStack {
   readonly stateMachine: CfnStateMachine;
 
   constructor(scope: Construct, id: string, {bucket}: Props) {
@@ -59,8 +59,9 @@ export default class DeleteFolderSubStack extends NestedStack {
           actions: [
             's3:ListBucket',
             's3:DeleteObject',
+            's3:DeleteFolder',
           ],
-          resources: [`${bucket.bucketArn}/*`],
+          resources: [`${bucket.bucketArn}/tables/*`],
         }),
 
       ]

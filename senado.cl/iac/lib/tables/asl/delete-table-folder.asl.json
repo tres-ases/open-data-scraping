@@ -7,15 +7,15 @@
       "Type": "Pass",
       "Next": "ListObjectsV2",
       "Assign": {
-        "bucket": "${bucket_name}",
-        "folder": "{% $states.input.folder %}"
+        "bucketName": "${bucket_name}",
+        "tableName": "{% $states.input.tableName %}"
       }
     },
     "ListObjectsV2": {
       "Type": "Task",
       "Arguments": {
-        "Bucket": "{% $bucket %}",
-        "Prefix": "{% $folder %}"
+        "Bucket": "{% $bucketName %}",
+        "Prefix": "{% 'tables/' & $tableName & '/' %}"
       },
       "Resource": "arn:aws:states:::aws-sdk:s3:listObjectsV2",
       "Next": "Assign keys",
@@ -44,7 +44,7 @@
     "DeleteObjects": {
       "Type": "Task",
       "Arguments": {
-        "Bucket": "{% $bucket %}",
+        "Bucket": "{% $bucketName %}",
         "Delete": {
           "Objects": "{% $states.input %}"
         }
