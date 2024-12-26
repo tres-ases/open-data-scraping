@@ -14,12 +14,12 @@
     "ts-jest": "^29.2.5"
   },
   "dependencies": {
-    "@types/node": "22.7.9",
-    "aws-cdk": "2.172.0",
-    "aws-cdk-lib": "2.172.0",
+    "@types/node": "22.10.2",
+    "aws-cdk": "2.173.3",
+    "aws-cdk-lib": "2.173.3",
     "constructs": "^10.0.0",
     "dotenv": "^16.4.7",
     "ts-node": "^10.9.2",
-    "typescript": "~5.6.3"
+    "typescript": "5.7.2"
   }
 }
