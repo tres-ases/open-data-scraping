@@ -22,12 +22,12 @@ export default class ScraperSubstack extends NestedStack {
   constructor(scope: Construct, id: string, {bucket, parlamentarioImagenQueue, legislaturasTable, sesionesTable, parlamentariosTable, ...props}: Props) {
     super(scope, id, props);
 
-    const parlamentarioQueue = new Queue(this, `${id}-parlamentario-queue`, {
+    const parlamentarioQueue = new Queue(this, `${id}-parl-queue`, {
       queueName: `${id}-parl-queue`,
       visibilityTimeout: Duration.minutes(15),
     });
 
-    const boletinQueue = new Queue(this, `${id}-proyecto-queue`, {
+    const boletinQueue = new Queue(this, `${id}-proy-queue`, {
       queueName: `${id}-proy-queue`,
       visibilityTimeout: Duration.minutes(15),
     });

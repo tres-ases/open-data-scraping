@@ -11,7 +11,7 @@ export default class TablesSubStack extends NestedStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this.legislaturas = new Table(this, `${id}-legislaturas-dyn`, {
+    this.legislaturas = new Table(this, `${id}-leg-dyn`, {
       tableName: 'senado-raw-legislaturas',
       partitionKey: {
         name: 'legId',
@@ -22,7 +22,7 @@ export default class TablesSubStack extends NestedStack {
       pointInTimeRecovery: true
     });
 
-    this.sesiones = new Table(this, `${id}-sesiones-dyn`, {
+    this.sesiones = new Table(this, `${id}-ses-dyn`, {
       tableName: 'senado-raw-sesiones',
       partitionKey: {
         name: 'legId',
@@ -37,7 +37,7 @@ export default class TablesSubStack extends NestedStack {
       pointInTimeRecovery: true
     });
 
-    this.parlamentarios = new Table(this, `${id}-parlamentarios-dyn`, {
+    this.parlamentarios = new Table(this, `${id}-parl-dyn`, {
       tableName: 'senado-raw-parlamentarios',
       partitionKey: {
         name: 'slug',
@@ -48,7 +48,7 @@ export default class TablesSubStack extends NestedStack {
       pointInTimeRecovery: true
     });
 
-    this.proyectos = new Table(this, `${id}-proyectos-dyn`, {
+    this.proyectos = new Table(this, `${id}-proy-dyn`, {
       tableName: 'senado-raw-proyectos',
       partitionKey: {
         name: 'boletin',
