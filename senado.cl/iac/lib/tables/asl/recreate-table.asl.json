@@ -50,7 +50,7 @@
             },
             "Create Table": {
               "Type": "Task",
-              "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+              "Resource": "arn:aws:states:::athena:startQueryExecution",
               "Arguments": {
                 "QueryString": "{% $createQuery %}",
                 "WorkGroup": "primary",
