@@ -73,7 +73,7 @@ export default class RecreateTablesSubStack extends NestedStack {
     });
     smRole.attachInlinePolicy(smRolePolicy);
 
-    const definition = fs.readFileSync('./lib/tables/asl/recreate-tables.asl.json', 'utf8');
+    const definition = fs.readFileSync('./lib/tables/asl/recreate-table.asl.json', 'utf8');
 
     this.stateMachine = new CfnStateMachine(this, `${id}-sm`, {
       roleArn: smRole.roleArn,

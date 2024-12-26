@@ -68,7 +68,7 @@ export default class DeleteTableFolderSubStack extends NestedStack {
     });
     smRole.attachInlinePolicy(smRolePolicy);
 
-    const definition = fs.readFileSync('./lib/tables/asl/delete-folder.asl.json', 'utf8');
+    const definition = fs.readFileSync('./lib/tables/asl/delete-table-folder.asl.json', 'utf8');
 
     this.stateMachine = new CfnStateMachine(this, `${id}-sm`, {
       roleArn: smRole.roleArn,
