@@ -1,4 +1,4 @@
-import {NestedStack, NestedStackProps} from "aws-cdk-lib";
+import {CfnElement, NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Construct} from "constructs";
 import ProyectoDistillerSubStack from "./distiller/proyecto.distiller.substack";
@@ -47,5 +47,16 @@ export default class DistillerSubstack extends NestedStack {
     new ParlamentarioImagenDistillerSubStack(this,`${id}-parlamentario-imagen`, {
       bucket, parlamentarioImagenQueue, layers,
     });
+  }
+
+  getLogicalId(element: CfnElement): string {
+    if (element.node.id.includes('NestedStackResource')) {
+      try {
+        return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
+      } catch (e) {
+
+      }
+    }
+    return super.getLogicalId(element)
   }
 }

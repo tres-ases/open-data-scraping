@@ -1,4 +1,4 @@
-import {Duration, RemovalPolicy, Stack, StackProps} from "aws-cdk-lib";
+import {CfnElement, Duration, RemovalPolicy, Stack, StackProps} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import ScraperSubstack from "./scraper.substack";
@@ -36,5 +36,16 @@ export default class MainStack extends Stack {
     new BuildTablesSubstack(this, `${id}-buildTables`, {
       bucket
     });
+  }
+
+  getLogicalId(element: CfnElement): string {
+    if (element.node.id.includes('NestedStackResource')) {
+      try {
+        return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
+      } catch (e) {
+
+      }
+    }
+    return super.getLogicalId(element)
   }
 }

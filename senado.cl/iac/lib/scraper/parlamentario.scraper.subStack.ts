@@ -1,4 +1,4 @@
-import {CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
+import {CfnElement, CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {Connection} from "aws-cdk-lib/aws-events";
 import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
@@ -158,5 +158,16 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
     new CfnOutput(this, '${parlamentario_imagen_queue}', {
       value: parlamentarioImagenQueue.queueArn,
     });
+  }
+
+  getLogicalId(element: CfnElement): string {
+    if (element.node.id.includes('NestedStackResource')) {
+      try {
+        return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
+      } catch (e) {
+
+      }
+    }
+    return super.getLogicalId(element)
   }
 }

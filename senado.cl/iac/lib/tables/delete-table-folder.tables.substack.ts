@@ -1,4 +1,4 @@
-import {NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
+import {CfnElement, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
@@ -61,7 +61,9 @@ export default class DeleteTableFolderSubStack extends NestedStack {
             's3:DeleteObject',
             's3:DeleteFolder',
           ],
-          resources: [`${bucket.bucketArn}/tables/*`],
+          resources: [
+            `${bucket.bucketArn}/tables/*`,
+          ],
         }),
       ]
     });
@@ -90,5 +92,16 @@ export default class DeleteTableFolderSubStack extends NestedStack {
         level: 'ALL',
       }
     });
+  }
+
+  getLogicalId(element: CfnElement): string {
+    if (element.node.id.includes('NestedStackResource')) {
+      try {
+        return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
+      } catch (e) {
+
+      }
+    }
+    return super.getLogicalId(element)
   }
 }

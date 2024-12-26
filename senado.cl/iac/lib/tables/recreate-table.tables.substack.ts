@@ -1,4 +1,4 @@
-import {NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
+import {CfnElement, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
@@ -70,6 +70,54 @@ export default class RecreateTablesSubStack extends NestedStack {
           ],
           resources: ['*']
         }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            's3:GetObject',
+            's3:ListBucket',
+            's3:ListBucketMultipartUploads',
+            's3:ListMultipartUploadParts',
+            's3:AbortMultipartUpload',
+            's3:CreateBucket',
+            's3:PutObject'
+          ],
+          resources: [
+            `${bucket.bucketArn}/tables/*`,
+            `${bucket.bucketArn}/athena-results/*`,
+          ],
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            's3:GetBucketLocation',
+          ],
+          resources: ['arn:aws:s3:::*']
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'glue:CreateDatabase',
+            'glue:GetDatabase',
+            'glue:GetDatabases',
+            'glue:UpdateDatabase',
+            'glue:DeleteDatabase',
+            'glue:CreateTable',
+            'glue:UpdateTable',
+            'glue:GetTable',
+            'glue:GetTables',
+            'glue:DeleteTable',
+            'glue:BatchDeleteTable',
+            'glue:BatchCreatePartition',
+            'glue:CreatePartition',
+            'glue:UpdatePartition',
+            'glue:GetPartition',
+            'glue:GetPartitions',
+            'glue:BatchGetPartition',
+            'glue:DeletePartition',
+            'glue:BatchDeletePartition'
+          ],
+          resources: ['arn:aws:glue:::*']
+        }),
       ]
     });
     smRole.attachInlinePolicy(smRolePolicy);
@@ -98,5 +146,16 @@ export default class RecreateTablesSubStack extends NestedStack {
         level: 'ALL',
       }
     });
+  }
+
+  getLogicalId(element: CfnElement): string {
+    if (element.node.id.includes('NestedStackResource')) {
+      try {
+        return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
+      } catch (e) {
+
+      }
+    }
+    return super.getLogicalId(element)
   }
 }
