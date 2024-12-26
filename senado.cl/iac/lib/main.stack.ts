@@ -33,9 +33,9 @@ export default class MainStack extends Stack {
       bucket, parlamentarioImagenQueue,
       proyectosTable: tables.proyectos
     });
-    new BuildTablesSubstack(this, `${id}-bldTables`, {
-      bucket
-    });
+    //new BuildTablesSubstack(this, `${id}-bldTables`, {
+    //  bucket
+    //});
   }
 
   getLogicalId(element: CfnElement): string {
