@@ -23,12 +23,12 @@ export default class ScraperSubstack extends NestedStack {
     super(scope, id, props);
 
     const parlamentarioQueue = new Queue(this, `${id}-parlamentario-queue`, {
-      queueName: `${id}-parlamentario-queue`,
+      queueName: `${id}-parl-queue`,
       visibilityTimeout: Duration.minutes(15),
     });
 
     const boletinQueue = new Queue(this, `${id}-proyecto-queue`, {
-      queueName: `${id}-proyecto-queue`,
+      queueName: `${id}-proy-queue`,
       visibilityTimeout: Duration.minutes(15),
     });
 
@@ -37,24 +37,24 @@ export default class ScraperSubstack extends NestedStack {
       authorization: Authorization.apiKey('API-KEY', SecretValue.unsafePlainText('DUMMY'))
     });
 
-    new LegislaturasScraperSubStack(this, `${id}-legislaturas`, {
+    new LegislaturasScraperSubStack(this, `${id}-legs`, {
       connection, legislaturasTable
     });
 
-    const sesionSubStack = new SesionScraperSubStack(this, `${id}-sesion`, {
+    const sesionSubStack = new SesionScraperSubStack(this, `${id}-ses`, {
       connection, parlamentarioQueue, boletinQueue, sesionesTable
     });
 
-    new LegislaturaSubStack(this, `${id}-legislatura`, {
+    new LegislaturaSubStack(this, `${id}-leg`, {
       connection, legislaturasTable, sesionesTable,
       sesionStateMachine: sesionSubStack.stateMachine,
     });
 
-    new ParlamentarioSubStack(this, `${id}-parlamentario`, {
+    new ParlamentarioSubStack(this, `${id}-parl`, {
       connection, parlamentarioQueue, parlamentarioImagenQueue, parlamentariosTable,
     });
 
-    new ProyectoSubStack(this, `${id}-proyecto`, {
+    new ProyectoSubStack(this, `${id}-proy`, {
       bucket, connection, boletinQueue
     });
   }

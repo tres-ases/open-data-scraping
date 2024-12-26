@@ -6,6 +6,6 @@ import MainStack from "../lib/main.stack";
 
 const app = new cdk.App();
 
-new MainStack(app, 'SenadoCl', {
+new MainStack(app, 'SenCl', {
   env: {account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION},
 });

@@ -28,7 +28,7 @@ export default class DistillerSubstack extends NestedStack {
       ]
     });
 
-    const distillerLy = new LayerVersion(this, `${id}-DistillerLy`, {
+    const distillerLy = new LayerVersion(this, `${id}-DistLy`, {
       layerVersionName: `${id}-DistillerLy`,
       compatibleRuntimes: [
         Runtime.NODEJS_20_X
@@ -41,10 +41,10 @@ export default class DistillerSubstack extends NestedStack {
 
     const layers = [modelLy, distillerLy];
 
-    new ProyectoDistillerSubStack(this, `${id}-proyecto`, {
+    new ProyectoDistillerSubStack(this, `${id}-proy`, {
       bucket, layers, proyectosTable
     });
-    new ParlamentarioImagenDistillerSubStack(this,`${id}-parlamentario-imagen`, {
+    new ParlamentarioImagenDistillerSubStack(this,`${id}-parl-img`, {
       bucket, parlamentarioImagenQueue, layers,
     });
   }

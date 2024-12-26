@@ -27,7 +27,7 @@ export default class SesionScraperSubStack extends NestedStack {
       retention: RetentionDays.THREE_MONTHS
     });
 
-    const smRole = new Role(this, `${id}-role`, {
+    const smRole = new Role(this, `${id}-smRole`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
     const smRolePolicy = new Policy(this, `${id}-smPolicy`, {

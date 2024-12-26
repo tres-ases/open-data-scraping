@@ -16,24 +16,24 @@ export default class MainStack extends Stack {
       removalPolicy: RemovalPolicy.RETAIN
     });
 
-    const parlamentarioImagenQueue = new Queue(this, `${id}-parlamentario-imagen-queue`, {
-      queueName: `${id}-parlamentario-imagen-queue`,
+    const parlamentarioImagenQueue = new Queue(this, `${id}-parl-img-queue`, {
+      queueName: `${id}-parl-img-queue`,
       visibilityTimeout: Duration.minutes(15),
     });
 
     const tables = new TablesSubStack(this, `${id}-model`);
 
-    new ScraperSubstack(this, `${id}-scraper`, {
+    new ScraperSubstack(this, `${id}-scrap`, {
       bucket, parlamentarioImagenQueue,
       legislaturasTable: tables.legislaturas,
       sesionesTable: tables.sesiones,
       parlamentariosTable: tables.parlamentarios,
     });
-    new DistillerSubstack(this, `${id}-distiller`, {
+    new DistillerSubstack(this, `${id}-dist`, {
       bucket, parlamentarioImagenQueue,
       proyectosTable: tables.proyectos
     });
-    new BuildTablesSubstack(this, `${id}-buildTables`, {
+    new BuildTablesSubstack(this, `${id}-bldTables`, {
       bucket
     });
   }
