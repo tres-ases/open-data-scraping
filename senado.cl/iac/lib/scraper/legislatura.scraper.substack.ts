@@ -28,7 +28,7 @@ export default class LegislaturaScraperSubStack extends NestedStack {
     const smRole = new Role(this, `${id}-role`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
-    const smRolePolicy = new Policy(this, 'smPolicy', {
+    const smRolePolicy = new Policy(this, `${id}-smPolicy`, {
       policyName: `${id}-smPolicy`,
       statements: [
         new PolicyStatement({
@@ -63,6 +63,16 @@ export default class LegislaturaScraperSubStack extends NestedStack {
             'logs:PutResourcePolicy',
             'logs:DescribeResourcePolicies',
             'logs:DescribeLogGroups'
+          ],
+          resources: ['*'],
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'xray:PutTraceSegments',
+            'xray:PutTelemetryRecords',
+            'xray:GetSamplingRules',
+            'xray:GetSamplingTargets'
           ],
           resources: ['*'],
         }),

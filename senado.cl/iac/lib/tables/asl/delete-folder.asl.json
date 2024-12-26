@@ -1,0 +1,56 @@
+{
+  "QueryLanguage": "JSONata",
+  "Comment": "A description of my state machine",
+  "StartAt": "Assign bucket & key",
+  "States": {
+    "Assign bucket & key": {
+      "Type": "Pass",
+      "Next": "ListObjectsV2",
+      "Assign": {
+        "bucket": "${bucket_name}",
+        "folder": "{% $states.input.folder %}"
+      }
+    },
+    "ListObjectsV2": {
+      "Type": "Task",
+      "Arguments": {
+        "Bucket": "{% $bucket %}",
+        "Prefix": "{% $folder %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:s3:listObjectsV2",
+      "Next": "Assign keys",
+      "Output": "{% $states.result.KeyCount = 0 ? [] : $states.result.Contents[].{ \"Key\": Key } %}"
+    },
+    "Assign keys": {
+      "Type": "Pass",
+      "Next": "¿Any files to delete?",
+      "Assign": {
+        "keys": "{% $states.input %}"
+      }
+    },
+    "¿Any files to delete?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Next": "DeleteObjects",
+          "Condition": "{% $count($keys) > 0 %}"
+        }
+      ],
+      "Default": "Nothing to do"
+    },
+    "Nothing to do": {
+      "Type": "Succeed"
+    },
+    "DeleteObjects": {
+      "Type": "Task",
+      "Arguments": {
+        "Bucket": "{% $bucket %}",
+        "Delete": {
+          "Objects": "{% $states.input %}"
+        }
+      },
+      "Resource": "arn:aws:states:::aws-sdk:s3:deleteObjects",
+      "End": true
+    }
+  }
+}

@@ -1,20 +1,19 @@
-import {CfnOutput, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
-import {Connection} from "aws-cdk-lib/aws-events";
-import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
+import {NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
-import {Table} from "aws-cdk-lib/aws-dynamodb";
+import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
+import {Bucket} from "aws-cdk-lib/aws-s3";
 
 interface Props extends NestedStackProps {
-  connection: Connection
-  legislaturasTable: Table
+  bucket: Bucket
 }
 
-export default class LegislaturasScraperSubStack extends NestedStack {
+export default class DeleteFolderSubStack extends NestedStack {
+  readonly stateMachine: CfnStateMachine;
 
-  constructor(scope: Construct, id: string, {connection, legislaturasTable}: Props) {
+  constructor(scope: Construct, id: string, {bucket}: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -29,21 +28,6 @@ export default class LegislaturasScraperSubStack extends NestedStack {
     const smRolePolicy = new Policy(this, `${id}-smPolicy`, {
       policyName: `${id}-smPolicy`,
       statements: [
-        new PolicyStatement({
-          sid: 'RetrieveConnectionCredentials',
-          effect: Effect.ALLOW,
-          actions: ["events:RetrieveConnectionCredentials"],
-          resources: [connection.connectionArn]
-        }),
-        new PolicyStatement({
-          sid: 'GetAndDescribeSecretValueForConnection',
-          effect: Effect.ALLOW,
-          actions: [
-            "secretsmanager:GetSecretValue",
-            "secretsmanager:DescribeSecret"
-          ],
-          resources: [connection.connectionSecretArn]
-        }),
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
@@ -73,31 +57,25 @@ export default class LegislaturasScraperSubStack extends NestedStack {
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
-            'dynamodb:PutItem',
-            'dynamodb:UpdateItem',
+            's3:ListBucket',
+            's3:DeleteObject',
           ],
-          resources: [legislaturasTable.tableArn]
+          resources: [`${bucket.bucketArn}/*`],
         }),
-        new PolicyStatement({
-          sid: 'InvokeHttpEndpoint',
-          effect: Effect.ALLOW,
-          actions: ["states:InvokeHTTPEndpoint"],
-          resources: ['*']
-        })
-      ],
+
+      ]
     });
     smRole.attachInlinePolicy(smRolePolicy);
 
-    let definition = fs.readFileSync('./lib/scraper/asl/legislaturas.asl.json', 'utf8');
+    const definition = fs.readFileSync('./lib/tables/asl/delete-folder.asl.json', 'utf8');
 
-    new CfnStateMachine(this, `${id}-sm`, {
+    this.stateMachine = new CfnStateMachine(this, `${id}-sm`, {
       roleArn: smRole.roleArn,
       definitionString: definition,
-      definitionSubstitutions: {
-        events_connection_arn: connection.connectionArn,
-        legislaturas_table_name: legislaturasTable.tableName,
-      },
       stateMachineName: `${id}-sm`,
+      definitionSubstitutions: {
+        bucket_name: bucket.bucketName
+      },
       stateMachineType: StateMachineType.EXPRESS,
       tracingConfiguration: {
         enabled: true
@@ -106,19 +84,11 @@ export default class LegislaturasScraperSubStack extends NestedStack {
         destinations: [{
           cloudWatchLogsLogGroup: {
             logGroupArn: logGroup.logGroupArn
-          },
+          }
         }],
         includeExecutionData: true,
         level: 'ALL',
       }
-    });
-
-
-    new CfnOutput(this, '${events_connection_arn}', {
-      value: connection.connectionArn,
-    });
-    new CfnOutput(this, '${legislaturas_table_name}', {
-      value: legislaturasTable.tableName,
     });
   }
 }

@@ -5,6 +5,7 @@ import ScraperSubstack from "./scraper.substack";
 import DistillerSubstack from "./distiller.substack";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import TablesSubStack from "./main/tables.subStack";
+import BuildTablesSubstack from "./build-tables.substack";
 
 export default class MainStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -31,6 +32,9 @@ export default class MainStack extends Stack {
     new DistillerSubstack(this, `${id}-distiller`, {
       bucket, parlamentarioImagenQueue,
       proyectosTable: tables.proyectos
+    });
+    new BuildTablesSubstack(this, `${id}-buildTables`, {
+      bucket
     });
   }
 }
