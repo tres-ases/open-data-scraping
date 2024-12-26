@@ -56,6 +56,7 @@ export default class RecreateTablesSubStack extends NestedStack {
           resources: ['*'],
         }),
         new PolicyStatement({
+          effect: Effect.ALLOW,
           actions: ['states:StartSyncExecution'],
           resources: [deleteTableFolderStateMachine.attrArn]
         }),

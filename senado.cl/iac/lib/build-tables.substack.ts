@@ -2,7 +2,6 @@ import {NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Construct} from "constructs";
 import DeleteTableFolderSubStack from "./tables/delete-table-folder.tables.substack";
-import RecreateTablesSubStack from "./tables/recreate-table.tables.substack";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
@@ -16,8 +15,8 @@ export default class BuildTablesSubstack extends NestedStack {
       bucket
     });
 
-    new RecreateTablesSubStack(this, `${id}-recreateTable`, {
-      bucket, deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine
-    });
+    //new RecreateTablesSubStack(this, `${id}-recreateTable`, {
+    //  bucket, deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine
+    //});
   }
 }
