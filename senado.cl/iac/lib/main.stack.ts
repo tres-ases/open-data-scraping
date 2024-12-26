@@ -29,13 +29,13 @@ export default class MainStack extends Stack {
       sesionesTable: tables.sesiones,
       parlamentariosTable: tables.parlamentarios,
     });
-    //new DistillerSubstack(this, `${id}-dist`, {
-    //  bucket, parlamentarioImagenQueue,
-    //  proyectosTable: tables.proyectos
-    //});
-    //new BuildTablesSubstack(this, `${id}-bldTables`, {
-    //  bucket
-    //});
+    new DistillerSubstack(this, `${id}-dist`, {
+      bucket, parlamentarioImagenQueue,
+      proyectosTable: tables.proyectos
+    });
+    new BuildTablesSubstack(this, `${id}-bldTables`, {
+      bucket
+    });
   }
 
   getLogicalId(element: CfnElement): string {
