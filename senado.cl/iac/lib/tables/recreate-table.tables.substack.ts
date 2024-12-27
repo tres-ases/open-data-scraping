@@ -68,6 +68,46 @@ export default class RecreateTablesSubStack extends NestedStack {
             'athena:getQueryExecution',
             'athena:getDataCatalog'
           ],
+          resources: [
+            'arn:aws:athena:${this.region}:${this.account}:workgroup/*',
+            'arn:aws:athena:${this.region}:${this.account}:datacatalog/*'
+          ]
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'glue:CreateDatabase',
+            'glue:GetDatabase',
+            'glue:GetDatabases',
+            'glue:UpdateDatabase',
+            'glue:DeleteDatabase',
+            'glue:CreateTable',
+            'glue:UpdateTable',
+            'glue:GetTable',
+            'glue:GetTables',
+            'glue:DeleteTable',
+            'glue:BatchDeleteTable',
+            'glue:BatchCreatePartition',
+            'glue:CreatePartition',
+            'glue:UpdatePartition',
+            'glue:GetPartition',
+            'glue:GetPartitions',
+            'glue:BatchGetPartition',
+            'glue:DeletePartition',
+            'glue:BatchDeletePartition'
+          ],
+          resources: [
+            `arn:aws:glue:${this.region}:${this.account}:catalog`,
+            `arn:aws:glue:${this.region}:${this.account}:database/*`,
+            `arn:aws:glue:${this.region}:${this.account}:table/*`,
+            `arn:aws:glue:${this.region}:${this.account}:userDefinedFunction/*`
+          ]
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'lakeformation:GetDataAccess'
+          ],
           resources: ['*']
         }),
         new PolicyStatement({
@@ -89,7 +129,7 @@ export default class RecreateTablesSubStack extends NestedStack {
           actions: [
             's3:ListBucket',
           ],
-          resources: [bucket.bucketArn],
+          resources: ['arn:aws:s3:::*'],
         }),
         new PolicyStatement({
           effect: Effect.ALLOW,
