@@ -74,11 +74,9 @@ export default class RecreateTablesSubStack extends NestedStack {
           effect: Effect.ALLOW,
           actions: [
             's3:GetObject',
-            's3:ListBucket',
             's3:ListBucketMultipartUploads',
             's3:ListMultipartUploadParts',
             's3:AbortMultipartUpload',
-            's3:CreateBucket',
             's3:PutObject'
           ],
           resources: [
@@ -90,9 +88,8 @@ export default class RecreateTablesSubStack extends NestedStack {
           effect: Effect.ALLOW,
           actions: [
             's3:ListBucket',
-            's3:CreateBucket',
           ],
-          resources: ['*'],
+          resources: [bucket.bucketArn],
         }),
         new PolicyStatement({
           effect: Effect.ALLOW,
