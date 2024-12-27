@@ -88,8 +88,8 @@ export default class RecreateTablesSubStack extends NestedStack {
             'athena:getDataCatalog'
           ],
           resources: [
-            'arn:aws:athena:${this.region}:${this.account}:workgroup/*',
-            'arn:aws:athena:${this.region}:${this.account}:datacatalog/*'
+            `arn:aws:athena:${this.region}:${this.account}:workgroup/*`,
+            `arn:aws:athena:${this.region}:${this.account}:datacatalog/*`
           ]
         }),
         new PolicyStatement({
