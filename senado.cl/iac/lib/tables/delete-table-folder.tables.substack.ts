@@ -57,13 +57,17 @@ export default class DeleteTableFolderSubStack extends NestedStack {
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
-            's3:ListBucket',
             's3:DeleteObject',
             's3:DeleteFolder',
           ],
-          resources: [
-            `${bucket.bucketArn}/tables/*`,
+          resources: [`${bucket.bucketArn}/tables/*`],
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            's3:ListBucket',
           ],
+          resources: [bucket.bucketArn],
         }),
       ]
     });
