@@ -5,16 +5,20 @@ import * as fs from "fs";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {Bucket} from "aws-cdk-lib/aws-s3";
+import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
   deleteTableFolderStateMachine: CfnStateMachine
+  dynamoTables: Table[]
 }
 
 export default class RecreateTablesSubStack extends NestedStack {
   readonly stateMachine: CfnStateMachine;
 
-  constructor(scope: Construct, id: string, {bucket, deleteTableFolderStateMachine}: Props) {
+  constructor(scope: Construct, id: string, {
+    bucket, deleteTableFolderStateMachine, dynamoTables
+  }: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -44,6 +48,21 @@ export default class RecreateTablesSubStack extends NestedStack {
             'logs:DescribeLogGroups'
           ],
           resources: ['*'],
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'dynamodb:BatchGetItem',
+            'dynamodb:Describe*',
+            'dynamodb:List*',
+            'dynamodb:GetAbacStatus',
+            'dynamodb:GetItem',
+            'dynamodb:GetResourcePolicy',
+            'dynamodb:Query',
+            'dynamodb:Scan',
+            'dynamodb:PartiQLSelect',
+          ],
+          resources: dynamoTables.map(t => t.tableArn),
         }),
         new PolicyStatement({
           effect: Effect.ALLOW,
@@ -106,9 +125,22 @@ export default class RecreateTablesSubStack extends NestedStack {
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
-            'lakeformation:GetDataAccess'
+            'lakeformation:GetDataAccess',
+            'lambda:*'
           ],
           resources: ['*']
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'iam:PassRole'
+          ],
+          resources: ['*'],
+          conditions: {
+            StringEquals: {
+              'iam:PassedToService': 'lambda.amazonaws.com'
+            }
+          }
         }),
         new PolicyStatement({
           effect: Effect.ALLOW,

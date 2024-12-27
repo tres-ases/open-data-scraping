@@ -3,13 +3,20 @@ import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Construct} from "constructs";
 import DeleteTableFolderSubStack from "./tables/delete-table-folder.tables.substack";
 import RecreateTablesSubStack from "./tables/recreate-table.tables.substack";
+import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
+  legislaturasTable: Table
+  sesionesTable: Table
+  parlamentariosTable: Table
+  proyectosTable: Table
 }
 
 export default class BuildTablesSubstack extends NestedStack {
-  constructor(scope: Construct, id: string, {bucket, ...props}: Props) {
+  constructor(scope: Construct, id: string, {
+    bucket, legislaturasTable, sesionesTable, parlamentariosTable, proyectosTable, ...props
+  }: Props) {
     super(scope, id, props);
 
     const deleteFolderSubStack = new DeleteTableFolderSubStack(this, `${id}-delFolder`, {
@@ -17,7 +24,9 @@ export default class BuildTablesSubstack extends NestedStack {
     });
 
     new RecreateTablesSubStack(this, `${id}-recTable`, {
-      bucket, deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine
+      bucket,
+      deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine,
+      dynamoTables: [sesionesTable, parlamentariosTable, proyectosTable]
     });
   }
 
