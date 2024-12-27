@@ -16,9 +16,9 @@ export default class BuildTablesSubstack extends NestedStack {
       bucket
     });
 
-    //new RecreateTablesSubStack(this, `${id}-recTable`, {
-    //  bucket, deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine
-    //});
+    new RecreateTablesSubStack(this, `${id}-recTable`, {
+      bucket, deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine
+    });
   }
 
   getLogicalId(element: CfnElement): string {
