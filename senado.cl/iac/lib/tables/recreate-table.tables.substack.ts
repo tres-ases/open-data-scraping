@@ -89,6 +89,14 @@ export default class RecreateTablesSubStack extends NestedStack {
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
+            's3:ListBucket',
+            's3:CreateBucket',
+          ],
+          resources: ['*'],
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
             's3:GetBucketLocation',
           ],
           resources: ['arn:aws:s3:::*']
