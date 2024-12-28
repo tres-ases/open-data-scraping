@@ -23,11 +23,11 @@ export default class BuildTablesSubstack extends NestedStack {
       bucket
     });
 
-    new RecreateTablesSubStack(this, `${id}-recTable`, {
-      bucket,
-      deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine,
-      dynamoTables: [sesionesTable, parlamentariosTable, proyectosTable]
-    });
+    //new RecreateTablesSubStack(this, `${id}-recTable`, {
+    //  bucket,
+    //  deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine,
+    //  dynamoTables: [sesionesTable, parlamentariosTable, proyectosTable]
+    //});
   }
 
   getLogicalId(element: CfnElement): string {
