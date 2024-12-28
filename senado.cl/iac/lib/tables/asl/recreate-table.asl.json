@@ -34,6 +34,14 @@
                   "OutputLocation": "{% 's3://' & $bucketName & '/athena-results/' %}"
                 }
               },
+              "Next": "Delete Table Result"
+            },
+            "Delete Table Result": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::athena:getQueryResults",
+              "Arguments": {
+                "QueryExecutionId": "{% $states.input.QueryExecutionId %}"
+              },
               "Next": "Delete S3 Table"
             },
             "Delete S3 Table": {
@@ -61,6 +69,14 @@
                 "ResultConfiguration": {
                   "OutputLocation": "{% 's3://' & $bucketName & '/athena-results/' %}"
                 }
+              },
+              "Next": "Create Table Result"
+            },
+            "Create Table Result": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::athena:getQueryResults",
+              "Arguments": {
+                "QueryExecutionId": "{% $states.input.QueryExecutionId %}"
               },
               "End": true
             }

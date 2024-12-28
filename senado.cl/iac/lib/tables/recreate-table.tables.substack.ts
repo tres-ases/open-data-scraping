@@ -85,7 +85,8 @@ export default class RecreateTablesSubStack extends NestedStack {
             'athena:startQueryExecution',
             'athena:stopQueryExecution',
             'athena:getQueryExecution',
-            'athena:getDataCatalog'
+            'athena:getDataCatalog',
+            'athena:GetQueryResults',
           ],
           resources: [
             `arn:aws:athena:${this.region}:${this.account}:workgroup/*`,
