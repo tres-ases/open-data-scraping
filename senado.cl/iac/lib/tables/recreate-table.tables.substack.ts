@@ -210,7 +210,7 @@ export default class RecreateTablesSubStack extends NestedStack {
         bucket_name: bucket.bucketName,
         delete_table_folder_state_machine: deleteTableFolderStateMachine.attrArn
       },
-      stateMachineType: StateMachineType.EXPRESS,
+      stateMachineType: StateMachineType.STANDARD,
       tracingConfiguration: {
         enabled: true
       },
