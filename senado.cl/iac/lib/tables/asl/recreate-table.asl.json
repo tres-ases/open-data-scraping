@@ -5,7 +5,7 @@
   "States": {
     "Assign variables": {
       "Type": "Pass",
-      "Next": "Parallel",
+      "Next": "Delete Table",
       "Assign": {
         "catalog": "AwsDataCatalog",
         "database": "senado_cl",
@@ -14,84 +14,64 @@
         "createQuery": "{% $states.input.createQuery %}"
       }
     },
-    "Parallel": {
-      "Type": "Parallel",
-      "Branches": [
-        {
-          "StartAt": "Delete Table",
-          "States": {
-            "Delete Table": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::athena:startQueryExecution",
-              "Arguments": {
-                "QueryString": "{% 'DROP TABLE `' & $tableName & '`;' %}",
-                "WorkGroup": "primary",
-                "QueryExecutionContext": {
-                  "Catalog": "{% $catalog %}",
-                  "Database": "{% $database %}"
-                },
-                "ResultConfiguration": {
-                  "OutputLocation": "{% 's3://' & $bucketName & '/athena-results/' %}"
-                }
-              },
-              "Next": "Delete Table Result"
-            },
-            "Delete Table Result": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::athena:getQueryResults",
-              "Arguments": {
-                "QueryExecutionId": "{% $states.input.QueryExecutionId %}"
-              },
-              "Next": "Delete S3 Table"
-            },
-            "Delete S3 Table": {
-              "Type": "Task",
-              "Arguments": {
-                "StateMachineArn": "${delete_table_folder_state_machine}",
-                "Input": {
-                  "tableName": "{% $tableName %}"
-                },
-                "Name": "{% 'table-' & $tableName & '-' & $millis() %}"
-              },
-              "Resource": "arn:aws:states:::aws-sdk:sfn:startSyncExecution",
-              "Next": "Create Table"
-            },
-            "Create Table": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::athena:startQueryExecution",
-              "Arguments": {
-                "QueryString": "{% $createQuery %}",
-                "WorkGroup": "primary",
-                "QueryExecutionContext": {
-                  "Catalog": "{% $catalog %}",
-                  "Database": "{% $database %}"
-                },
-                "ResultConfiguration": {
-                  "OutputLocation": "{% 's3://' & $bucketName & '/athena-results/' %}"
-                }
-              },
-              "Next": "Create Table Result"
-            },
-            "Create Table Result": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::athena:getQueryResults",
-              "Arguments": {
-                "QueryExecutionId": "{% $states.input.QueryExecutionId %}"
-              },
-              "End": true
-            }
-          }
+    "Delete Table": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+      "Arguments": {
+        "QueryString": "{% 'DROP TABLE IF EXISTS `' & $tableName & '`;' %}",
+        "WorkGroup": "primary",
+        "QueryExecutionContext": {
+          "Catalog": "{% $catalog %}",
+          "Database": "{% $database %}"
         },
-        {
-          "StartAt": "Pass",
-          "States": {
-            "Pass": {
-              "Type": "Pass",
-              "End": true
-            }
-          }
+        "ResultConfiguration": {
+          "OutputLocation": "{% 's3://' & $bucketName & '/athena-results/' %}"
         }
-      ],
+      },
+      "Next": "Delete Table Result"
+    },
+    "Delete Table Result": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:getQueryResults",
+      "Arguments": {
+        "QueryExecutionId": "{% $states.input.QueryExecution.QueryExecutionId %}"
+      },
+      "Next": "Delete S3 Table"
+    },
+    "Delete S3 Table": {
+      "Type": "Task",
+      "Arguments": {
+        "StateMachineArn": "${delete_table_folder_state_machine}",
+        "Input": {
+          "tableName": "{% $tableName %}"
+        },
+        "Name": "{% 'table-' & $tableName & '-' & $millis() %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sfn:startSyncExecution",
+      "Next": "Create Table"
+    },
+    "Create Table": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+      "Arguments": {
+        "QueryString": "{% $createQuery %}",
+        "WorkGroup": "primary",
+        "QueryExecutionContext": {
+          "Catalog": "{% $catalog %}",
+          "Database": "{% $database %}"
+        },
+        "ResultConfiguration": {
+          "OutputLocation": "{% 's3://' & $bucketName & '/athena-results/' %}"
+        }
+      },
+      "Next": "Create Table Result"
+    },
+    "Create Table Result": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:getQueryResults",
+      "Arguments": {
+        "QueryExecutionId": "{% $states.input.QueryExecution.QueryExecutionId %}"
+      },
       "End": true
     }
   }
