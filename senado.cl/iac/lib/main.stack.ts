@@ -1,4 +1,4 @@
-import {CfnElement, Duration, RemovalPolicy, Stack, StackProps} from "aws-cdk-lib";
+import {Duration, RemovalPolicy, Stack, StackProps} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import ScraperSubstack from "./scraper.substack";
@@ -6,7 +6,6 @@ import DistillerSubstack from "./distiller.substack";
 import {Queue} from "aws-cdk-lib/aws-sqs";
 import TablesSubStack from "./main/tables.subStack";
 import BuildTablesSubstack from "./build-tables.substack";
-import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 export default class MainStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

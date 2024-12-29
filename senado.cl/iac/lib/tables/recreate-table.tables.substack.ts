@@ -21,7 +21,7 @@ export default class RecreateTablesSubStack extends NestedStack {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
-      logGroupName: `/aws/vendedlogs/states/${id}-sm`,
+      logGroupName: `/aws/SenCl/states/${id}-sm`,
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.THREE_MONTHS
     });
