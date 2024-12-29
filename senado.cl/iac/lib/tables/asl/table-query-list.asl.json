@@ -26,6 +26,7 @@
           },
           "Recreate Table": {
             "Type": "Task",
+            "Resource": "arn:aws:states:::states:startExecution.sync:2",
             "Arguments": {
               "StateMachineArn": "${recreate_table_state_machine}",
               "Input": {
@@ -34,7 +35,6 @@
               },
               "Name": "{% $table & '-' & $millis() %}"
             },
-            "Resource": "arn:aws:states:::aws-sdk:sfn:startSyncExecution",
             "End": true
           }
         }
