@@ -4,6 +4,7 @@ import {Construct} from "constructs";
 import DeleteTableFolderSubStack from "./tables/delete-table-folder.tables.substack";
 import RecreateTablesSubStack from "./tables/recreate-table.tables.substack";
 import {Table} from "aws-cdk-lib/aws-dynamodb";
+import TableQueryListSubStack from "./tables/table-query-list.tables.substack";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
@@ -23,10 +24,14 @@ export default class BuildTablesSubstack extends NestedStack {
       bucket
     });
 
-    new RecreateTablesSubStack(this, `${id}-recTable`, {
+    const recreateTables = new RecreateTablesSubStack(this, `${id}-recTable`, {
       bucket,
       deleteTableFolderStateMachine: deleteFolderSubStack.stateMachine,
       dynamoTables: [sesionesTable, parlamentariosTable, proyectosTable]
+    });
+
+    new TableQueryListSubStack(this, `${id}-tableQueryList`, {
+      recreateTableStateMachine: recreateTables.stateMachine
     });
   }
 
