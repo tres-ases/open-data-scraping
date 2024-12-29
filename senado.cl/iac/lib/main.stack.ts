@@ -26,22 +26,22 @@ export default class MainStack extends Stack {
 
     const tables = new TablesSubStack(this, `${id}-model`);
 
-    //new ScraperSubstack(this, `${id}-scrap`, {
-    //  bucket, parlamentarioImagenQueue,
-    //  legislaturasTable: tables.legislaturas,
-    //  sesionesTable: tables.sesiones,
-    //  parlamentariosTable: tables.parlamentarios,
-    //});
-    //new DistillerSubstack(this, `${id}-dist`, {
-    //  bucket, parlamentarioImagenQueue,
-    //  proyectosTable: tables.proyectos
-    //});
-    //new BuildTablesSubstack(this, `${id}-tables`, {
-    //  bucket,
-    //  legislaturasTable: tables.legislaturas,
-    //  sesionesTable: tables.sesiones,
-    //  parlamentariosTable: tables.parlamentarios,
-    //  proyectosTable: tables.proyectos,
-    //});
+    new ScraperSubstack(this, `${id}-scrap`, {
+      bucket, parlamentarioImagenQueue,
+      legislaturasTable: tables.legislaturas,
+      sesionesTable: tables.sesiones,
+      parlamentariosTable: tables.parlamentarios,
+    });
+    new DistillerSubstack(this, `${id}-dist`, {
+      bucket, parlamentarioImagenQueue,
+      proyectosTable: tables.proyectos
+    });
+    new BuildTablesSubstack(this, `${id}-tables`, {
+      bucket,
+      legislaturasTable: tables.legislaturas,
+      sesionesTable: tables.sesiones,
+      parlamentariosTable: tables.parlamentarios,
+      proyectosTable: tables.proyectos,
+    });
   }
 }
