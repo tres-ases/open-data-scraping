@@ -34,13 +34,13 @@ export default class MainStack extends Stack {
       bucket, parlamentarioImagenQueue,
       proyectosTable: tables.proyectos
     });
-    //new BuildTablesSubstack(this, `${id}-bldTables`, {
-    //  bucket,
-    //  legislaturasTable: tables.legislaturas,
-    //  sesionesTable: tables.sesiones,
-    //  parlamentariosTable: tables.parlamentarios,
-    //  proyectosTable: tables.proyectos,
-    //});
+    new BuildTablesSubstack(this, `${id}-bldTables`, {
+      bucket,
+      legislaturasTable: tables.legislaturas,
+      sesionesTable: tables.sesiones,
+      parlamentariosTable: tables.parlamentarios,
+      proyectosTable: tables.proyectos,
+    });
   }
 
   getLogicalId(element: CfnElement): string {
