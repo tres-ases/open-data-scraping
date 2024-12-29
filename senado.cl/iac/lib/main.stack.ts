@@ -20,6 +20,7 @@ export default class MainStack extends Stack {
     const parlamentarioImagenQueue = new Queue(this, `${id}-parl-img-queue`, {
       queueName: `${id}-parl-img-queue`,
       visibilityTimeout: Duration.minutes(15),
+      contentBasedDeduplication: true,
     });
 
     const tables = new TablesSubStack(this, `${id}-model`);
