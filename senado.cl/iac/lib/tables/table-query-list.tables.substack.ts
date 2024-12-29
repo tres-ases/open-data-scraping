@@ -4,8 +4,6 @@ import {Construct} from "constructs";
 import * as fs from "fs";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Effect, Policy, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
-import {Bucket} from "aws-cdk-lib/aws-s3";
-import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   recreateTableStateMachine: CfnStateMachine
@@ -25,6 +23,7 @@ export default class TableQueryListSubStack extends NestedStack {
 
     const smRole = new Role(this, `${id}-smRole`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
+      roleName: `${id}-smRole`
     });
     const smRolePolicy = new Policy(this, `${id}-smPolicy`, {
       policyName: `${id}-smPolicy`,
