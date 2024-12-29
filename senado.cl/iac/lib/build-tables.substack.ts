@@ -30,7 +30,7 @@ export default class BuildTablesSubstack extends NestedStack {
       dynamoTables: [sesionesTable, parlamentariosTable, proyectosTable]
     });
 
-    new TableQueryListSubStack(this, `${id}-tableQueryList`, {
+    new TableQueryListSubStack(this, `${id}-tblQryList`, {
       recreateTableStateMachine: recreateTables.stateMachine
     });
   }
