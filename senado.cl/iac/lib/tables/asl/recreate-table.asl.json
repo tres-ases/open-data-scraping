@@ -9,7 +9,7 @@
       "Assign": {
         "catalog": "AwsDataCatalog",
         "database": "senado_cl",
-        "bucketName": "${bucket_name}",
+        "bucketName": "open-data-cl-bucket",
         "tableName": "{% $states.input.tableName %}",
         "createQuery": "{% $states.input.createQuery %}"
       }
@@ -36,6 +36,37 @@
       "Arguments": {
         "QueryExecutionId": "{% $states.input.QueryExecution.QueryExecutionId %}"
       },
+      "Next": "Listar Archivos a Borrar"
+    },
+    "Listar Archivos a Borrar": {
+      "Type": "Task",
+      "Arguments": {
+        "Bucket": "{% $bucketName %}",
+        "Prefix": "{% 'tables/' & $tableName & '/' %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:s3:listObjectsV2",
+      "Next": "Assign Keys",
+      "Output": "{% $states.result.KeyCount = 0 ? [] : $states.result.Contents[].{ \"Key\": Key } %}"
+    },
+    "Assign Keys": {
+      "Type": "Pass",
+      "Next": "¿Any files to delete?",
+      "Assign": {
+        "keys": "{% $states.input %}"
+      }
+    },
+    "¿Any files to delete?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Next": "DeleteObjects",
+          "Condition": "{% $count($keys) > 0 %}"
+        }
+      ],
+      "Default": "Nothing to do"
+    },
+    "Nothing to do": {
+      "Type": "Pass",
       "Next": "Delete S3 Table"
     },
     "Delete S3 Table": {
@@ -73,6 +104,22 @@
         "QueryExecutionId": "{% $states.input.QueryExecution.QueryExecutionId %}"
       },
       "End": true
+    },
+    "DeleteObjects": {
+      "Type": "Task",
+      "Arguments": {
+        "Bucket": "MyData",
+        "Delete": {
+          "Objects": [
+            {
+              "Key": "MyData"
+            }
+          ]
+        }
+      },
+      "Resource": "arn:aws:states:::aws-sdk:s3:deleteObjects",
+      "Next": "Delete S3 Table"
     }
-  }
+  },
+  "TimeoutSeconds": 300
 }

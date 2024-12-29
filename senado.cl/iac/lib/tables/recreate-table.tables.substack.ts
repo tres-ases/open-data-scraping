@@ -9,7 +9,6 @@ import {Table} from "aws-cdk-lib/aws-dynamodb";
 
 interface Props extends NestedStackProps {
   bucket: Bucket
-  deleteTableFolderStateMachine: CfnStateMachine
   dynamoTables: Table[]
 }
 
@@ -17,7 +16,7 @@ export default class RecreateTablesSubStack extends NestedStack {
   readonly stateMachine: CfnStateMachine;
 
   constructor(scope: Construct, id: string, {
-    bucket, deleteTableFolderStateMachine, dynamoTables
+    bucket, dynamoTables
   }: Props) {
     super(scope, id);
 
@@ -29,6 +28,7 @@ export default class RecreateTablesSubStack extends NestedStack {
 
     const smRole = new Role(this, `${id}-smRole`, {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
+      roleName: `${id}-smRole`
     });
     const smRolePolicy = new Policy(this, `${id}-smPolicy`, {
       policyName: `${id}-smPolicy`,
@@ -73,11 +73,6 @@ export default class RecreateTablesSubStack extends NestedStack {
             'xray:GetSamplingTargets'
           ],
           resources: ['*'],
-        }),
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: ['states:StartSyncExecution'],
-          resources: [deleteTableFolderStateMachine.attrArn]
         }),
         new PolicyStatement({
           effect: Effect.ALLOW,
@@ -160,9 +155,17 @@ export default class RecreateTablesSubStack extends NestedStack {
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: [
+            's3:DeleteObject',
+            's3:DeleteFolder',
+          ],
+          resources: [`${bucket.bucketArn}/tables/*`],
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
             's3:ListBucket',
           ],
-          resources: ['arn:aws:s3:::*'],
+          resources: [bucket.bucketArn],
         }),
         new PolicyStatement({
           effect: Effect.ALLOW,
@@ -208,9 +211,8 @@ export default class RecreateTablesSubStack extends NestedStack {
       stateMachineName: `${id}-sm`,
       definitionSubstitutions: {
         bucket_name: bucket.bucketName,
-        delete_table_folder_state_machine: deleteTableFolderStateMachine.attrArn
       },
-      stateMachineType: StateMachineType.STANDARD,
+      stateMachineType: StateMachineType.EXPRESS,
       tracingConfiguration: {
         enabled: true
       },
