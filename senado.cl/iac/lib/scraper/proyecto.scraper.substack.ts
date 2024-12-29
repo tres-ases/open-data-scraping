@@ -145,7 +145,7 @@ export default class ProyectoScraperSubStack extends NestedStack {
       target: sm.attrArn,
       targetParameters: {
         stepFunctionStateMachineParameters: {
-          invocationType: 'FIRE_AND_FORGET'
+          invocationType: 'REQUEST_RESPONSE'
         },
       },
     });

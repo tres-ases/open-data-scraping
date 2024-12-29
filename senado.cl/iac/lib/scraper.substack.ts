@@ -19,16 +19,22 @@ interface Props extends NestedStackProps {
 }
 
 export default class ScraperSubstack extends NestedStack {
-  constructor(scope: Construct, id: string, {bucket, parlamentarioImagenQueue, legislaturasTable, sesionesTable, parlamentariosTable, ...props}: Props) {
+  constructor(scope: Construct, id: string, {
+    bucket, parlamentarioImagenQueue, legislaturasTable, sesionesTable, parlamentariosTable, ...props
+  }: Props) {
     super(scope, id, props);
 
     const parlamentarioQueue = new Queue(this, `${id}-parl-queue`, {
-      queueName: `${id}-parl-queue`,
+      queueName: `${id}-parl-queue.fifo`,
+      fifo: true,
+      contentBasedDeduplication: true,
       visibilityTimeout: Duration.minutes(15),
     });
 
     const boletinQueue = new Queue(this, `${id}-proy-queue`, {
-      queueName: `${id}-proy-queue`,
+      queueName: `${id}-proy-queue.fifo`,
+      fifo: true,
+      contentBasedDeduplication: true,
       visibilityTimeout: Duration.minutes(15),
     });
 

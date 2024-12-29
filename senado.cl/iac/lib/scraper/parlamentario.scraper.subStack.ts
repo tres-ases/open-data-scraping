@@ -144,8 +144,9 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
       target: sm.attrArn,
       targetParameters: {
         stepFunctionStateMachineParameters: {
-          invocationType: 'FIRE_AND_FORGET'
+          invocationType: 'REQUEST_RESPONSE'
         },
+        inputTemplate: '{"Name": "Execution_<$.messages[0].body>", "Input": <$.messages>}'
       },
     });
 
