@@ -64,20 +64,20 @@ export default class TableQueryListSubStack extends NestedStack {
     });
     smRole.attachInlinePolicy(smRolePolicy);
 
-    const definition = fs.readFileSync('./lib/tables/asl/table-query-list.asl.json', 'utf8');
-
-    const tableQueries = [
+    const defJson = JSON.parse(
+      fs.readFileSync('./lib/tables/asl/table-query-list.asl.json', 'utf8')
+    );
+    defJson['States']['Table-Query List']['Output'] = [
       'table-proyectos'
     ].map(table => ({
       table, query: fs.readFileSync(`./lib/tables/query/${table}.sql`, 'utf8')
-    }))
+    }));
 
     new CfnStateMachine(this, `${id}-sm`, {
       roleArn: smRole.roleArn,
-      definitionString: definition,
+      definitionString: JSON.stringify(defJson),
       stateMachineName: `${id}-sm`,
       definitionSubstitutions: {
-        table_queries: JSON.stringify(tableQueries),
         recreate_table_state_machine: recreateTableStateMachine.attrArn
       },
       stateMachineType: StateMachineType.STANDARD,
