@@ -212,7 +212,7 @@ export default class RecreateTablesSubStack extends NestedStack {
       definitionSubstitutions: {
         bucket_name: bucket.bucketName,
       },
-      stateMachineType: StateMachineType.EXPRESS,
+      stateMachineType: StateMachineType.STANDARD,
       tracingConfiguration: {
         enabled: true
       },
