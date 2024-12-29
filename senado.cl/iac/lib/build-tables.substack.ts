@@ -28,15 +28,4 @@ export default class BuildTablesSubstack extends NestedStack {
       recreateTableStateMachine: recreateTables.stateMachine
     });
   }
-
-  getLogicalId(element: CfnElement): string {
-    if (element.node.id.includes('NestedStackResource')) {
-      try {
-        return /([a-zA-Z0-9]+)\.NestedStackResource/.exec(element.node.id)![1] // will be the exact id of the stack
-      } catch (e) {
-
-      }
-    }
-    return super.getLogicalId(element)
-  }
 }
