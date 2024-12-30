@@ -96,8 +96,7 @@
                     "Type": "Task",
                     "Arguments": {
                       "Entries": "{% $states.input %}",
-                      "QueueUrl": "${parlamentario_imagen_queue}",
-                      "MessageGroupId": "{% $parSlug %}"
+                      "QueueUrl": "${parlamentario_imagen_queue}"
                     },
                     "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessageBatch",
                     "End": true
