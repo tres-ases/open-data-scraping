@@ -18,7 +18,9 @@ interface Props extends NestedStackProps {
 
 export default class ParlamentarioScraperSubStack extends NestedStack {
 
-  constructor(scope: Construct, id: string, {connection, parlamentarioQueue, parlamentarioImagenQueue, parlamentariosTable}: Props) {
+  constructor(scope: Construct, id: string, {
+    connection, parlamentarioQueue, parlamentarioImagenQueue, parlamentariosTable
+  }: Props) {
     super(scope, id);
 
     const logGroup = new LogGroup(this, `${id}-smLogs`, {
@@ -144,9 +146,9 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
       target: sm.attrArn,
       targetParameters: {
         stepFunctionStateMachineParameters: {
-          invocationType: 'REQUEST_RESPONSE'
+          invocationType: 'FIRE_AND_FORGET'
         },
-        inputTemplate: '{"Name": "Execution_<$.messages[0].body>", "Input": <$.messages>}'
+        inputTemplate: '{"Name": "slug-<$.body>", "Input": <$>}'
       },
     });
 

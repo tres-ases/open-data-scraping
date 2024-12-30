@@ -117,7 +117,8 @@
                             "Resource": "arn:aws:states:::sqs:sendMessage",
                             "Arguments": {
                               "QueueUrl": "${parlamentario_queue_url}",
-                              "MessageBody": "{% $slug %}"
+                              "MessageBody": "{% $slug %}",
+                              "MessageGroupId": "{% $slug %}"
                             },
                             "End": true,
                             "Output": {
@@ -223,7 +224,8 @@
                             "Resource": "arn:aws:states:::sqs:sendMessage",
                             "Arguments": {
                               "QueueUrl": "${boletin_queue_url}",
-                              "MessageBody": "{% $states.input %}"
+                              "MessageBody": "{% $states.input %}",
+                              "MessageGroupId": "{% $states.input %}"
                             },
                             "End": true,
                             "Output": {
