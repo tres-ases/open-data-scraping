@@ -18,6 +18,9 @@
         "Method": "GET",
         "InvocationConfig": {
           "ConnectionArn": "${events_connection_arn}"
+        },
+        "QueryParameters": {
+          "limit": 1000
         }
       },
       "Retry": [
