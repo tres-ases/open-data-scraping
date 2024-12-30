@@ -135,7 +135,10 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
     parlamentarioQueue.grantConsumeMessages(pipeRole);
     pipeRole.addToPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
-      actions: ["states:StartExecution"],
+      actions: [
+        'states:StartExecution',
+        'states:StartSyncExecution'
+      ],
       resources: [sm.attrArn]
     }));
 
@@ -144,9 +147,14 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
       roleArn: pipeRole.roleArn,
       source: parlamentarioQueue.queueArn,
       target: sm.attrArn,
+      sourceParameters: {
+        sqsQueueParameters: {
+          batchSize: 1
+        }
+      },
       targetParameters: {
         stepFunctionStateMachineParameters: {
-          invocationType: 'FIRE_AND_FORGET'
+          invocationType: 'REQUEST_RESPONSE'
         },
         inputTemplate: '{"Name": "slug-<$.body>", "Input": <$>}'
       },
