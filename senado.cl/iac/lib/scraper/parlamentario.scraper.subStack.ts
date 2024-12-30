@@ -156,7 +156,10 @@ export default class ParlamentarioScraperSubStack extends NestedStack {
         stepFunctionStateMachineParameters: {
           invocationType: 'FIRE_AND_FORGET'
         },
-        inputTemplate: '{"Name": "slug-<$.body>", "Input": <$>}'
+        //inputTemplate: JSON.stringify({
+        //  "Name": "slug-<$.Records[0].body>",
+        //  "Input": '{"slug": "<$.Records[0].body>" }'
+        //})
       },
     });
 
