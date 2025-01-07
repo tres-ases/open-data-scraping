@@ -1,8 +1,0 @@
-packages:
-  - "senado.cl/libs/model"
-  - "senado.cl/libs/layers/distiller/nodejs"
-  - "senado.cl/distiller"
-  - "senado.cl/admin"
-
-  - "servel.cl/libs"
-  - "servel.cl/processor/*"

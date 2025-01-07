@@ -1,4 +1,4 @@
-import {CfnElement, NestedStack, NestedStackProps} from "aws-cdk-lib";
+import {NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 import {Construct} from "constructs";
 import ProyectoDistillerSubStack from "./distiller/proyecto.distiller.substack";
@@ -17,17 +17,6 @@ export default class DistillerSubstack extends NestedStack {
   constructor(scope: Construct, id: string, {bucket, parlamentarioImagenQueue, proyectosTable, ...props}: Props) {
     super(scope, id, props);
 
-    const modelLy = new LayerVersion(this, `${id}-ModelLy`, {
-      layerVersionName: `${id}-ModelLy`,
-      compatibleRuntimes: [
-        Runtime.NODEJS_20_X
-      ],
-      code: Code.fromAsset('../../../../../artifact/model-layer'),
-      compatibleArchitectures: [
-        Architecture.X86_64
-      ]
-    });
-
     const distillerLy = new LayerVersion(this, `${id}-DistLy`, {
       layerVersionName: `${id}-DistillerLy`,
       compatibleRuntimes: [
@@ -39,7 +28,7 @@ export default class DistillerSubstack extends NestedStack {
       ]
     });
 
-    const layers = [modelLy, distillerLy];
+    const layers = [distillerLy];
 
     new ProyectoDistillerSubStack(this, `${id}-proy`, {
       bucket, layers, proyectosTable

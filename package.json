@@ -2,19 +2,23 @@
   "name": "open-data-scraping",
   "private": true,
   "scripts": {
-    "@senado.cl/libs:package": "turbo package --filter=\"./senado.cl/libs/**\"",
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
     "@senado.cl/distiller:build": "turbo build --filter=@odata-senado.cl/distiller",
-    "@senado.cl/distiller-layer:package": "turbo package --filter=@odata-senado.cl/distiller-layer",
-    "@senado.cl/model:build": "turbo build --filter=@odata-senado.cl/model",
-    "@senado.cl/admin:package": "turbo package --filter=@odata-senado.cl/admin",
-    "@senado.cl/iac:deploy": "turbo deploy --filter=@odata-senado.cl/iac"
+    "@senado.cl/admin:build": "turbo build --filter=@odata-senado.cl/admin"
   },
   "devDependencies": {
-    "turbo": "^2.0.5",
-    "typescript": "^5.4.5"
+    "prettier": "^3.2.5",
+    "turbo": "^2.3.3",
+    "typescript": "5.5.4"
   },
-  "packageManager": "pnpm@9.4.0",
   "engines": {
-    "node": ">=20"
-  }
+    "node": ">=18"
+  },
+  "packageManager": "yarn@4.6.0",
+  "workspaces": [
+    "senado.cl/iac",
+    "senado.cl/packages/*"
+  ]
 }

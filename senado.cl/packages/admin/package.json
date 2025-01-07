@@ -14,7 +14,7 @@
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
-    "@odata-senado.cl/model": "workspace:*",
+    "@odata-senado.cl/model": "*",
     "aws-amplify": "^6.4.2",
     "cheerio": "1.0.0-rc.12",
     "clsx": "^2.1.1",

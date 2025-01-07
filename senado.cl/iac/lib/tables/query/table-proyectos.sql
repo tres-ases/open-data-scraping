@@ -2,7 +2,7 @@ CREATE TABLE "senado_cl"."table-proyectos"
 WITH
 (
   format='JSON',
-  external_location='s3://open-data-cl-bucket/tables/table-proyectos'
+  external_location='s3://open-data-cl-bucket/senado.cl/tables/table-proyectos'
 ) AS
 
 SELECT

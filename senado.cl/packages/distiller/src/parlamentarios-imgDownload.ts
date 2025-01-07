@@ -2,9 +2,9 @@ import {Logger} from "@aws-lambda-powertools/logger";
 import type {LambdaInterface} from "@aws-lambda-powertools/commons/types";
 import {Tracer} from '@aws-lambda-powertools/tracer';
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import {SQSEvent} from "aws-lambda";
 import axios from "axios";
 import {Readable} from "stream";
+import {SQSEvent} from "aws-lambda";
 
 const serviceName = 'ParlamentariosDownloadImageFromQueue';
 const logger = new Logger({

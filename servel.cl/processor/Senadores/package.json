@@ -19,7 +19,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@servel-cl/libs": "workspace:*",
+    "@servel-cl/libs": "*",
     "exceljs": "^4.4.0"
   }
 }

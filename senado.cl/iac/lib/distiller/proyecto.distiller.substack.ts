@@ -2,7 +2,7 @@ import {NestedStack, NestedStackProps} from "aws-cdk-lib";
 import {Bucket, EventType} from "aws-cdk-lib/aws-s3";
 import {Construct} from "constructs";
 import SenadoFunction from "../commons/SenadoFunction";
-import {Architecture, Code, LayerVersion, Runtime} from "aws-cdk-lib/aws-lambda";
+import {LayerVersion} from "aws-cdk-lib/aws-lambda";
 import {LambdaDestination} from "aws-cdk-lib/aws-s3-notifications";
 import {Table} from "aws-cdk-lib/aws-dynamodb";
 
@@ -30,7 +30,7 @@ export default class ProyectoDistillerSubStack extends NestedStack {
     bucket.addEventNotification(
       EventType.OBJECT_CREATED_PUT,
       new LambdaDestination(lambda),
-      { prefix: 'raw/proyecto/'}
+      { prefix: 'senado.cl/raw/proyecto/'}
     );
   }
 }

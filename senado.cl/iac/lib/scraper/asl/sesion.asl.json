@@ -56,12 +56,8 @@
               "Type": "Parallel",
               "Branches": [
                 {
-                  "StartAt": "Transform asistencia",
+                  "StartAt": "Update Sesion - asistencia",
                   "States": {
-                    "Transform asistencia": {
-                      "Type": "Pass",
-                      "Next": "Update Sesion - asistencia"
-                    },
                     "Update Sesion - asistencia": {
                       "Type": "Task",
                       "Resource": "arn:aws:states:::dynamodb:updateItem",

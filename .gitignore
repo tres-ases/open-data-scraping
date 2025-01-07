@@ -49,6 +49,7 @@ servel.cl/libs/dist
 servel.cl/processor/**/dist
 
 .turbo
+.yarn/
 
 **/cdk.out
 

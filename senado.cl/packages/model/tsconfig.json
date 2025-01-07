@@ -24,7 +24,7 @@
 
     /* Experimental Options */
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": false
+    "emitDecoratorMetadata": true
   },
   "include": ["src"],
   "exclude": [

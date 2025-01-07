@@ -4,8 +4,12 @@
   "description": "",
   "scripts": {
     "check-types": "tsc --noEmit",
+    "clean": "rm -rf node_modules",
     "build": "tsc",
     "test": "jest --watch"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
   },
   "keywords": [],
   "author": "Julio Villane",
@@ -28,8 +32,7 @@
     "@aws-lambda-powertools/commons": "^2.10.0",
     "@aws-lambda-powertools/logger": "^2.8.0",
     "@aws-lambda-powertools/tracer": "^2.10.0",
-    "@odata-senado.cl/distiller-layer": "workspace:*",
-    "@odata-senado.cl/model": "workspace:*",
+    "@odata-senado.cl/model": "*",
     "axios": "^1.7.9",
     "cheerio": "1.0.0"
   }

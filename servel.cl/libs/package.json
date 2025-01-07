@@ -4,10 +4,6 @@
   "private": true,
   "main": "dist/index.js",
   "types": "src/index",
-  "exports": {
-    "./model": "./dist/model/index.js",
-    "./repo": "./dist/repo/index.js"
-  },
   "scripts": {
     "check-types": "tsc --noEmit",
     "build": "rm -rf dist && rm -rf layer && tsc"

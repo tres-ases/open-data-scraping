@@ -4,7 +4,7 @@ import {Votacion} from "@servel-cl/libs";
 
 const workbook = new ExcelJS.Workbook();
 
-export const processor = async (inFilePath: string = './data/2021_11_Senadores_Datos_Eleccion.xlsx', outFilePath: string = './data/data.2021.json'): Promise<Votacion> => {
+export const processor = async (inFilePath: string = './data/2017_11_Senatorial_Datos_Eleccion.xlsx', outFilePath: string = './data/data.2017.json'): Promise<Votacion> => {
   const votacion: Votacion = {};
 
   await workbook.xlsx.readFile(inFilePath);

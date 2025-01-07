@@ -1,10 +1,10 @@
-import {processor} from "./2021_11";
+import {processor} from "./2017_11";
 import {expect} from "@jest/globals";
 
-describe('Procesar votación noviembre 2021', () => {
+describe('Procesar votación noviembre 2017', () => {
 
-  test('Circunscripciones senatoriales 12 y 13', async () => {
-    const result = await processor('./data/2021_11_Senadores_Datos_Eleccion.min.xlsx', './data.2021.min.json');
+  test('Circunscripciones senatoriales 11 y 15', async () => {
+    const result = await processor('./data/2017_11_Senatorial_Datos_Eleccion.min.xlsx', './data/data.2017.min.json');
     console.log(JSON.stringify(result));
     expect(result).toBeDefined();
   }, 30_000);
