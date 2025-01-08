@@ -44,12 +44,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'yarn'
-
       - name: Setup Yarn 4.6.0
         uses: threeal/setup-yarn-action@v2.0.0
         with:
