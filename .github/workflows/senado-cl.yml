@@ -54,10 +54,6 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          yarn --version
-
-      - name: Install Dependencies
-        run: |
           yarn install
 
       - name: Build distiller
@@ -69,6 +65,16 @@ jobs:
         with:
           name: distiller-dist
           path: senado.cl/packages/distiller/dist
+
+      - name: Package admin webapp
+        run: |
+          yarn @senado.cl/admin:build
+
+      - name: Upload admin-dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-dist
+          path: senado.cl/packages/admin/dist
 
       - name: Package distiller layer
         working-directory: senado.cl/packages/distiller
@@ -84,16 +90,6 @@ jobs:
         with:
           name: distiller-layer
           path: /tmp/distiller-layer
-
-      - name: Package admin webapp
-        run: |
-          yarn @senado.cl/admin:build
-
-      - name: Upload admin-dist
-        uses: actions/upload-artifact@v4
-        with:
-          name: admin-dist
-          path: senado.cl/packages/admin/dist
 
   iac:
     runs-on: ubuntu-latest
