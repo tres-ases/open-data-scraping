@@ -67,7 +67,20 @@ export default class TableQueryListSubStack extends NestedStack {
       fs.readFileSync('./lib/tables/asl/table-query-list.asl.json', 'utf8')
     );
     defJson['States']['Table-Query List']['Output'] = [
-      'table-proyectos'
+      'table-legislaturas',
+      'table-materias',
+      'table-parlamentarios',
+      'table-parlamentarios-enlaces',
+      'table-parlamentarios-periodos',
+      'table-parlamentarios-regiones',
+      'table-partidos',
+      'table-proyectos',
+      'table-proyectos-autores',
+      'table-proyectos-comparados',
+      'table-proyectos-informes',
+      'table-proyectos-materias',
+      'table-proyectos-oficios',
+      'table-sesiones',
     ].map(table => ({
       table, query: fs.readFileSync(`./lib/tables/query/${table}.sql`, 'utf8')
     }));

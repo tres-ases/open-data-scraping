@@ -1,4 +1,4 @@
-import {CfnElement, NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
+import {NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {CfnStateMachine, StateMachineType} from "aws-cdk-lib/aws-stepfunctions";
 import {Construct} from "constructs";
 import * as fs from "fs";
