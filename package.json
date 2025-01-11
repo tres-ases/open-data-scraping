@@ -18,7 +18,6 @@
   },
   "packageManager": "yarn@4.6.0",
   "workspaces": [
-    "senado.cl/iac",
     "senado.cl/packages/*"
   ]
 }

@@ -101,8 +101,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: 'npm'
+          cache-dependency-path: senado.cl/iac/package-lock.json
+
+      - name: Build distiller
+        run: |
+          yarn @senado.cl/distiller:build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -151,6 +156,25 @@ jobs:
 #        with:
 #          name: admin-front
 #          path: senado.cl/admin/front/dist
+
+#      - name: CDK deploy prepare
+#        working-directory: ./senado.cl/iac
+#        run: |
+#          touch .env
+#          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
+#          npm install
+
+#      - name: AWS CDK Actions
+#        uses: tj-actions/aws-cdk@v4
+#        with:
+#          cdk_subcommand: deploy
+#          cdk_extra_args: >-
+#            --require-approval never
+#          working_dir: ./senado.cl/iac
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
 
       - name: CDK deploy prepare
         working-directory: ./senado.cl/iac
