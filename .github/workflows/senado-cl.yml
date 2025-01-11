@@ -105,10 +105,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: senado.cl/iac/package-lock.json
 
-      - name: Build distiller
-        run: |
-          yarn @senado.cl/distiller:build
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
