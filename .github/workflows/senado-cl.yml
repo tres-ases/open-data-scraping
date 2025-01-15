@@ -19,7 +19,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      admin-front: ${{ steps.changes.outputs.admin-front }}
+      front: ${{ steps.changes.outputs.admin-front }}
       iac: ${{ steps.changes.outputs.iac }}
     steps:
       - name: Checkout
@@ -29,8 +29,8 @@ jobs:
         id: changes
         with:
           filters: |
-            admin-front:
-              - 'senado.cl/admin/front/**'
+            front:
+              - 'senado.cl/packages/front/**'
             iac:
               - '.github/workflows/senado-cl.yml'
               - 'senado.cl/packages/**'
@@ -66,15 +66,15 @@ jobs:
           name: distiller-dist
           path: senado.cl/packages/distiller/dist
 
-      - name: Package admin webapp
+      - name: Package front webapp
         run: |
-          yarn @senado.cl/admin:build
+          yarn @senado.cl/front:build
 
-      - name: Upload admin-dist
+      - name: Upload front-dist
         uses: actions/upload-artifact@v4
         with:
-          name: admin-dist
-          path: senado.cl/packages/admin/dist
+          name: front-dist
+          path: senado.cl/packages/front/dist
 
       - name: Package distiller layer
         working-directory: senado.cl/packages/distiller
@@ -124,54 +124,6 @@ jobs:
           name: distiller-dist
           path: ~/artifact/distiller-dist
 
-      - name: Download artifact admin-dist
-        uses: actions/download-artifact@v4
-        with:
-          name: admin-dist
-          path: ~/artifact/admin-dist
-
-#      - name: Get AWS SSM Parameters
-#        uses: dkershner6/aws-ssm-getparameters-action@v2
-#        with:
-#          parameterPairs: "
-#            /openData/senadoCl/admin/cognitoUserPool/id = USER_POOL_ID,
-#            /openData/senadoCl/admin/cognitoUserPool/clientId = USER_POOL_CLIENT_ID"
-#          withDecryption: "true"
-
-#      - name: Create admin env file
-#        working-directory: ./senado.cl/admin
-#        run: |
-#          touch .env.production
-#          echo VITE_COGNITO_USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env.production
-#          echo VITE_COGNITO_USER_POOL_CLIENT_ID=${{ env.USER_POOL_CLIENT_ID }} >> .env.production
-#          cat .env.production
-
-#      - name: Upload admin-front build
-#        if: ${{ needs.changes.outputs.admin-front == 'true' }}
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: admin-front
-#          path: senado.cl/admin/front/dist
-
-#      - name: CDK deploy prepare
-#        working-directory: ./senado.cl/iac
-#        run: |
-#          touch .env
-#          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-#          npm install
-
-#      - name: AWS CDK Actions
-#        uses: tj-actions/aws-cdk@v4
-#        with:
-#          cdk_subcommand: deploy
-#          cdk_extra_args: >-
-#            --require-approval never
-#          working_dir: ./senado.cl/iac
-#        env:
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          AWS_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
-
       - name: CDK deploy prepare
         working-directory: ./senado.cl/iac
         run: |
@@ -191,43 +143,39 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
 
-#      - name: CDK deploy
-#        run: |
-#          pnpm @senado.cl/iac:deploy
+  front:
+    runs-on: ubuntu-latest
+    needs: [changes, iac, iac-artifacts]
+    if: ${{ needs.changes.outputs.front == 'true' }}
+    steps:
+      - name: Download artifact front-dist
+        uses: actions/download-artifact@v4
+        with:
+          name: front-dist
+          path: ~/artifact/front-dist
 
-#  admin-front:
-#    runs-on: ubuntu-latest
-#    needs: [changes, infra]
-#    if: ${{ needs.changes.outputs.admin-front == 'true' }}
-#    steps:
-#      - name: Download artifact from build job
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: admin-front
-#          path: dist
-#
-#      - name: Configure AWS credentials
-#        uses: aws-actions/configure-aws-credentials@v4
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: 'us-east-1'
-#
-#      - name: Deploy Admin SPA to S3
-#        run: aws s3 sync ./dist s3://senado-admin.open-data.cl
-#
-#      - name: Get AWS SSM Parameters
-#        uses: dkershner6/aws-ssm-getparameters-action@v2
-#        with:
-#          parameterPairs: "
-#            /openData/senadoCl/admin/distributionId = DISTRIBUTION"
-#          withDecryption: "true"
-#
-#      - name: Invalidate CloudFront Admin SPA
-#        uses: chetan/invalidate-cloudfront-action@v2
-#        env:
-#          DISTRIBUTION: ${{ env.DISTRIBUTION }}
-#          PATHS: "/*"
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          AWS_REGION: 'us-east-1'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.CDK_DEFAULT_REGION }}
+
+      - name: Deploy Admin SPA to S3
+        run: aws s3 sync ~/artifact/front-dist s3://senado-admin.open-data.cl
+
+      - name: Get AWS SSM Parameters
+        uses: dkershner6/aws-ssm-getparameters-action@v2
+        with:
+          parameterPairs: "
+            /openData/senadoCl/front/distributionId = DISTRIBUTION"
+          withDecryption: "true"
+
+      - name: Invalidate CloudFront Admin SPA
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ env.DISTRIBUTION }}
+          PATHS: "/*"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.CDK_DEFAULT_REGION }}

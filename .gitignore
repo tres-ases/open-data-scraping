@@ -60,3 +60,5 @@ servel.cl/processor/**/dist
 **/packages/**/*.js
 !**/packages/**/jest.config.js
 **/iac/**/*.js
+
+**/.DS_Store
