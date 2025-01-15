@@ -19,7 +19,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      front: ${{ steps.changes.outputs.admin-front }}
+      front: ${{ steps.changes.outputs.front }}
       iac: ${{ steps.changes.outputs.iac }}
     steps:
       - name: Checkout
@@ -131,17 +131,20 @@ jobs:
           echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
           npm install
 
-      - name: AWS CDK Actions
-        uses: tj-actions/aws-cdk@v4
-        with:
-          cdk_subcommand: deploy
-          cdk_extra_args: >-
-            --require-approval never
-          working_dir: ./senado.cl/iac
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
+      - run: cdk deploy --require-approval never --all
+        working-directory: ./senado.cl/iac
+
+      #- name: AWS CDK Actions
+      #  uses: tj-actions/aws-cdk@v4
+      #  with:
+      #    cdk_subcommand: deploy
+      #    cdk_extra_args: >-
+      #      --require-approval never
+      #    working_dir: ./senado.cl/iac
+      #  env:
+      #    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #    AWS_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
 
   front:
     runs-on: ubuntu-latest
