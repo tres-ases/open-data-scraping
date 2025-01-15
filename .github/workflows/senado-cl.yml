@@ -131,8 +131,11 @@ jobs:
 #          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
 #          npm install
 
-      - run: npm run cdk deploy --require-approval never --all
+      - name: CDK deploy
         working-directory: ./senado.cl/iac
+        run: |
+          npm install
+          cdk deploy --require-approval never --all
 
       #- name: AWS CDK Actions
       #  uses: tj-actions/aws-cdk@v4
