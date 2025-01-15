@@ -168,7 +168,7 @@ jobs:
           aws-region: ${{ vars.CDK_DEFAULT_REGION }}
 
       - name: Deploy Admin SPA to S3
-        run: aws s3 sync ~/artifact/front-dist s3://senado-admin.open-data.cl
+        run: aws s3 sync ~/artifact/front-dist s3://senado.open-data.cl
 
       - name: Get AWS SSM Parameters
         uses: dkershner6/aws-ssm-getparameters-action@v2
