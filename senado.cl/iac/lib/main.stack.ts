@@ -43,6 +43,6 @@ export default class MainStack extends Stack {
       parlamentariosTable: tables.parlamentarios,
       proyectosTable: tables.proyectos,
     });
-    new FrontStack(this, `${id}-front`);
+    //new FrontStack(this, `${id}-front`);
   }
 }
