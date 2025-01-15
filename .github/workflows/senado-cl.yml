@@ -124,14 +124,14 @@ jobs:
           name: distiller-dist
           path: ~/artifact/distiller-dist
 
-      - name: CDK deploy prepare
-        working-directory: ./senado.cl/iac
-        run: |
-          touch .env
-          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
-          npm install
+#      - name: CDK deploy prepare
+#        working-directory: ./senado.cl/iac
+#        run: |
+#          touch .env
+#          echo "CDK_DEFAULT_ACCOUNT=${{ vars.CDK_DEFAULT_ACCOUNT }}" >> .env
+#          npm install
 
-      - run: cdk deploy --require-approval never --all
+      - run: npm run cdk deploy --require-approval never --all
         working-directory: ./senado.cl/iac
 
       #- name: AWS CDK Actions
