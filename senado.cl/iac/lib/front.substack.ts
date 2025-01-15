@@ -9,7 +9,7 @@ import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 const domain = 'open-data.cl';
-const subdomain = `senado-admin.${domain}`;
+const subdomain = `senado.${domain}`;
 
 export default class FrontStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
