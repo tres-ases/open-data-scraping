@@ -1,7 +1,7 @@
 import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
-import { AllowedMethods, CachePolicy, Distribution, OriginAccessIdentity, OriginRequestPolicy, PriceClass, ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
-import { S3Origin, HttpOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { CachePolicy, Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
 import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { BlockPublicAccess, Bucket } from "aws-cdk-lib/aws-s3";
