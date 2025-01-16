@@ -6,7 +6,8 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "@senado.cl/distiller:build": "turbo build --filter=@odata-senado.cl/distiller",
-    "@senado.cl/front:build": "turbo build --filter=@odata-senado.cl/front"
+    "@senado.cl/front:build": "turbo build --filter=@odata-senado.cl/front",
+    "@senado.cl/front:dev": "turbo dev --filter=@odata-senado.cl/front"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
