@@ -5,8 +5,7 @@ import {
   RestApi,
   AwsIntegration,
   CognitoUserPoolsAuthorizer,
-  AuthorizationType,
-  Cors
+  AuthorizationType
 } from "aws-cdk-lib/aws-apigateway";
 import {
   UserPool,
@@ -101,7 +100,7 @@ export default class ApiSubStack extends NestedStack {
       authorizer,
       methodResponses: [
         {
-          statusCode: "200",
+          statusCode: '200',
         },
       ],
     });
