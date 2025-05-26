@@ -7,6 +7,7 @@ import {Queue} from "aws-cdk-lib/aws-sqs";
 import TablesSubStack from "./main/tables.subStack";
 import BuildTablesSubstack from "./build-tables.substack";
 import FrontStack from "./front.substack";
+import ApiSubStack from "./api.substack";
 
 export default class MainStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -44,5 +45,8 @@ export default class MainStack extends Stack {
       proyectosTable: tables.proyectos,
     });
     new FrontStack(this, `${id}-front`, props);
+    new ApiSubStack(this, `${id}-api`, {
+      parlamentariosTable: tables.parlamentarios,
+    });
   }
 }
