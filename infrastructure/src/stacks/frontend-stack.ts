@@ -101,7 +101,7 @@ export class FrontendStack extends cdk.Stack {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Data Motivation</title>
+    <title>Open Data</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -143,7 +143,7 @@ export class FrontendStack extends cdk.Stack {
 </head>
 <body>
     <div class="container">
-        <h1>🏛️ Open Data Motivation</h1>
+        <h1>🏛️ Open Data</h1>
         <p>Plataforma de Transparencia Legislativa Chilena</p>
         <div class="status">
             <h3>🚧 En Construcción</h3>

@@ -115,7 +115,7 @@ All APIs must be defined using OpenAPI 3.0 specification:
 # api-spec.yaml
 openapi: 3.0.0
 info:
-  title: Open Data Motivation API
+  title: Open Data API
   version: 1.0.0
 paths:
   /legislators/{id}:
@@ -176,7 +176,7 @@ components:
 ```typescript
 // CDK Stack configuration
 const api = new RestApi(this, 'ODMApi', {
-  restApiName: 'Open Data Motivation API',
+  restApiName: 'Open Data API',
   description: 'API for legislative transparency data',
   apiDefinition: ApiDefinition.fromAsset('api-spec.yaml')
 });

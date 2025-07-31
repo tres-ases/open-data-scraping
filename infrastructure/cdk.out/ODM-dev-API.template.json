@@ -1,5 +1,5 @@
 {
- "Description": "Open Data Motivation - API Gateway and handlers",
+ "Description": "Open Data - API Gateway and handlers",
  "Resources": {
   "ApiLambdaRole66D0B4CD": {
    "Type": "AWS::IAM::Role",
@@ -391,7 +391,7 @@
   "ODMApi21DA1483": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
-    "Description": "Open Data Motivation API",
+    "Description": "Open Data API",
     "Name": "ODM-dev-API",
     "Tags": [
      {
@@ -481,10 +481,10 @@
     "aws:cdk:path": "ODM-dev-API/ODMApi/Account"
    }
   },
-  "ODMApiDeployment3A246EF2ec2821d25daadb3ce3a3ac96177b6b21": {
+  "ODMApiDeployment3A246EF2335b7cefd901b0bf11edb9921b5edbc8": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
-    "Description": "Open Data Motivation API",
+    "Description": "Open Data API",
     "RestApiId": {
      "Ref": "ODMApi21DA1483"
     }
@@ -516,7 +516,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "ODMApiDeployment3A246EF2ec2821d25daadb3ce3a3ac96177b6b21"
+     "Ref": "ODMApiDeployment3A246EF2335b7cefd901b0bf11edb9921b5edbc8"
     },
     "MethodSettings": [
      {

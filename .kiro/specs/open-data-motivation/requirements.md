@@ -2,7 +2,7 @@
 
 ## Introducción
 
-La plataforma Open Data Motivation es un sistema de transparencia legislativa chilena diseñado principalmente para la ciudadanía general, que extrae y analiza información del Congreso Nacional y SERVEL para identificar y destacar comportamientos problemáticos de los legisladores. El objetivo principal es empoderar a los ciudadanos con información clara y accesible sobre el rendimiento de sus representantes, destacando especialmente incumplimientos, comportamientos reprochables y desviaciones del comportamiento estándar como inasistencias injustificadas, ausencias en votaciones, gastos excesivos de fondos públicos, entre otros. La plataforma ofrece acceso gratuito básico y un servicio premium de informes mensuales automatizados, integrando datos del Senado (senado.cl), Cámara de Diputados (camara.cl) y SERVEL (servel.cl).
+La plataforma Open Data es un sistema de transparencia legislativa chilena diseñado principalmente para la ciudadanía general, que extrae y analiza información del Congreso Nacional y SERVEL para identificar y destacar comportamientos problemáticos de los legisladores. El objetivo principal es empoderar a los ciudadanos con información clara y accesible sobre el rendimiento de sus representantes, destacando especialmente incumplimientos, comportamientos reprochables y desviaciones del comportamiento estándar como inasistencias injustificadas, ausencias en votaciones, gastos excesivos de fondos públicos, entre otros. La plataforma ofrece acceso gratuito básico y un servicio premium de informes mensuales automatizados, integrando datos del Senado (senado.cl), Cámara de Diputados (camara.cl) y SERVEL (servel.cl).
 
 ## Requerimientos
 

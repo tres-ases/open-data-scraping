@@ -1,6 +1,6 @@
 # Product Overview
 
-Open Data Motivation is a Chilean legislative transparency platform designed to empower citizens with clear, accessible information about their representatives' performance in Congress.
+Open Data is a Chilean legislative transparency platform designed to empower citizens with clear, accessible information about their representatives' performance in Congress.
 
 ## Core Purpose
 - Extract and analyze data from Chilean Senate (senado.cl), Chamber of Deputies (camara.cl), and SERVEL (servel.cl)

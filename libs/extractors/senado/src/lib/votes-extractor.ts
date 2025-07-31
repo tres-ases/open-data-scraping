@@ -28,7 +28,7 @@ export class SenadoVotesExtractor extends BaseDataExtractor {
   constructor() {
     super('senado-votes-extractor');
     this.scraper = new WebScraper('senado-votes', {
-      userAgent: 'OpenDataMotivation/1.0 (Senate Votes Extractor)',
+      userAgent: 'OpenData/1.0 (Senate Votes Extractor)',
       rateLimit: {
         requests: 5,
         period: 1000,
@@ -74,7 +74,7 @@ export class SenadoVotesExtractor extends BaseDataExtractor {
             batchNumber: 1,
             totalBatches: 1,
             url: '/votaciones/votaciones-de-sala',
-            userAgent: 'OpenDataMotivation/1.0 (Senate Votes Extractor)',
+            userAgent: 'OpenData/1.0 (Senate Votes Extractor)',
           },
         };
 

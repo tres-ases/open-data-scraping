@@ -116,7 +116,7 @@ Proporciona insights predictivos con nivel de confianza.`,
     new ssm.StringParameter(this, 'NotificationSettings', {
       parameterName: `/odm/${environment}/notifications/settings`,
       stringValue: JSON.stringify({
-        emailFrom: 'noreply@opendatamotivation.cl',
+        emailFrom: 'noreply@opendata.cl',
         webhookTimeout: 5000,
         retryAttempts: 3,
       }),

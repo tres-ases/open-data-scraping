@@ -21,14 +21,14 @@ const env = {
 const storageStack = new StorageStack(app, `ODM-${environment}-Storage`, {
   env,
   environment,
-  description: 'Open Data Motivation - Storage infrastructure (S3, DynamoDB)',
+  description: 'Open Data - Storage infrastructure (S3, DynamoDB)',
 });
 
 // Processing Stack - Lambda functions and Step Functions
 const processingStack = new ProcessingStack(app, `ODM-${environment}-Processing`, {
   env,
   environment,
-  description: 'Open Data Motivation - Data processing infrastructure',
+  description: 'Open Data - Data processing infrastructure',
   // Pass storage resources
   dataBucket: storageStack.dataBucket,
   legislatorsTable: storageStack.legislatorsTable,
@@ -43,7 +43,7 @@ const processingStack = new ProcessingStack(app, `ODM-${environment}-Processing`
 const apiStack = new ApiStack(app, `ODM-${environment}-API`, {
   env,
   environment,
-  description: 'Open Data Motivation - API Gateway and handlers',
+  description: 'Open Data - API Gateway and handlers',
   // Pass storage resources
   dataBucket: storageStack.dataBucket,
   legislatorsTable: storageStack.legislatorsTable,
@@ -58,7 +58,7 @@ const apiStack = new ApiStack(app, `ODM-${environment}-API`, {
 const frontendStack = new FrontendStack(app, `ODM-${environment}-Frontend`, {
   env,
   environment,
-  description: 'Open Data Motivation - Frontend infrastructure',
+  description: 'Open Data - Frontend infrastructure',
   // Pass API Gateway URL
   apiGatewayUrl: apiStack.apiGatewayUrl,
 });

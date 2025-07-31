@@ -1,5 +1,5 @@
 {
- "Description": "Open Data Motivation - Data processing infrastructure",
+ "Description": "Open Data - Data processing infrastructure",
  "Resources": {
   "LambdaExecutionRoleD5C26073": {
    "Type": "AWS::IAM::Role",

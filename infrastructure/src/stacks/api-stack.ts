@@ -169,7 +169,7 @@ export class ApiStack extends cdk.Stack {
     // API Gateway
     this.apiGateway = new apigateway.RestApi(this, 'ODMApi', {
       restApiName: `ODM-${environment}-API`,
-      description: 'Open Data Motivation API',
+      description: 'Open Data API',
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,

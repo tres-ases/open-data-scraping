@@ -1,5 +1,5 @@
 {
- "Description": "Open Data Motivation - Storage infrastructure (S3, DynamoDB)",
+ "Description": "Open Data - Storage infrastructure (S3, DynamoDB)",
  "Resources": {
   "ParametersSenadoBaseUrlE24FBCFA": {
    "Type": "AWS::SSM::Parameter",
@@ -182,7 +182,7 @@
      "Project": "OpenDataMotivation"
     },
     "Type": "String",
-    "Value": "{\"emailFrom\":\"noreply@opendatamotivation.cl\",\"webhookTimeout\":5000,\"retryAttempts\":3}"
+    "Value": "{\"emailFrom\":\"noreply@opendata.cl\",\"webhookTimeout\":5000,\"retryAttempts\":3}"
    },
    "Metadata": {
     "aws:cdk:path": "ODM-dev-Storage/Parameters/NotificationSettings/Resource"
@@ -913,7 +913,7 @@
     "BucketName": {
      "Ref": "DataBucketE3889A50"
     },
-    "Timestamp": 1753652087405
+    "Timestamp": 1753996984992
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
