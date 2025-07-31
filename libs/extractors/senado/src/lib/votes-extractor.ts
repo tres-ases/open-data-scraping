@@ -344,6 +344,14 @@ export class SenadoVotesExtractor extends BaseDataExtractor {
     return '';
   }
 
+  /**
+   * Helper method to clean text
+   */
+  private cleanText(text: string): string {
+    if (!text) return '';
+    return text.trim().replace(/\s+/g, ' ');
+  }
+
   private parseNumber(text: string): number | undefined {
     if (!text) return undefined;
     const num = parseInt(this.cleanText(text), 10);
@@ -357,8 +365,8 @@ export class SenadoVotesExtractor extends BaseDataExtractor {
     return parsed ? toISOString(parsed) : toISOString(new Date());
   }
 
-  private normalizeVoteType(tipo: string): 'nominal' | 'economica' | 'secreta' | undefined {
-    if (!tipo) return undefined;
+  private normalizeVoteType(tipo: string): 'nominal' | 'economica' | 'secreta' {
+    if (!tipo) return 'nominal'; // Default for empty string
 
     const cleanType = this.cleanText(tipo).toLowerCase();
 
@@ -396,8 +404,11 @@ export class SenadoVotesExtractor extends BaseDataExtractor {
 
   private generateSenatorId(name: string): string {
     return `senado-${name.toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .replace(/[^a-z0-9\s-]/g, '') // Keep hyphens
       .replace(/\s+/g, '-')
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
       .substring(0, 50)}`;
   }
 
