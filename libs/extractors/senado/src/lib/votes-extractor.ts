@@ -344,13 +344,7 @@ export class SenadoVotesExtractor extends BaseDataExtractor {
     return '';
   }
 
-  /**
-   * Helper method to clean text
-   */
-  private cleanText(text: string): string {
-    if (!text) return '';
-    return text.trim().replace(/\s+/g, ' ');
-  }
+
 
   private parseNumber(text: string): number | undefined {
     if (!text) return undefined;
