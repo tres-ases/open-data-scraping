@@ -1,97 +1,90 @@
-# open-data-scraping
-Encargado de obtener la información desde múltiples orígenes de información
+# OpenDataMotivation
 
-## Data
-Toda la información descargada desde distintos orígenes y organizada para que pueda ser consultada usando Athena desde S3 o bien directamente.
+<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
-### senado.cl
-Corresponde a la información obtenida desde el sitio ```https://www.senado.cl/``` la cual es almacenada en el bucket ```open-data-senado-cl```
+✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
 
-#### Legislaturas
-La extracción de **legislaturas** se realiza a través de un servicio que se expone en la página donde se listan las Sesiones de Sala que se puede visitar en ```https://www.senado.cl/actividad-legislativa/sala/sesiones-de-sala``` cuya URL es ```https://web-back.senado.cl/api/legislatures```.
+[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
 
-La información cruda se almacena en el bucket indicado cuya key es ```raw/legislaturas/data.json```.
+## Finish your CI setup
 
-La estructura de la información está dada por la interfaz ```LegislaturaRaw``` ubicada en la librería ```@senado-cl/global/legislaturas```.
+[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/zf6H6P2Vps)
 
-A partir de la información cruda de una Legislatura en particular se obtienen las **sesiones** que pertenecen a cada Legislatura, así como la información de **asistencia** y **votaciones**. Dicha información cruda es almacenada en:
 
-* **Sesiones**
-  * Listado: ```raw/sesiones/legId=${legId}/data.json``` estructurado según la interfaz ```SesionRaw``` (```@senado-cl/global/sesiones```)
-  * Detalle: ```raw/sesion/detalle/sesId=${sesId}/data.json``` estructurado según la interfaz ```SesionRaw``` (```@senado-cl/global/sesiones```)
-* **Asistencia**: ```raw/sesion/asistencia/sesId=${sesId}/data.json``` estructurado según la interfaz ```AsistenciaRaw``` (```@senado-cl/global/sesiones```)
-* **Votaciones**: ```raw/sesion/votacion/sesId=${sesId}/data.json``` estructurado según la interfaz ```VotacionRaw``` (```@senado-cl/global/sesiones```)
+## Generate a library
 
-Luego, dicha información es destilada para construir estructuras de información conjunta detallada de la siguiente manera:
+```sh
+npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+```
 
-* **Legislatura**
-  * Listado: ```distilled/legislaturas/data.json``` estructurado según la interfaz ```LegislaturaMapDtl``` (```@senado-cl/global/legislaturas```)
-  * Detalle: ```distilled/legislatura/legId=${legId}/data.json``` estructurado según la interfaz ```LegislaturaDtl``` (```@senado-cl/global/legislaturas```)
-    * Aunando en una sola estructura la información de sesiones con sus correspondientes sesiones, asistencias y votaciones 
+## Run tasks
 
----
+To build the library use:
 
-#### Dieta
-La dieta es la remuneración mensual que percibe el Senador durante el periodo para el cual ha sido elegido y, de acuerdo al artículo 62 de la Constitución Política de la República, equivale a la de un Ministro de Estado.
+```sh
+npx nx build pkg1
+```
 
-Se extrae desde la página ```https://tramitacion.senado.cl/appsenado/index.php?mo=transparencia&ac=informeTransparencia&tipo=7```
+To run any task with Nx use:
 
-La extracción se realiza en 2 etapas:
-1. Descarga de la combinación de años y meses disponibles con la información de las dietas parlamentarias
-2. Descarga del detalle de los montos de las dietas para cada uno de los parlamentarios
+```sh
+npx nx <target> <project-name>
+```
 
-La información de la Dieta se almacenará en las siguientes carpetas:
-* ```Dieta```
-  * ```/AnoMes```: listado de años disponibles y meses que se encuentran disponibles
-    * ```/JsonStructured/data.json```
-    * ```/JsonLines/data.jsonl```
-  * ```/detalle```: información de la dieta parlamentaria separada por año y mes, los cuales son extraídos previamente
-    * ```/JsonStructured/ano=#/mes=#/data.json```
-    * ```/JsonLines/ano=#/mes=#/data.jsonl``` 
+These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
 
-#### Gastos Operacionales
+[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
-La información de Gastos Operacionales se almacenará en las siguientes carpetas:
-* ```GastosOperacionales```
-  * ```/JsonStructured/parlId=#/ano=#/mes=#/data.json```
-  * ```/JsonLines/parlId=#/ano=#/mes=#/data.jsonl```
+## Versioning and releasing
 
-#### Personal Apoyo
+To version and release the library use
 
-#### SenadoresView
+```
+npx nx release
+```
 
-La información de los senadores y de los períodos en los que ha participado en las cámaras se puede obtener desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=periodos```
+Pass `--dry-run` to see what would happen without actually releasing the library.
 
-El detalle de nombre, región, partido, teléfono y correo se puede obtener desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=senadores&ac=fichasenador&id=985```
+[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
-* ```SenadoresView```
-  * ```/Periodos```: listado completo de todos los SenadoresView, incluyendo detalle de los períodos 
-    * ```/JsonStructured/data.json```
-    * ```/JsonLines/data.jsonl```
-  * ```/Detalle```
-    * ```/Foto/parlId=#```: fotos con distinto tamaño en formato jpeg de cada senador
-    * ```/JsonStructured/parlId=#/data.json```: información más detallada del senador
+## Keep TypeScript project references up to date
 
-#### Votaciones
+Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
 
-Las Votaciones se realizan dentro de una Sesión (en día en particular), se suelen realizar varias votaciones dentro de una misma Sesión. 
+To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
 
-Las Sesiones están asociados a una Legislatura, que abarca un período de tiempo más amplio, y por ende, varias Sesiones.
+```sh
+npx nx sync
+```
 
-Las Legislaturas y Sesiones se extraen desde la página ```https://tramitacion.senado.cl/appsenado/index.php?mo=sesionessala&ac=votacionSala&legiini=462```
+You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
 
-El resumen de las votaciones se extrae desde ```https://tramitacion.senado.cl/appsenado/index.php?mo=sesionessala&ac=votacionSala&legiini=462```
+```sh
+npx nx sync:check
+```
 
-La información de Gastos Operacionales se almacenará en las siguientes carpetas:
-* ```Votaciones```
-  * ```/Legislaturas```
-    * ```/Lista```: listado simple de las Legislaturas
-      * ```/JsonStructured/data.json```
-      * ```/JsonLines/data.jsonl```
-    * ```/Detalle/JsonStructured/legisId=#/data.json```: información en detalle de la Legislatura, incluyendo información de Sesiones
-    * ```/Sesiones```: información de las Sesiones asociadas a una Legislatura en particular 
-      * ```/JsonStructured/legisId=#/data.json```
-      * ```/JsonLines/legisId=#/data.jsonl```
-  * ```/Resumen```
-    * ```/JsonStructured/legisId=#/sesionId=#/data.json```
-    * ```/JsonLines/legisId=#/sesionId=#/data.jsonl```
+[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+
+
+[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+## Install Nx Console
+
+Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+
+[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+## Useful links
+
+Learn more:
+
+- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
+- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+And join the Nx community:
+- [Discord](https://go.nx.dev/community)
+- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
+- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
+- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)

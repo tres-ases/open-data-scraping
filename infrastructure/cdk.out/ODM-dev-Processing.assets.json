@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "9876215b213e195a1969554093eb1621d06bd830399fe7d5557403947d7f6d65": {
+      "displayName": "ODM-dev-Processing Template",
+      "source": {
+        "path": "ODM-dev-Processing.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-cb401fef": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "9876215b213e195a1969554093eb1621d06bd830399fe7d5557403947d7f6d65.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,34 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./web"
+    },
+    {
+      "path": "./api-e2e"
+    },
+    {
+      "path": "./api"
+    },
+    {
+      "path": "./infrastructure-e2e"
+    },
+    {
+      "path": "./infrastructure"
+    },
+    {
+      "path": "./shared"
+    },
+    {
+      "path": "./extractors-core"
+    },
+    {
+      "path": "./processors-core"
+    },
+    {
+      "path": "./libs/extractors/senado"
+    }
+  ]
+}

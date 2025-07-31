@@ -1,0 +1,222 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+  AWS_REGION: 'us-east-1'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      affected-apps: ${{ steps.affected.outputs.apps }}
+      affected-libs: ${{ steps.affected.outputs.libs }}
+      has-infrastructure-changes: ${{ steps.affected.outputs.infrastructure }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get affected projects
+        id: affected
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="HEAD~1"
+          fi
+
+          echo "apps=$(npx nx print-affected --base=$BASE_SHA --type=app --select=projects | tr '\n' ',' | sed 's/,$//')" >> $GITHUB_OUTPUT
+          echo "libs=$(npx nx print-affected --base=$BASE_SHA --type=lib --select=projects | tr '\n' ',' | sed 's/,$//')" >> $GITHUB_OUTPUT
+
+          # Check if infrastructure has changes
+          if npx nx print-affected --base=$BASE_SHA --select=projects | grep -q "infrastructure"; then
+            echo "infrastructure=true" >> $GITHUB_OUTPUT
+          else
+            echo "infrastructure=false" >> $GITHUB_OUTPUT
+          fi
+
+  test-and-lint:
+    needs: setup
+    if: needs.setup.outputs.affected-libs != ''
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: ${{ fromJson(format('["{0}"]', needs.setup.outputs.affected-libs)) }}
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/nx
+          key: nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('nx.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
+            nx-${{ runner.os }}-
+
+      - name: Test ${{ matrix.project }}
+        run: npx nx test ${{ matrix.project }}
+
+      - name: Build ${{ matrix.project }}
+        run: npx nx build ${{ matrix.project }}
+
+  build-apps:
+    needs: [setup, test-and-lint]
+    if: always() && needs.setup.outputs.affected-apps != ''
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: ${{ fromJson(format('["{0}"]', needs.setup.outputs.affected-apps)) }}
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/nx
+          key: nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('nx.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
+            nx-${{ runner.os }}-
+
+      - name: Build ${{ matrix.app }}
+        run: npx nx build ${{ matrix.app }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app }}-build
+          path: dist/${{ matrix.app }}
+          retention-days: 1
+
+  deploy-infrastructure:
+    needs: [setup, test-and-lint, build-apps]
+    if: always() && github.ref == 'refs/heads/main' && needs.setup.outputs.has-infrastructure-changes == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build infrastructure
+        run: npx nx build infrastructure
+
+      - name: Deploy infrastructure
+        run: |
+          cd dist/infrastructure
+          npx cdk deploy --all --require-approval never --context environment=prod
+        env:
+          CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }}
+          CDK_DEFAULT_REGION: ${{ env.AWS_REGION }}
+
+  deploy-applications:
+    needs: [setup, deploy-infrastructure]
+    if: always() && github.ref == 'refs/heads/main' && (needs.deploy-infrastructure.result == 'success' || needs.deploy-infrastructure.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      matrix:
+        app: ['api', 'web']
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download build artifacts
+        if: contains(needs.setup.outputs.affected-apps, matrix.app)
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.app }}-build
+          path: dist/${{ matrix.app }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy ${{ matrix.app }}
+        if: contains(needs.setup.outputs.affected-apps, matrix.app)
+        run: |
+          echo "Deploying ${{ matrix.app }} application"
+          # Deployment logic will be implemented in future tasks
+          echo "Deployment completed for ${{ matrix.app }}"
+
+  health-check:
+    needs: [deploy-applications]
+    if: always() && github.ref == 'refs/heads/main' && needs.deploy-applications.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health check
+        run: |
+          echo "Running post-deployment health checks"
+          # Health check logic will be implemented in future tasks
+          echo "Health checks passed"

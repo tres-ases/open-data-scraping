@@ -1,0 +1,59 @@
+{
+  "name": "@open-data-motivation/infrastructure",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "deploy": "cdk deploy --all",
+    "destroy": "cdk destroy --all",
+    "synth": "cdk synth",
+    "diff": "cdk diff"
+  },
+  "nx": {
+    "targets": {
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@open-data-motivation/infrastructure:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@open-data-motivation/infrastructure:build:development"
+          },
+          "production": {
+            "buildTarget": "@open-data-motivation/infrastructure:build:production"
+          }
+        }
+      },
+      "deploy": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "cd dist/infrastructure && npm run deploy",
+          "cwd": "{workspaceRoot}"
+        },
+        "dependsOn": ["build"]
+      },
+      "synth": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "cd dist/infrastructure && npm run synth",
+          "cwd": "{workspaceRoot}"
+        },
+        "dependsOn": ["build"]
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      }
+    }
+  }
+}

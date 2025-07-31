@@ -1,0 +1,60 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/nx
+          key: nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('nx.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
+            nx-${{ runner.os }}-
+
+      - name: Check affected projects
+        run: |
+          echo "Affected projects:"
+          npx nx print-affected --base=origin/main --select=projects
+
+      - name: Run affected tests
+        run: npx nx affected:test --base=origin/main
+
+      - name: Run affected builds
+        run: npx nx affected:build --base=origin/main
+
+      - name: Check formatting
+        run: npx nx format:check --base=origin/main
+
+      - name: Validate CDK (if infrastructure changed)
+        run: |
+          if npx nx print-affected --base=origin/main --select=projects | grep -q "infrastructure"; then
+            echo "Infrastructure changes detected, validating CDK..."
+            npx nx build infrastructure
+            cd dist/infrastructure
+            npx cdk synth --context environment=dev
+          else
+            echo "No infrastructure changes detected"
+          fi
