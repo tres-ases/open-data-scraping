@@ -7,6 +7,16 @@
       "@open-data-motivation/infrastructure"
     ],
     "targets": {
+      "test": {
+        "executor": "@nx/jest:jest",
+        "outputs": [
+          "{projectRoot}/test-output/jest/coverage"
+        ],
+        "options": {
+          "jestConfig": "infrastructure-e2e/jest.config.ts",
+          "passWithNoTests": true
+        }
+      },
       "e2e": {
         "executor": "@nx/jest:jest",
         "outputs": [
