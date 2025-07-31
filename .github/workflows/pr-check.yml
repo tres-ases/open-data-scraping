@@ -34,23 +34,32 @@ jobs:
             nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
             nx-${{ runner.os }}-
 
+      - name: Determine base branch
+        id: base
+        run: |
+          if git show-ref --verify --quiet refs/remotes/origin/main; then
+            echo "base=origin/main" >> $GITHUB_OUTPUT
+          else
+            echo "base=origin/master" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check affected projects
         run: |
           echo "Affected projects:"
-          npx nx print-affected --base=origin/main --select=projects
+          npx nx print-affected --base=${{ steps.base.outputs.base }} --select=projects
 
       - name: Run affected tests
-        run: npx nx affected:test --base=origin/main
+        run: npx nx affected:test --base=${{ steps.base.outputs.base }}
 
       - name: Run affected builds
-        run: npx nx affected:build --base=origin/main
+        run: npx nx affected:build --base=${{ steps.base.outputs.base }}
 
       - name: Check formatting
-        run: npx nx format:check --base=origin/main
+        run: npx nx format:check --base=${{ steps.base.outputs.base }}
 
       - name: Validate CDK (if infrastructure changed)
         run: |
-          if npx nx print-affected --base=origin/main --select=projects | grep -q "infrastructure"; then
+          if npx nx print-affected --base=${{ steps.base.outputs.base }} --select=projects | grep -q "infrastructure"; then
             echo "Infrastructure changes detected, validating CDK..."
             npx nx build infrastructure
             cd dist/infrastructure

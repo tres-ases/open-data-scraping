@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 env:
   NODE_VERSION: '20'
@@ -133,7 +133,7 @@ jobs:
 
   deploy-infrastructure:
     needs: [setup, test-and-lint, build-apps]
-    if: always() && github.ref == 'refs/heads/main' && needs.setup.outputs.has-infrastructure-changes == 'true'
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && needs.setup.outputs.has-infrastructure-changes == 'true'
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -169,7 +169,7 @@ jobs:
 
   deploy-applications:
     needs: [setup, deploy-infrastructure]
-    if: always() && github.ref == 'refs/heads/main' && (needs.deploy-infrastructure.result == 'success' || needs.deploy-infrastructure.result == 'skipped')
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (needs.deploy-infrastructure.result == 'success' || needs.deploy-infrastructure.result == 'skipped')
     runs-on: ubuntu-latest
     environment: production
     strategy:
@@ -212,7 +212,7 @@ jobs:
 
   health-check:
     needs: [deploy-applications]
-    if: always() && github.ref == 'refs/heads/main' && needs.deploy-applications.result == 'success'
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && needs.deploy-applications.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Health check
