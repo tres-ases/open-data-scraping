@@ -46,7 +46,7 @@ jobs:
       - name: Check affected projects
         run: |
           echo "Affected projects:"
-          npx nx print-affected --base=${{ steps.base.outputs.base }} --select=projects
+          npx nx show projects --affected --base=${{ steps.base.outputs.base }}
 
       - name: Run affected tests
         run: npx nx affected:test --base=${{ steps.base.outputs.base }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Validate CDK (if infrastructure changed)
         run: |
-          if npx nx print-affected --base=${{ steps.base.outputs.base }} --select=projects | grep -q "infrastructure"; then
+          if npx nx show projects --affected --base=${{ steps.base.outputs.base }} | grep -q "infrastructure"; then
             echo "Infrastructure changes detected, validating CDK..."
             npx nx build infrastructure
             cd dist/infrastructure
