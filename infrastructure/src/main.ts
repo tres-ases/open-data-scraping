@@ -18,14 +18,14 @@ const env = {
 };
 
 // Storage Stack - Foundation for all data storage
-const storageStack = new StorageStack(app, `ODM-${environment}-Storage`, {
+const storageStack = new StorageStack(app, `OD-${environment}-Storage`, {
   env,
   environment,
   description: 'Open Data - Storage infrastructure (S3, DynamoDB)',
 });
 
 // Processing Stack - Lambda functions and Step Functions
-const processingStack = new ProcessingStack(app, `ODM-${environment}-Processing`, {
+const processingStack = new ProcessingStack(app, `OD-${environment}-Processing`, {
   env,
   environment,
   description: 'Open Data - Data processing infrastructure',
@@ -40,7 +40,7 @@ const processingStack = new ProcessingStack(app, `ODM-${environment}-Processing`
 });
 
 // API Stack - API Gateway and Lambda handlers
-const apiStack = new ApiStack(app, `ODM-${environment}-API`, {
+const apiStack = new ApiStack(app, `OD-${environment}-API`, {
   env,
   environment,
   description: 'Open Data - API Gateway and handlers',
@@ -55,7 +55,7 @@ const apiStack = new ApiStack(app, `ODM-${environment}-API`, {
 });
 
 // Frontend Stack - CloudFront and S3 for web app
-const frontendStack = new FrontendStack(app, `ODM-${environment}-Frontend`, {
+const frontendStack = new FrontendStack(app, `OD-${environment}-Frontend`, {
   env,
   environment,
   description: 'Open Data - Frontend infrastructure',

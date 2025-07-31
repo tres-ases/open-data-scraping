@@ -76,7 +76,7 @@ export class ApiStack extends cdk.Stack {
                 'ssm:GetParameters',
               ],
               resources: [
-                `arn:aws:ssm:${this.region}:${this.account}:parameter/odm/${environment}/*`,
+                `arn:aws:ssm:${this.region}:${this.account}:parameter/od/${environment}/*`,
               ],
             }),
           ],
@@ -93,7 +93,7 @@ export class ApiStack extends cdk.Stack {
 
     // Legislators API Handler (placeholder)
     const legislatorsHandler = new lambda.Function(this, 'LegislatorsHandler', {
-      functionName: `odm-${environment}-legislators-api`,
+      functionName: `od-${environment}-legislators-api`,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
@@ -131,7 +131,7 @@ export class ApiStack extends cdk.Stack {
 
     // Analytics API Handler (placeholder)
     const analyticsHandler = new lambda.Function(this, 'AnalyticsHandler', {
-      functionName: `odm-${environment}-analytics-api`,
+      functionName: `od-${environment}-analytics-api`,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
@@ -167,8 +167,8 @@ export class ApiStack extends cdk.Stack {
     });
 
     // API Gateway
-    this.apiGateway = new apigateway.RestApi(this, 'ODMApi', {
-      restApiName: `ODM-${environment}-API`,
+    this.apiGateway = new apigateway.RestApi(this, 'ODApi', {
+      restApiName: `OD-${environment}-API`,
       description: 'Open Data API',
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
@@ -297,13 +297,13 @@ export class ApiStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ApiGatewayUrl', {
       value: this.apiGatewayUrl,
       description: 'API Gateway URL',
-      exportName: `ODM-${environment}-ApiGatewayUrl`,
+      exportName: `OD-${environment}-ApiGatewayUrl`,
     });
 
     new cdk.CfnOutput(this, 'ApiGatewayId', {
       value: this.apiGateway.restApiId,
       description: 'API Gateway ID',
-      exportName: `ODM-${environment}-ApiGatewayId`,
+      exportName: `OD-${environment}-ApiGatewayId`,
     });
   }
 }

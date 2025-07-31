@@ -2,9 +2,10 @@
 
 ## Visión General
 
-La plataforma Open Data Motivation es una solución serverless construida en AWS que extrae, procesa y presenta datos legislativos chilenos de manera eficiente y escalable. El sistema está diseñado con una arquitectura orientada a eventos que minimiza costos operativos mientras mantiene alta disponibilidad y tiempos de respuesta óptimos.
+La plataforma Open Data es una solución serverless construida en AWS que extrae, procesa y presenta datos legislativos chilenos de manera eficiente y escalable. El sistema está diseñado con una arquitectura orientada a eventos que minimiza costos operativos mientras mantiene alta disponibilidad y tiempos de respuesta óptimos.
 
 La arquitectura se basa en tres pilares fundamentales:
+
 1. **Extracción automatizada** de datos desde fuentes gubernamentales
 2. **Procesamiento inteligente** para identificar comportamientos problemáticos
 3. **Presentación accesible** para ciudadanos con modelo freemium
@@ -16,6 +17,7 @@ La arquitectura se basa en tres pilares fundamentales:
 El sistema legislativo chileno se organiza en dos cámaras con estructuras de información específicas:
 
 **Senado de Chile (senado.cl):**
+
 - **Legislaturas**: Períodos de 8 años (ej: 2018-2026)
 - **Senadores**: 50 senadores elegidos por regiones
 - **Sesiones**: Ordinarias (marzo-enero) y extraordinarias
@@ -23,6 +25,7 @@ El sistema legislativo chileno se organiza en dos cámaras con estructuras de in
 - **Proyectos de Ley**: Tramitación bicameral
 
 **Cámara de Diputados (camara.cl):**
+
 - **Legislaturas**: Períodos de 4 años (ej: 2022-2026)
 - **Diputados**: 155 diputados elegidos por distritos
 - **Sesiones**: Sala y comisiones
@@ -37,22 +40,22 @@ erDiagram
     LEGISLADOR ||--o{ VOTO : emite
     LEGISLADOR ||--o{ GASTO : incurre
     LEGISLADOR ||--o{ RESULTADO_ELECTORAL : elegido_por
-    
+
     SESION ||--o{ ASISTENCIA : tiene
     SESION ||--o{ VOTACION : incluye
     SESION ||--o{ PROYECTO_LEY : tramita
-    
+
     VOTACION ||--o{ VOTO : compuesta_por
     PROYECTO_LEY ||--o{ VOTACION : genera
     PROYECTO_LEY ||--o{ TRAMITACION : sigue
-    
+
     COMISION ||--o{ SESION : realiza
     COMISION ||--o{ LEGISLADOR : integrada_por
-    
+
     RESULTADO_ELECTORAL ||--o{ LEGISLADOR : elige
     REGION ||--o{ RESULTADO_ELECTORAL : tiene
     DISTRITO ||--o{ RESULTADO_ELECTORAL : tiene
-    
+
     LEGISLATURA {
         string id
         date fecha_inicio
@@ -60,7 +63,7 @@ erDiagram
         string camara
         int numero
     }
-    
+
     LEGISLADOR {
         string id
         string nombre
@@ -70,7 +73,7 @@ erDiagram
         string periodo
         string estado
     }
-    
+
     SESION {
         string id
         date fecha
@@ -80,7 +83,7 @@ erDiagram
         string estado
         array proyectos_tratados
     }
-    
+
     PROYECTO_LEY {
         string boletin
         string titulo
@@ -90,7 +93,7 @@ erDiagram
         date fecha_ingreso
         string urgencia
     }
-    
+
     VOTACION {
         string id
         string id_sesion
@@ -102,14 +105,14 @@ erDiagram
         int abstenciones
         int ausentes
     }
-    
+
     VOTO {
         string id_legislador
         string id_votacion
         string posicion
         string justificacion
     }
-    
+
     ASISTENCIA {
         string id_legislador
         string id_sesion
@@ -117,7 +120,7 @@ erDiagram
         string justificacion
         string tipo_ausencia
     }
-    
+
     GASTO {
         string id_legislador
         date fecha
@@ -131,6 +134,7 @@ erDiagram
 ### Flujos de Información por Fuente
 
 **Senado.cl - Estructura de Datos:**
+
 1. **Legisladores**: `/senadores/` → Perfiles, contactos, comisiones
 2. **Sesiones**: `/sesiones/` → Fechas, asistencia, orden del día
 3. **Votaciones**: `/votaciones/` → Resultados por proyecto y legislador
@@ -138,6 +142,7 @@ erDiagram
 5. **Proyectos**: `/tramitacion/` → Estado de proyectos de ley
 
 **Camara.cl - Estructura de Datos:**
+
 1. **Diputados**: `/diputados/` → Perfiles, distritos, comisiones
 2. **Sesiones**: `/sesiones-sala/` → Sesiones de sala y comisiones
 3. **Votaciones**: `/votaciones/` → Detalles de votaciones
@@ -145,6 +150,7 @@ erDiagram
 5. **Proyectos**: `/proyectos-de-ley/` → Tramitación legislativa
 
 **Servel.cl - Estructura de Datos:**
+
 1. **Elecciones Parlamentarias**: Resultados por región/distrito
 2. **Candidatos**: Información de candidatos electos
 3. **Votación**: Votos obtenidos por candidato
@@ -153,20 +159,24 @@ erDiagram
 ### Ciclos de Actualización de Datos
 
 **Datos en Tiempo Real:**
+
 - Sesiones en curso: Asistencia y votaciones
 - Estado de proyectos: Cambios de tramitación
 
 **Datos Diarios:**
+
 - Nuevas sesiones programadas
 - Resultados de votaciones del día
 - Actualizaciones de asistencia
 
 **Datos Semanales:**
+
 - Gastos parlamentarios publicados
 - Informes de comisiones
 - Estadísticas de rendimiento
 
 **Datos Mensuales:**
+
 - Consolidación de métricas
 - Reportes de transparencia
 - Análisis de tendencias
@@ -182,7 +192,7 @@ graph TB
         B[camara.cl]
         C[servel.cl]
     end
-    
+
     subgraph "Capa de Extracción"
         D[Step Functions Orchestrator]
         E[Lambda Extractor Legisladores]
@@ -192,13 +202,13 @@ graph TB
         I[Lambda Extractor SERVEL]
         J[EventBridge Scheduler]
     end
-    
+
     subgraph "Capa de Almacenamiento"
         K[S3 Raw Data]
         L[DynamoDB]
         M[S3 Processed Data]
     end
-    
+
     subgraph "Capa de Procesamiento"
         N[Lambda Data Processor]
         O[Lambda Analytics Engine]
@@ -206,34 +216,34 @@ graph TB
         Q[Lambda Report Generator]
         R[Bedrock AI Agents]
     end
-    
+
     subgraph "Capa de API"
         S[API Gateway]
         T[Lambda API Handlers]
     end
-    
+
     subgraph "Frontend"
         U[React Web App]
         V[CloudFront CDN]
     end
-    
+
     A --> D
     B --> D
     C --> D
     J --> D
-    
+
     D --> E
     D --> F
     D --> G
     D --> H
     D --> I
-    
+
     E --> K
     F --> K
     G --> K
     H --> K
     I --> K
-    
+
     K --> N
     N --> L
     N --> M
@@ -241,11 +251,11 @@ graph TB
     O --> P
     P --> R
     R --> Q
-    
+
     S --> T
     T --> L
     T --> M
-    
+
     V --> U
     U --> S
 ```
@@ -253,7 +263,7 @@ graph TB
 ### Estructura de Datos en S3
 
 ```
-s3://open-data-bucket/
+s3://open-data-cl-bucket-{environment}/
 ├── raw/
 │   ├── senado/
 │   │   ├── year=2024/
@@ -318,6 +328,7 @@ s3://open-data-bucket/
 ### 1. Sistema de Extracción de Datos con Step Functions
 
 **Orquestador Principal (Step Functions):**
+
 - `ExtractionOrchestrator`: Coordina la extracción completa de todas las fuentes
 - Maneja reintentos, paralelización y manejo de errores
 - Ejecuta flujos diferenciados para Senado, Cámara y SERVEL
@@ -325,6 +336,7 @@ s3://open-data-bucket/
 **Extractores Lambda Especializados:**
 
 **Para Senado.cl:**
+
 - `SenadoLegisladoresExtractor`: Extrae perfiles de senadores, comisiones, contactos
 - `SenadoSesionesExtractor`: Extrae sesiones de sala y comisiones, orden del día
 - `SenadoVotacionesExtractor`: Extrae votaciones con detalle por senador
@@ -332,6 +344,7 @@ s3://open-data-bucket/
 - `SenadoProyectosExtractor`: Extrae estado de tramitación de proyectos
 
 **Para Camara.cl:**
+
 - `CamaraLegisladoresExtractor`: Extrae perfiles de diputados, distritos, comisiones
 - `CamaraSesionesExtractor`: Extrae sesiones de sala y comisiones
 - `CamaraVotacionesExtractor`: Extrae votaciones con detalle por diputado
@@ -339,11 +352,13 @@ s3://open-data-bucket/
 - `CamaraProyectosExtractor`: Extrae proyectos de ley y su tramitación
 
 **Para Servel.cl:**
+
 - `ServelEleccionesExtractor`: Extrae resultados electorales por circunscripción
 - `ServelCandidatosExtractor`: Extrae información de candidatos electos
 - `ServelResultadosExtractor`: Extrae votación detallada por región/distrito
 
 **Flujo de Step Functions:**
+
 ```json
 {
   "Comment": "Orquestación de extracción de datos legislativos",
@@ -368,7 +383,7 @@ s3://open-data-bucket/
                         "source": "senado",
                         "pages": ["legisladores", "senadores-en-ejercicio"]
                       },
-                      "Retry": [{"ErrorEquals": ["States.ALL"], "MaxAttempts": 3}],
+                      "Retry": [{ "ErrorEquals": ["States.ALL"], "MaxAttempts": 3 }],
                       "End": true
                     }
                   }
@@ -430,6 +445,7 @@ s3://open-data-bucket/
 ```
 
 **Interfaces:**
+
 ```typescript
 interface DataExtractor {
   extract(params: ExtractionParams): Promise<RawDataBatch>;
@@ -474,6 +490,7 @@ interface StepFunctionExecutionResult {
 ```
 
 **Configuración de Scheduling:**
+
 - Extracción diaria: Legisladores, sesiones recientes
 - Extracción semanal: Votaciones, gastos
 - Extracción mensual: Datos históricos completos
@@ -482,22 +499,26 @@ interface StepFunctionExecutionResult {
 ### 2. Motor de Procesamiento y Análisis
 
 **Procesador Principal:**
+
 - Transforma datos raw JSON en formato Parquet estructurado
 - Aplica esquemas consistentes para compatibilidad con Glue/Athena
 - Identifica inconsistencias y anomalías en los datos
 
 **Motor de Analytics:**
+
 - Detecta comportamientos problemáticos usando reglas de negocio
 - Genera rankings comparativos entre legisladores
 - Calcula indicadores de accountability y transparencia
 
 **Generador de Insights con IA:**
+
 - Utiliza Amazon Bedrock para análisis avanzados
 - Genera insights narrativos sobre patrones de comportamiento
 - Crea resúmenes automáticos para informes premium
 - Identifica tendencias emergentes en datos legislativos
 
 **Interfaces:**
+
 ```typescript
 interface AnalyticsEngine {
   detectProblematicBehavior(legislator: Legislator): ProblematicBehavior[];
@@ -533,6 +554,7 @@ interface ProblematicBehavior {
 ### 3. API REST
 
 **Endpoints Principales:**
+
 - `GET /api/legislators` - Lista de legisladores con métricas básicas
 - `GET /api/legislators/{id}` - Detalle completo de un legislador
 - `GET /api/legislators/{id}/problematic-behaviors` - Comportamientos problemáticos
@@ -541,6 +563,7 @@ interface ProblematicBehavior {
 - `POST /api/subscriptions` - Gestión de suscripciones premium
 
 **Autenticación:**
+
 - JWT tokens para usuarios registrados
 - API Keys para desarrolladores externos
 - Rate limiting por usuario/IP
@@ -548,6 +571,7 @@ interface ProblematicBehavior {
 ### 4. Frontend Web
 
 **Componentes Principales:**
+
 - `LegislatorCard`: Tarjeta con información básica y alertas
 - `ProblematicBehaviorAlert`: Componente para destacar comportamientos problemáticos
 - `PerformanceChart`: Gráficos de rendimiento comparativo
@@ -559,6 +583,7 @@ interface ProblematicBehavior {
 ### DynamoDB Tables
 
 **Legislators Table:**
+
 ```typescript
 interface LegislatorRecord {
   PK: string; // "LEG#{id}"
@@ -577,6 +602,7 @@ interface LegislatorRecord {
 ```
 
 **Sessions Table:**
+
 ```typescript
 interface SessionRecord {
   PK: string; // "SESSION#{date}#{chamber}"
@@ -591,6 +617,7 @@ interface SessionRecord {
 ```
 
 **Analytics Table:**
+
 ```typescript
 interface AnalyticsRecord {
   PK: string; // "ANALYTICS#{type}"
@@ -606,6 +633,7 @@ interface AnalyticsRecord {
 ### Esquemas de Datos Procesados (Parquet)
 
 **Tabla: processed/senado/legisladores/**
+
 ```sql
 CREATE EXTERNAL TABLE senado_legisladores (
   id string,
@@ -653,6 +681,7 @@ STORED AS PARQUET
 ```
 
 **Tabla: processed/senado/votaciones/**
+
 ```sql
 CREATE EXTERNAL TABLE senado_votaciones (
   id_votacion string,
@@ -687,6 +716,7 @@ STORED AS PARQUET
 ```
 
 **Tabla: processed/senado/sesiones/**
+
 ```sql
 CREATE EXTERNAL TABLE senado_sesiones (
   id_sesion string,
@@ -725,6 +755,7 @@ STORED AS PARQUET
 ```
 
 **Tabla: processed/senado/proyectos/**
+
 ```sql
 CREATE EXTERNAL TABLE senado_proyectos (
   boletin string,
@@ -760,6 +791,7 @@ STORED AS PARQUET
 ```
 
 **Tabla: processed/senado/gastos/**
+
 ```sql
 CREATE EXTERNAL TABLE senado_gastos (
   id_gasto string,
@@ -787,6 +819,7 @@ STORED AS PARQUET
 ```
 
 **Tabla: processed/analisis/comportamientos_problematicos/**
+
 ```sql
 CREATE EXTERNAL TABLE comportamientos_problematicos (
   id_legislador string,
@@ -829,17 +862,20 @@ STORED AS PARQUET
 ### Estrategias de Resilencia
 
 **Extracción de Datos:**
+
 - Retry automático con backoff exponencial
 - Circuit breaker para fuentes no disponibles
 - Fallback a datos cached en caso de falla
 - Dead Letter Queue para errores persistentes
 
 **Procesamiento:**
+
 - Validación de datos en múltiples capas
 - Rollback automático en caso de inconsistencias
 - Alertas automáticas para anomalías de datos
 
 **API:**
+
 - Rate limiting con respuestas HTTP apropiadas
 - Timeout handling para consultas complejas
 - Graceful degradation para servicios no críticos
@@ -852,7 +888,7 @@ enum ErrorCodes {
   DATA_VALIDATION_FAILED = 'DVF002',
   RATE_LIMIT_EXCEEDED = 'RLE003',
   AUTHENTICATION_FAILED = 'AUF004',
-  PREMIUM_SUBSCRIPTION_REQUIRED = 'PSR005'
+  PREMIUM_SUBSCRIPTION_REQUIRED = 'PSR005',
 }
 ```
 
@@ -861,16 +897,19 @@ enum ErrorCodes {
 ### Testing Automatizado
 
 **Unit Tests:**
+
 - Cobertura mínima del 80% para funciones críticas
 - Tests para extractores de datos con mocks de fuentes externas
 - Tests para motor de analytics con datos sintéticos
 
 **Integration Tests:**
+
 - Tests end-to-end para flujo completo de extracción-procesamiento-API
 - Tests de performance para endpoints críticos
 - Tests de carga para validar escalabilidad
 
 **E2E Tests:**
+
 - Scenarios de usuario completos
 - Tests de regresión para comportamientos problemáticos
 - Tests de compatibilidad cross-browser
@@ -878,11 +917,13 @@ enum ErrorCodes {
 ### Estrategia de Deployment
 
 **Environments:**
+
 - `dev`: Desarrollo con datos sintéticos
 - `staging`: Pre-producción con subset de datos reales
 - `prod`: Producción con monitoreo completo
 
 **CI/CD Pipeline:**
+
 ```mermaid
 graph LR
     A[Git Push] --> B[Unit Tests]
@@ -898,18 +939,21 @@ graph LR
 ### Monitoreo y Observabilidad
 
 **Métricas Clave:**
+
 - Latencia de API (p95 < 500ms)
 - Tasa de éxito de extracción (> 99%)
 - Costo por usuario activo
 - Tiempo de procesamiento de datos
 
 **Alertas:**
+
 - Fallas en extracción de datos > 5 minutos
 - Latencia de API > 1 segundo
 - Errores de validación > 5%
 - Costos AWS > presupuesto mensual
 
 **Dashboards:**
+
 - CloudWatch dashboard para métricas técnicas
 - Business dashboard para KPIs de producto
 - Cost dashboard para optimización financiera
@@ -919,12 +963,14 @@ graph LR
 ### Configuración de Glue Data Catalog
 
 **Crawlers Automáticos:**
+
 - Crawler para datos procesados de Senado: `senado-processed-crawler`
 - Crawler para datos procesados de Cámara: `camara-processed-crawler`
 - Crawler para datos de SERVEL: `servel-processed-crawler`
 - Crawler para análisis de IA: `analisis-ia-crawler`
 
 **Tablas Glue Generadas:**
+
 ```typescript
 interface GlueTableConfig {
   tableName: string;
@@ -938,18 +984,18 @@ const glueTablesConfig: GlueTableConfig[] = [
   {
     tableName: 'senado_legisladores',
     s3Location: 's3://bucket/processed/senado/legisladores/',
-    partitionKeys: ['year', 'month']
+    partitionKeys: ['year', 'month'],
   },
   {
     tableName: 'senado_votaciones',
     s3Location: 's3://bucket/processed/senado/votaciones/',
-    partitionKeys: ['year', 'month']
+    partitionKeys: ['year', 'month'],
   },
   {
     tableName: 'comportamientos_problematicos',
     s3Location: 's3://bucket/processed/analisis/comportamientos_problematicos/',
-    partitionKeys: ['year', 'month']
-  }
+    partitionKeys: ['year', 'month'],
+  },
 ];
 ```
 
@@ -958,12 +1004,14 @@ const glueTablesConfig: GlueTableConfig[] = [
 **Configuración de Agentes:**
 
 1. **Agente Analista de Comportamiento:**
+
    - Modelo: Claude 3.5 Sonnet
    - Función: Identificar patrones anómalos en comportamiento legislativo
    - Input: Datos de asistencia, votaciones y gastos
    - Output: Insights narrativos y recomendaciones
 
 2. **Agente Generador de Reportes:**
+
    - Modelo: Claude 3.5 Sonnet
    - Función: Crear resúmenes ejecutivos para informes premium
    - Input: Métricas agregadas y comportamientos problemáticos
@@ -976,6 +1024,7 @@ const glueTablesConfig: GlueTableConfig[] = [
    - Output: Análisis predictivo y alertas tempranas
 
 **Prompts de Sistema para Agentes:**
+
 ```typescript
 const BEHAVIOR_ANALYST_PROMPT = `
 Eres un analista especializado en transparencia legislativa chilena. 
