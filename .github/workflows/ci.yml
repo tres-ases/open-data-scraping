@@ -41,8 +41,13 @@ jobs:
             BASE_SHA="HEAD~1"
           fi
 
-          echo "apps=$(npx nx show projects --affected --base=$BASE_SHA --type=app | tr '\n' ',' | sed 's/,$//')" >> $GITHUB_OUTPUT
-          echo "libs=$(npx nx show projects --affected --base=$BASE_SHA --type=lib | tr '\n' ',' | sed 's/,$//')" >> $GITHUB_OUTPUT
+          # Get affected apps and format as JSON array
+          AFFECTED_APPS=$(npx nx show projects --affected --base=$BASE_SHA --type=app | jq -R -s -c 'split("\n")[:-1]')
+          echo "apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
+
+          # Get affected libs and format as JSON array
+          AFFECTED_LIBS=$(npx nx show projects --affected --base=$BASE_SHA --type=lib | jq -R -s -c 'split("\n")[:-1]')
+          echo "libs=$AFFECTED_LIBS" >> $GITHUB_OUTPUT
 
           # Check if infrastructure has changes
           if npx nx show projects --affected --base=$BASE_SHA | grep -q "infrastructure"; then
@@ -53,11 +58,11 @@ jobs:
 
   test-and-lint:
     needs: setup
-    if: needs.setup.outputs.affected-libs != ''
+    if: needs.setup.outputs.affected-libs != '[]'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: ${{ fromJson(format('["{0}"]', needs.setup.outputs.affected-libs)) }}
+        project: ${{ fromJson(needs.setup.outputs.affected-libs) }}
       fail-fast: false
     steps:
       - name: Checkout
@@ -91,11 +96,11 @@ jobs:
 
   build-apps:
     needs: [setup, test-and-lint]
-    if: always() && needs.setup.outputs.affected-apps != ''
+    if: always() && needs.setup.outputs.affected-apps != '[]'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app: ${{ fromJson(format('["{0}"]', needs.setup.outputs.affected-apps)) }}
+        app: ${{ fromJson(needs.setup.outputs.affected-apps) }}
       fail-fast: false
     steps:
       - name: Checkout
@@ -161,7 +166,7 @@ jobs:
 
       - name: Deploy infrastructure
         run: |
-          cd dist/infrastructure
+          cd infrastructure
           npx cdk deploy --all --require-approval never --context environment=prod
         env:
           CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }}
