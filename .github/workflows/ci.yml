@@ -55,19 +55,36 @@ jobs:
             BASE_SHA="HEAD~1"
           fi
 
+          echo "Detecting affected projects with base SHA: $BASE_SHA"
+
+          # Get all affected projects for debugging
+          echo "All affected projects:"
+          npx nx show projects --affected --base=$BASE_SHA || echo "No affected projects found"
+
           # Get affected apps (excluding e2e projects) and format as JSON array
           AFFECTED_APPS=$(npx nx show projects --affected --base=$BASE_SHA --type=app | grep -v '\-e2e$' | jq -R -s -c 'split("\n")[:-1]')
+
+          # If no apps are affected but we're on master, include core apps
+          if [ "$AFFECTED_APPS" = "[]" ] && [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            echo "No apps affected, but on master branch - including core apps"
+            AFFECTED_APPS='["api", "web"]'
+          fi
+
+          echo "Affected apps: $AFFECTED_APPS"
           echo "apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
 
           # Get affected libs and format as JSON array
           AFFECTED_LIBS=$(npx nx show projects --affected --base=$BASE_SHA --type=lib | jq -R -s -c 'split("\n")[:-1]')
+          echo "Affected libs: $AFFECTED_LIBS"
           echo "libs=$AFFECTED_LIBS" >> $GITHUB_OUTPUT
 
           # Check if infrastructure has changes
           if npx nx show projects --affected --base=$BASE_SHA | grep -q "infrastructure"; then
             echo "infrastructure=true" >> $GITHUB_OUTPUT
+            echo "Infrastructure changes detected"
           else
             echo "infrastructure=false" >> $GITHUB_OUTPUT
+            echo "No infrastructure changes detected"
           fi
 
   test-and-lint:
@@ -202,13 +219,13 @@ jobs:
           CDK_DEFAULT_REGION: ${{ env.AWS_REGION }}
 
   deploy-applications:
-    needs: [setup, deploy-infrastructure]
-    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (needs.deploy-infrastructure.result == 'success' || needs.deploy-infrastructure.result == 'skipped')
+    needs: [setup, build-apps, deploy-infrastructure]
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (needs.deploy-infrastructure.result == 'success' || needs.deploy-infrastructure.result == 'skipped') && needs.setup.outputs.affected-apps != '[]'
     runs-on: ubuntu-latest
     environment: production
     strategy:
       matrix:
-        app: ["api", "web"]
+        app: ${{ fromJson(needs.setup.outputs.affected-apps) }}
       fail-fast: false
     steps:
       - name: Checkout
@@ -227,11 +244,11 @@ jobs:
           echo "Dependencies installed successfully"
 
       - name: Download build artifacts
-        if: contains(needs.setup.outputs.affected-apps, matrix.app)
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.app }}-build
           path: dist/${{ matrix.app }}
+        continue-on-error: false
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -241,7 +258,6 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy ${{ matrix.app }}
-        if: contains(needs.setup.outputs.affected-apps, matrix.app)
         run: |
           echo "Deploying ${{ matrix.app }} application"
           # Deployment logic will be implemented in future tasks
