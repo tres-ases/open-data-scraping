@@ -59,8 +59,8 @@ const frontendStack = new FrontendStack(app, `OD-${environment}-Frontend`, {
   env,
   environment,
   description: 'Open Data - Frontend infrastructure',
-  // Pass API Gateway URL
-  apiGatewayUrl: apiStack.apiGatewayUrl,
+  // Pass API Gateway ID
+  apiGatewayId: apiStack.apiGateway.restApiId,
 });
 
 // Add dependencies

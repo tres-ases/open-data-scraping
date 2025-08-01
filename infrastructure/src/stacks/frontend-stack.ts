@@ -8,7 +8,7 @@ import { Construct } from 'constructs';
 
 export interface FrontendStackProps extends cdk.StackProps {
   environment: string;
-  apiGatewayUrl: string;
+  apiGatewayId: string;
 }
 
 export class FrontendStack extends cdk.Stack {
@@ -19,7 +19,11 @@ export class FrontendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: FrontendStackProps) {
     super(scope, id, props);
 
-    const { environment, apiGatewayUrl } = props;
+    const { environment, apiGatewayId } = props;
+
+    // Construct API Gateway URL from the ID
+    const apiGatewayUrl = `https://${apiGatewayId}.execute-api.${this.region}.amazonaws.com/${environment}`;
+    const apiGatewayDomain = `${apiGatewayId}.execute-api.${this.region}.amazonaws.com`;
 
     // S3 Bucket for website hosting
     this.websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
@@ -32,7 +36,7 @@ export class FrontendStack extends cdk.Stack {
 
     // Origin Access Identity for CloudFront
     const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OAI', {
-      comment: `OAI for ODM ${environment} website`,
+      comment: `OAI for OD ${environment} website`,
     });
 
     // Grant CloudFront access to S3 bucket
@@ -46,7 +50,7 @@ export class FrontendStack extends cdk.Stack {
 
     // CloudFront Distribution
     this.distribution = new cloudfront.Distribution(this, 'Distribution', {
-      comment: `ODM ${environment} website distribution`,
+      comment: `OD ${environment} website distribution`,
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessIdentity(this.websiteBucket, {
           originAccessIdentity,
@@ -59,8 +63,9 @@ export class FrontendStack extends cdk.Stack {
       },
       additionalBehaviors: {
         '/api/*': {
-          origin: new origins.HttpOrigin(apiGatewayUrl.replace('https://', '').replace('http://', ''), {
+          origin: new origins.HttpOrigin(apiGatewayDomain, {
             protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+            originPath: `/${environment}`,
           }),
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
@@ -168,19 +173,19 @@ export class FrontendStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'WebsiteUrl', {
       value: this.websiteUrl,
       description: 'Website URL',
-      exportName: `ODM-${environment}-WebsiteUrl`,
+      exportName: `OD-${environment}-WebsiteUrl`,
     });
 
     new cdk.CfnOutput(this, 'WebsiteBucketName', {
       value: this.websiteBucket.bucketName,
       description: 'Website S3 bucket name',
-      exportName: `ODM-${environment}-WebsiteBucketName`,
+      exportName: `OD-${environment}-WebsiteBucketName`,
     });
 
     new cdk.CfnOutput(this, 'DistributionId', {
       value: this.distribution.distributionId,
       description: 'CloudFront distribution ID',
-      exportName: `ODM-${environment}-DistributionId`,
+      exportName: `OD-${environment}-DistributionId`,
     });
   }
 }

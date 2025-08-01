@@ -1418,14 +1418,6 @@
    "Export": {
     "Name": "OD-prod-API:ExportsOutputRefODApi07BAFD8A0413D835"
    }
-  },
-  "ExportsOutputRefODApiDeploymentStageprod80AB9DC27DD41B7B": {
-   "Value": {
-    "Ref": "ODApiDeploymentStageprod80AB9DC2"
-   },
-   "Export": {
-    "Name": "OD-prod-API:ExportsOutputRefODApiDeploymentStageprod80AB9DC27DD41B7B"
-   }
   }
  },
  "Rules": {

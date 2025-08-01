@@ -91,7 +91,7 @@
    "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
    "Properties": {
     "CloudFrontOriginAccessIdentityConfig": {
-     "Comment": "OAI for ODM prod website"
+     "Comment": "OAI for OD prod website"
     }
    },
    "Metadata": {
@@ -121,7 +121,7 @@
        "ViewerProtocolPolicy": "redirect-to-https"
       }
      ],
-     "Comment": "ODM prod website distribution",
+     "Comment": "OD prod website distribution",
      "CustomErrorResponses": [
       {
        "ErrorCachingMinTTL": 300,
@@ -193,19 +193,12 @@
           {
            "Fn::ImportValue": "OD-prod-API:ExportsOutputRefODApi07BAFD8A0413D835"
           },
-          ".execute-api.us-east-1.",
-          {
-           "Ref": "AWS::URLSuffix"
-          },
-          "/",
-          {
-           "Fn::ImportValue": "OD-prod-API:ExportsOutputRefODApiDeploymentStageprod80AB9DC27DD41B7B"
-          },
-          "/"
+          ".execute-api.us-east-1.amazonaws.com"
          ]
         ]
        },
-       "Id": "ODprodFrontendDistributionOrigin20ED47DC5"
+       "Id": "ODprodFrontendDistributionOrigin20ED47DC5",
+       "OriginPath": "/prod"
       }
      ],
      "PriceClass": "PriceClass_All"
@@ -262,18 +255,12 @@
      }
     ],
     "SourceObjectKeys": [
-     "eb947d108f541a03b0bbf45f2f0687b2efa6a0b70446e7e906f25dce77f18609.zip"
+     "afd4b2510a398302217a4b066b5e47c00881b21e416418dc0f5af27e529408af.zip"
     ],
     "SourceMarkers": [
      {
       "<<marker:0xbaba:0>>": {
        "Fn::ImportValue": "OD-prod-API:ExportsOutputRefODApi07BAFD8A0413D835"
-      },
-      "<<marker:0xbaba:1>>": {
-       "Ref": "AWS::URLSuffix"
-      },
-      "<<marker:0xbaba:2>>": {
-       "Fn::ImportValue": "OD-prod-API:ExportsOutputRefODApiDeploymentStageprod80AB9DC27DD41B7B"
       }
      }
     ],
@@ -522,7 +509,7 @@
     ]
    },
    "Export": {
-    "Name": "ODM-prod-WebsiteUrl"
+    "Name": "OD-prod-WebsiteUrl"
    }
   },
   "WebsiteBucketName": {
@@ -531,7 +518,7 @@
     "Ref": "WebsiteBucket75C24D94"
    },
    "Export": {
-    "Name": "ODM-prod-WebsiteBucketName"
+    "Name": "OD-prod-WebsiteBucketName"
    }
   },
   "DistributionId": {
@@ -540,7 +527,7 @@
     "Ref": "Distribution830FAC52"
    },
    "Export": {
-    "Name": "ODM-prod-DistributionId"
+    "Name": "OD-prod-DistributionId"
    }
   }
  },
