@@ -4,6 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export interface ApiStackProps extends cdk.StackProps {
@@ -84,11 +85,16 @@ export class ApiStack extends cdk.Stack {
       },
     });
 
-    // Powertools layer
+    // Powertools layer - lookup ARN via AWS SSM Parameter Store
+    const powertoolsLayerArn = ssm.StringParameter.valueForStringParameter(
+      this,
+      '/aws/service/powertools/typescript/layer-arn'
+    );
+
     const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
       this,
       'PowertoolsLayer',
-      `arn:aws:lambda:${this.region}:017000801446:layer:AWSLambdaPowertoolsTypeScriptV2:25`
+      powertoolsLayerArn
     );
 
     // Legislators API Handler (placeholder)
@@ -116,7 +122,7 @@ export class ApiStack extends cdk.Stack {
       loggingFormat: lambda.LoggingFormat.JSON,
       environment: {
         POWERTOOLS_SERVICE_NAME: 'legislators-api',
-        POWERTOOLS_METRICS_NAMESPACE: 'ODM',
+        POWERTOOLS_METRICS_NAMESPACE: 'OD',
         LOG_LEVEL: 'INFO',
         DATA_BUCKET_NAME: dataBucket.bucketName,
         LEGISLATORS_TABLE_NAME: legislatorsTable.tableName,
@@ -153,7 +159,7 @@ export class ApiStack extends cdk.Stack {
       loggingFormat: lambda.LoggingFormat.JSON,
       environment: {
         POWERTOOLS_SERVICE_NAME: 'analytics-api',
-        POWERTOOLS_METRICS_NAMESPACE: 'ODM',
+        POWERTOOLS_METRICS_NAMESPACE: 'OD',
         LOG_LEVEL: 'INFO',
         DATA_BUCKET_NAME: dataBucket.bucketName,
         LEGISLATORS_TABLE_NAME: legislatorsTable.tableName,

@@ -7,6 +7,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export interface ProcessingStackProps extends cdk.StackProps {
@@ -102,13 +103,17 @@ export class ProcessingStack extends cdk.Stack {
     });
 
     // Common Lambda layer for shared dependencies
-    // Remove the layer for now to avoid permission issues
-    // We'll bundle the dependencies directly in the function
-    // const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
-    //   this,
-    //   'PowertoolsLayer',
-    //   `arn:aws:lambda:${this.region}:094274105915:layer:AWSLambdaPowertoolsTypeScriptV2:12`
-    // );
+    // Powertools layer - lookup ARN via AWS SSM Parameter Store
+    const powertoolsLayerArn = ssm.StringParameter.valueForStringParameter(
+      this,
+      '/aws/service/powertools/typescript/layer-arn'
+    );
+
+    const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
+      this,
+      'PowertoolsLayer',
+      powertoolsLayerArn
+    );
 
     // Data Extractor Lambda (placeholder)
     const dataExtractorFunction = new lambda.Function(this, 'DataExtractorFunction', {
@@ -124,7 +129,7 @@ export class ProcessingStack extends cdk.Stack {
       timeout: cdk.Duration.minutes(15),
       memorySize: 1024,
       role: lambdaExecutionRole,
-      // layers: [powertoolsLayer], // Removed to avoid permission issues
+      layers: [powertoolsLayer],
       loggingFormat: lambda.LoggingFormat.JSON,
       environment: {
         POWERTOOLS_SERVICE_NAME: 'data-extractor',
@@ -155,7 +160,7 @@ export class ProcessingStack extends cdk.Stack {
       timeout: cdk.Duration.minutes(15),
       memorySize: 2048,
       role: lambdaExecutionRole,
-      // layers: [powertoolsLayer], // Removed to avoid permission issues
+      layers: [powertoolsLayer],
       loggingFormat: lambda.LoggingFormat.JSON,
       environment: {
         POWERTOOLS_SERVICE_NAME: 'data-processor',

@@ -243,7 +243,7 @@
     "Environment": {
      "Variables": {
       "POWERTOOLS_SERVICE_NAME": "legislators-api",
-      "POWERTOOLS_METRICS_NAMESPACE": "ODM",
+      "POWERTOOLS_METRICS_NAMESPACE": "OD",
       "LOG_LEVEL": "INFO",
       "DATA_BUCKET_NAME": {
        "Fn::ImportValue": "OD-prod-Storage:ExportsOutputRefDataBucketE3889A50250F5285"
@@ -271,7 +271,9 @@
     "FunctionName": "od-prod-legislators-api",
     "Handler": "index.handler",
     "Layers": [
-     "arn:aws:lambda:us-east-1:017000801446:layer:AWSLambdaPowertoolsTypeScriptV2:25"
+     {
+      "Ref": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+     }
     ],
     "LoggingConfig": {
      "LogFormat": "JSON"
@@ -320,7 +322,7 @@
     "Environment": {
      "Variables": {
       "POWERTOOLS_SERVICE_NAME": "analytics-api",
-      "POWERTOOLS_METRICS_NAMESPACE": "ODM",
+      "POWERTOOLS_METRICS_NAMESPACE": "OD",
       "LOG_LEVEL": "INFO",
       "DATA_BUCKET_NAME": {
        "Fn::ImportValue": "OD-prod-Storage:ExportsOutputRefDataBucketE3889A50250F5285"
@@ -348,7 +350,9 @@
     "FunctionName": "od-prod-analytics-api",
     "Handler": "index.handler",
     "Layers": [
-     "arn:aws:lambda:us-east-1:017000801446:layer:AWSLambdaPowertoolsTypeScriptV2:25"
+     {
+      "Ref": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+     }
     ],
     "LoggingConfig": {
      "LogFormat": "JSON"
@@ -1331,11 +1335,22 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOzW7CQAyEn4X7xkAunGmr3ipQeIDKbFxq2J8o9jaKVvvuVRJQ6Wm+mZHsqaHe7GCzwkEq294qx2fIJ0V7MzjIZ2b0kJvoyLx+hVmP0bEdJ7tQMQ79uUXI7ylY5Rim7pmP1HsW4RiKwY4vqDTgCLkh0X3H8+U/3FsbU1DzRp2Lo6egU/rkToqXec4CDUlMvaUXFDIfpN+xnco7Pdr7k5lL+RcfknZJiwmxJbjK+qeuYbuD7eoqzFWfgrInaBb9BTkLrq4wAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOzU7DMBCEn6V3Z2lz6bmAuKFG6QOgrbOUbf0T2WuiyPK7IydFlNN8MyPtTgvtdg/bDU6x0cOtMXyGfBLUN4VT/MiMFnLvDamXT7do5w3rudqVijJozwNCfktOC3tXu0fuKFiOkb0rCke+oNCEM+SeohxGXi7/4UFrn5yoVxqNny05qemDOwleljkr9BR9CpqeMZJ6J/nyQy3v9Nvenyxcyr+4w4CWhEI1xyRjkqKcHwiu8em7bWG3h93mGpmbkJywJehX/QFtrFqxPQEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "OD-prod-API/CDKMetadata/Default"
    }
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/aws/service/powertools/typescript/layer-arn"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Outputs": {
@@ -1411,13 +1426,6 @@
    "Export": {
     "Name": "OD-prod-API:ExportsOutputRefODApiDeploymentStageprod80AB9DC27DD41B7B"
    }
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Rules": {

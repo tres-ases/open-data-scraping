@@ -183,7 +183,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":parameter/odm/prod/*"
+            ":parameter/od/prod/*"
            ]
           ]
          }
@@ -254,7 +254,7 @@
     "Environment": {
      "Variables": {
       "POWERTOOLS_SERVICE_NAME": "data-extractor",
-      "POWERTOOLS_METRICS_NAMESPACE": "ODM",
+      "POWERTOOLS_METRICS_NAMESPACE": "OD",
       "LOG_LEVEL": "INFO",
       "DATA_BUCKET_NAME": {
        "Fn::ImportValue": "OD-prod-Storage:ExportsOutputRefDataBucketE3889A50250F5285"
@@ -279,10 +279,12 @@
       }
      }
     },
-    "FunctionName": "odm-prod-data-extractor",
+    "FunctionName": "od-prod-data-extractor",
     "Handler": "index.handler",
     "Layers": [
-     "arn:aws:lambda:us-east-1:017000801446:layer:AWSLambdaPowertoolsTypeScriptV2:25"
+     {
+      "Ref": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+     }
     ],
     "LoggingConfig": {
      "LogFormat": "JSON"
@@ -331,7 +333,7 @@
     "Environment": {
      "Variables": {
       "POWERTOOLS_SERVICE_NAME": "data-processor",
-      "POWERTOOLS_METRICS_NAMESPACE": "ODM",
+      "POWERTOOLS_METRICS_NAMESPACE": "OD",
       "LOG_LEVEL": "INFO",
       "DATA_BUCKET_NAME": {
        "Fn::ImportValue": "OD-prod-Storage:ExportsOutputRefDataBucketE3889A50250F5285"
@@ -356,10 +358,12 @@
       }
      }
     },
-    "FunctionName": "odm-prod-data-processor",
+    "FunctionName": "od-prod-data-processor",
     "Handler": "index.handler",
     "Layers": [
-     "arn:aws:lambda:us-east-1:017000801446:layer:AWSLambdaPowertoolsTypeScriptV2:25"
+     {
+      "Ref": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+     }
     ],
     "LoggingConfig": {
      "LogFormat": "JSON"
@@ -547,7 +551,7 @@
       "Arn"
      ]
     },
-    "StateMachineName": "ODM-prod-DataExtraction",
+    "StateMachineName": "OD-prod-DataExtraction",
     "Tags": [
      {
       "Key": "Environment",
@@ -640,7 +644,7 @@
    "Type": "AWS::Events::Rule",
    "Properties": {
     "Description": "Trigger daily data extraction",
-    "Name": "ODM-prod-DailyExtraction",
+    "Name": "OD-prod-DailyExtraction",
     "ScheduleExpression": "cron(0 6 * * ? *)",
     "State": "ENABLED",
     "Targets": [
@@ -667,7 +671,7 @@
    "Type": "AWS::Events::Rule",
    "Properties": {
     "Description": "Trigger weekly SERVEL data extraction",
-    "Name": "ODM-prod-WeeklyExtraction",
+    "Name": "OD-prod-WeeklyExtraction",
     "ScheduleExpression": "cron(0 7 ? * SUN *)",
     "State": "ENABLED",
     "Targets": [
@@ -693,11 +697,22 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOUQrCMBBEz+J/ump+PIAgCIoSD1DSdMXYNCnupkVC7i6NCvo182Z3mZUgVxtYLfRElWm7ytkG0oW16YSeqE5W95BUcCi2V1/0HJw1zxnfLgun+6bVkHbRG7bBz7Ovz4IYh+uHqGZNHcGhXOz9GDr8XyjljEdtbtaX0l/OAkf0TJBU/LwUHeYsFFKID1OiU+QhchY+tAh3Wo5SwnoD68WdrK0e0bPtEdRbX8WwqhkAAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WO0QrCMAxFv8X3Lupe/ABBEBTH/ADJuoh1XStLOpHSf5d1Cvp077lJuCmhXG1gtcAnF7rtCmsaiGdB3Sl88iUa7CHW3pLaXl3WylujXxPOLimLfdMixF1wWox30+zrk2Khx/VDfBHkjuGQL/Zu9B39L+RyoSPqm3G59JeTopGcMMQ6fF4KllJSNbEPg85RhQP2JDRMcAryCJKU8y3BnZdjWcJ6A+vFnY0phuDE9AT1rG8tUvHoDQEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "OD-prod-Processing/CDKMetadata/Default"
    }
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/aws/service/powertools/typescript/layer-arn"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Outputs": {
@@ -707,7 +722,7 @@
     "Ref": "ExtractionStateMachineEC59ACBD"
    },
    "Export": {
-    "Name": "ODM-prod-ExtractionStateMachineArn"
+    "Name": "OD-prod-ExtractionStateMachineArn"
    }
   },
   "DataExtractorFunctionArn": {
@@ -719,15 +734,8 @@
     ]
    },
    "Export": {
-    "Name": "ODM-prod-DataExtractorFunctionArn"
+    "Name": "OD-prod-DataExtractorFunctionArn"
    }
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Rules": {
