@@ -4,7 +4,7 @@
  * Test para el extractor de legisladores del Senado
  */
 
-import { WebScraper } from '@open-data-motivation/extractors-core';
+import { WebScraper } from '@open-data/extractors-core';
 
 async function testLegislatorsExtraction() {
   console.log('👥 Probando extracción de legisladores del Senado...\n');

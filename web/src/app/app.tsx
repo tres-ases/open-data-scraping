@@ -7,7 +7,7 @@ import { Route, Routes, Link } from 'react-router-dom';
 export function App() {
   return (
     <div>
-      <NxWelcome title="@open-data-motivation/web" />
+      <NxWelcome title="@open-data/web" />
 
       {/* START: routes */}
       {/* These routes and navigation have been generated for you */}

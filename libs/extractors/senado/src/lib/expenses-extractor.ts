@@ -3,9 +3,9 @@ import {
   BaseDataExtractor,
   BaseExtractorInput,
   ExtractionResult
-} from '@open-data-motivation/extractors-core';
-import { WebScraper } from '@open-data-motivation/extractors-core';
-import { ExpenseSchema, toISOString } from '@open-data-motivation/shared';
+} from '@open-data/extractors-core';
+import { WebScraper } from '@open-data/extractors-core';
+import { ExpenseSchema, toISOString } from '@open-data/shared';
 import * as cheerio from 'cheerio';
 
 // Senate expense specific schema
@@ -28,7 +28,7 @@ export class SenadoExpensesExtractor extends BaseDataExtractor {
   constructor() {
     super('senado-expenses-extractor');
     this.scraper = new WebScraper('senado-expenses', {
-      userAgent: 'OpenDataMotivation/1.0 (Senate Expenses Extractor)',
+      userAgent: 'OpenData/1.0 (Senate Expenses Extractor)',
       rateLimit: {
         requests: 3, // More conservative for financial data
         period: 1000,
@@ -74,7 +74,7 @@ export class SenadoExpensesExtractor extends BaseDataExtractor {
             batchNumber: 1,
             totalBatches: 1,
             url: '/gastos',
-            userAgent: 'OpenDataMotivation/1.0 (Senate Expenses Extractor)',
+            userAgent: 'OpenData/1.0 (Senate Expenses Extractor)',
           },
         };
 

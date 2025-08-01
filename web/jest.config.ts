@@ -1,5 +1,5 @@
 export default {
-  displayName: '@open-data-motivation/web',
+  displayName: '@open-data/web',
   preset: '../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',

@@ -1,5 +1,5 @@
 {
-  "name": "@open-data-motivation/processors-core",
+  "name": "@open-data/processors-core",
   "version": "0.0.1",
   "private": true,
   "main": "./dist/index.js",

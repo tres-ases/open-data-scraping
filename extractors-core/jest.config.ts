@@ -10,7 +10,7 @@ const swcJestConfig = JSON.parse(
 swcJestConfig.swcrc = false;
 
 export default {
-  displayName: '@open-data-motivation/extractors-core',
+  displayName: '@open-data/extractors-core',
   preset: '../jest.preset.js',
   testEnvironment: 'node',
   transform: {

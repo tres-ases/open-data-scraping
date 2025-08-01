@@ -3,9 +3,9 @@ import {
   BaseDataExtractor,
   BaseExtractorInput,
   ExtractionResult
-} from '@open-data-motivation/extractors-core';
-import { WebScraper } from '@open-data-motivation/extractors-core';
-import { SessionSchema, toISOString } from '@open-data-motivation/shared';
+} from '@open-data/extractors-core';
+import { WebScraper } from '@open-data/extractors-core';
+import { SessionSchema, toISOString } from '@open-data/shared';
 import * as cheerio from 'cheerio';
 
 // Senate session specific schema
@@ -34,7 +34,7 @@ export class SenadoSessionsExtractor extends BaseDataExtractor {
   constructor() {
     super('senado-sessions-extractor');
     this.scraper = new WebScraper('senado-sessions', {
-      userAgent: 'OpenDataMotivation/1.0 (Senate Sessions Extractor)',
+      userAgent: 'OpenData/1.0 (Senate Sessions Extractor)',
       rateLimit: {
         requests: 5,
         period: 1000,
@@ -80,7 +80,7 @@ export class SenadoSessionsExtractor extends BaseDataExtractor {
             batchNumber: 1,
             totalBatches: 1,
             url: '/sesiones',
-            userAgent: 'OpenDataMotivation/1.0 (Senate Sessions Extractor)',
+            userAgent: 'OpenData/1.0 (Senate Sessions Extractor)',
           },
         };
 

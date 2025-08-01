@@ -1,10 +1,10 @@
 {
-  "name": "@open-data-motivation/api-e2e",
+  "name": "@open-data/api-e2e",
   "version": "0.0.1",
   "private": true,
   "nx": {
     "implicitDependencies": [
-      "@open-data-motivation/api"
+      "@open-data/api"
     ],
     "targets": {
       "test": {
@@ -27,8 +27,8 @@
           "passWithNoTests": true
         },
         "dependsOn": [
-          "@open-data-motivation/api:build",
-          "@open-data-motivation/api:serve"
+          "@open-data/api:build",
+          "@open-data/api:serve"
         ]
       }
     }

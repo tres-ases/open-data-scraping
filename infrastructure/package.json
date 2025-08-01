@@ -1,5 +1,5 @@
 {
-  "name": "@open-data-motivation/infrastructure",
+  "name": "@open-data/infrastructure",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -21,15 +21,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@open-data-motivation/infrastructure:build",
+          "buildTarget": "@open-data/infrastructure:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@open-data-motivation/infrastructure:build:development"
+            "buildTarget": "@open-data/infrastructure:build:development"
           },
           "production": {
-            "buildTarget": "@open-data-motivation/infrastructure:build:production"
+            "buildTarget": "@open-data/infrastructure:build:production"
           }
         }
       },

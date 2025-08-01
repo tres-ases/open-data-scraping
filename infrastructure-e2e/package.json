@@ -1,10 +1,10 @@
 {
-  "name": "@open-data-motivation/infrastructure-e2e",
+  "name": "@open-data/infrastructure-e2e",
   "version": "0.0.1",
   "private": true,
   "nx": {
     "implicitDependencies": [
-      "@open-data-motivation/infrastructure"
+      "@open-data/infrastructure"
     ],
     "targets": {
       "test": {
@@ -27,8 +27,8 @@
           "passWithNoTests": true
         },
         "dependsOn": [
-          "@open-data-motivation/infrastructure:build",
-          "@open-data-motivation/infrastructure:serve"
+          "@open-data/infrastructure:build",
+          "@open-data/infrastructure:serve"
         ]
       }
     }

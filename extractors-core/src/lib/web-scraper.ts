@@ -21,7 +21,7 @@ const DEFAULT_CONFIG: ScrapingConfig = {
   baseUrl: '',
   timeout: 30000,
   retryAttempts: 3,
-  userAgent: 'OpenDataMotivation/1.0 (Legislative Data Extractor)',
+  userAgent: 'OpenData/1.0 (Legislative Data Extractor)',
   rateLimit: {
     requests: 10,
     period: 1000, // 10 requests per second

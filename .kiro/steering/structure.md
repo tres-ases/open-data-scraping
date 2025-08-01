@@ -156,7 +156,7 @@
 ### AWS Resources
 - **Lambda Functions**: `odm-{environment}-{function-name}` (e.g., `odm-prod-senado-extractor`)
 - **DynamoDB Tables**: `ODM-{Environment}-{TableName}` (e.g., `ODM-Prod-Legislators`)
-- **S3 Buckets**: `open-data-motivation-{environment}-{purpose}` (e.g., `open-data-motivation-prod-data`)
+- **S3 Buckets**: `open-data-{environment}-{purpose}` (e.g., `open-data-prod-data`)
 - **Step Functions**: `ODM-{Environment}-{WorkflowName}` (e.g., `ODM-Prod-DataExtraction`)
 
 ### Code Organization

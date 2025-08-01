@@ -10,7 +10,7 @@ const swcJestConfig = JSON.parse(
 swcJestConfig.swcrc = false;
 
 export default {
-  displayName: '@open-data-motivation/processors-core',
+  displayName: '@open-data/processors-core',
   preset: '../jest.preset.js',
   testEnvironment: 'node',
   transform: {

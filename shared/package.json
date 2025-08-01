@@ -1,5 +1,5 @@
 {
-  "name": "@open-data-motivation/shared",
+  "name": "@open-data/shared",
   "version": "0.0.1",
   "private": true,
   "main": "./dist/index.js",

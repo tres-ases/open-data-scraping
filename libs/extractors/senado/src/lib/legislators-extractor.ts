@@ -3,9 +3,9 @@ import {
   BaseDataExtractor,
   BaseExtractorInput,
   ExtractionResult
-} from '@open-data-motivation/extractors-core';
-import { WebScraper } from '@open-data-motivation/extractors-core';
-import { LegislatorSchema, toISOString } from '@open-data-motivation/shared';
+} from '@open-data/extractors-core';
+import { WebScraper } from '@open-data/extractors-core';
+import { LegislatorSchema, toISOString } from '@open-data/shared';
 import * as cheerio from 'cheerio';
 
 // Senate legislator specific schema
@@ -27,7 +27,7 @@ export class SenadoLegislatorsExtractor extends BaseDataExtractor {
   constructor() {
     super('senado-legislators-extractor');
     this.scraper = new WebScraper('senado-legislators', {
-      userAgent: 'OpenDataMotivation/1.0 (Senate Legislators Extractor)',
+      userAgent: 'OpenData/1.0 (Senate Legislators Extractor)',
       rateLimit: {
         requests: 5,
         period: 1000,
@@ -71,7 +71,7 @@ export class SenadoLegislatorsExtractor extends BaseDataExtractor {
             batchNumber: 1,
             totalBatches: 1,
             url: '/senadores',
-            userAgent: 'OpenDataMotivation/1.0 (Senate Legislators Extractor)',
+            userAgent: 'OpenData/1.0 (Senate Legislators Extractor)',
           },
         };
 

@@ -199,7 +199,7 @@ async function testWebScraper() {
   console.log('🌐 Probando conectividad con senado.cl...\n');
 
   try {
-    const { WebScraper } = await import('@open-data-motivation/extractors-core');
+    const { WebScraper } = await import('@open-data/extractors-core');
 
     const scraper = new WebScraper('test-scraper', {
       baseUrl: 'https://www.senado.cl',

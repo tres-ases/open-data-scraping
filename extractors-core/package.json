@@ -1,5 +1,5 @@
 {
-  "name": "@open-data-motivation/extractors-core",
+  "name": "@open-data/extractors-core",
   "version": "0.0.1",
   "private": true,
   "main": "./dist/index.js",

@@ -3,9 +3,9 @@ import {
   BaseDataExtractor,
   BaseExtractorInput,
   ExtractionResult
-} from '@open-data-motivation/extractors-core';
-import { WebScraper } from '@open-data-motivation/extractors-core';
-import { VotationSchema, toISOString } from '@open-data-motivation/shared';
+} from '@open-data/extractors-core';
+import { WebScraper } from '@open-data/extractors-core';
+import { VotationSchema, toISOString } from '@open-data/shared';
 import * as cheerio from 'cheerio';
 
 // Senate vote specific schema

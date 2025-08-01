@@ -70,7 +70,7 @@ frontendStack.addDependency(apiStack);
 
 // Add tags to all stacks
 const tags = {
-  Project: 'OpenDataMotivation',
+  Project: 'OpenData',
   Environment: environment,
   ManagedBy: 'CDK',
 };

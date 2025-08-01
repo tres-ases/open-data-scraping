@@ -10,7 +10,7 @@ const swcJestConfig = JSON.parse(
 swcJestConfig.swcrc = false;
 
 export default {
-  displayName: '@open-data-motivation/senado',
+  displayName: '@open-data/senado',
   preset: '../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {

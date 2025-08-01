@@ -10,7 +10,7 @@ const swcJestConfig = JSON.parse(
 swcJestConfig.swcrc = false;
 
 export default {
-  displayName: '@open-data-motivation/infrastructure-e2e',
+  displayName: '@open-data/infrastructure-e2e',
   preset: '../jest.preset.js',
   setupFiles: ['<rootDir>/src/test-setup.ts'],
   testEnvironment: 'node',

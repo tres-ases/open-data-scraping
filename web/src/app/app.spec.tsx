@@ -20,7 +20,7 @@ describe('App', () => {
       </BrowserRouter>
     );
     expect(
-      getAllByText(new RegExp('Welcome @open-data-motivation/web', 'gi'))
+      getAllByText(new RegExp('Welcome @open-data/web', 'gi'))
         .length > 0
     ).toBeTruthy();
   });

@@ -5,7 +5,7 @@
  * Incluye pruebas tanto de scraping como de API
  */
 
-import { WebScraper } from '@open-data-motivation/extractors-core';
+import { WebScraper } from '@open-data/extractors-core';
 import axios from 'axios';
 
 async function testVotesAPI() {

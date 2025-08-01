@@ -10,7 +10,7 @@ const swcJestConfig = JSON.parse(
 swcJestConfig.swcrc = false;
 
 export default {
-  displayName: '@open-data-motivation/shared',
+  displayName: '@open-data/shared',
   preset: '../jest.preset.js',
   testEnvironment: 'node',
   transform: {

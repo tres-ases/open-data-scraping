@@ -1,5 +1,5 @@
 {
-  "name": "@open-data-motivation/api",
+  "name": "@open-data/api",
   "version": "0.0.1",
   "private": true,
   "nx": {
@@ -12,15 +12,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@open-data-motivation/api:build",
+          "buildTarget": "@open-data/api:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@open-data-motivation/api:build:development"
+            "buildTarget": "@open-data/api:build:development"
           },
           "production": {
-            "buildTarget": "@open-data-motivation/api:build:production"
+            "buildTarget": "@open-data/api:build:production"
           }
         }
       },
