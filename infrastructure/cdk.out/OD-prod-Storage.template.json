@@ -718,9 +718,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-     },
+     "S3Bucket": "cdk-hnb659fds-assets-886436935193-us-east-1",
      "S3Key": "bdc104ed9cab1b5b6421713c8155f0b753380595356f710400609664d3635eca.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (OD-prod-Storage/S3InitializerProvider)",
@@ -785,7 +783,7 @@
     "BucketName": {
      "Ref": "DataBucketE3889A50"
     },
-    "Timestamp": 1754059662125
+    "Timestamp": 1754061708134
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",

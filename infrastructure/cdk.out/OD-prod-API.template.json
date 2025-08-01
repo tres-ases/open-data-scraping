@@ -169,18 +169,7 @@
           "ssm:GetParameters"
          ],
          "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-east-1:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/od/prod/*"
-           ]
-          ]
-         }
+         "Resource": "arn:aws:ssm:us-east-1:886436935193:parameter/od/prod/*"
         }
        ],
        "Version": "2012-10-17"
@@ -796,11 +785,7 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
+       "arn:aws:execute-api:us-east-1:886436935193:",
        {
         "Ref": "ODApi07BAFD8A"
        },
@@ -832,11 +817,7 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
+       "arn:aws:execute-api:us-east-1:886436935193:",
        {
         "Ref": "ODApi07BAFD8A"
        },
@@ -983,11 +964,7 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
+       "arn:aws:execute-api:us-east-1:886436935193:",
        {
         "Ref": "ODApi07BAFD8A"
        },
@@ -1019,11 +996,7 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
+       "arn:aws:execute-api:us-east-1:886436935193:",
        {
         "Ref": "ODApi07BAFD8A"
        },
@@ -1228,11 +1201,7 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
+       "arn:aws:execute-api:us-east-1:886436935193:",
        {
         "Ref": "ODApi07BAFD8A"
        },
@@ -1264,11 +1233,7 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:execute-api:us-east-1:",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
+       "arn:aws:execute-api:us-east-1:886436935193:",
        {
         "Ref": "ODApi07BAFD8A"
        },

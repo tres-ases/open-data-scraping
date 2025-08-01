@@ -11,7 +11,7 @@
     },
     "OD-prod-Storage": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/us-east-1",
+      "environment": "aws://886436935193/us-east-1",
       "properties": {
         "templateFile": "OD-prod-Storage.template.json",
         "terminationProtection": false,
@@ -21,16 +21,16 @@
           "Project": "OpenDataMotivation"
         },
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/941fce3abd2b4539d015ffc7a6e6185478466e4d83bc2add35f530cec8387c83.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-deploy-role-886436935193-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-cfn-exec-role-886436935193-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-886436935193-us-east-1/529701934e23e19a3d7bf0b79f2bd85f47571bc98f8d04237790111cea0f803e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "OD-prod-Storage.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-lookup-role-886436935193-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -425,7 +425,7 @@
     },
     "OD-prod-Processing": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/us-east-1",
+      "environment": "aws://886436935193/us-east-1",
       "properties": {
         "templateFile": "OD-prod-Processing.template.json",
         "terminationProtection": false,
@@ -435,16 +435,16 @@
           "Project": "OpenDataMotivation"
         },
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/c200b32dc490d55e3c4fd350e3f65f8cf8c4748221b6452e5519466ee07a6c9b.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-deploy-role-886436935193-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-cfn-exec-role-886436935193-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-886436935193-us-east-1/990e44c20286bb61e03257bc4cd7bb65ecaa760aede8fecafcec0ae5a0ac04ae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "OD-prod-Processing.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-lookup-role-886436935193-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -588,7 +588,7 @@
     },
     "OD-prod-API": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/us-east-1",
+      "environment": "aws://886436935193/us-east-1",
       "properties": {
         "templateFile": "OD-prod-API.template.json",
         "terminationProtection": false,
@@ -598,16 +598,16 @@
           "Project": "OpenDataMotivation"
         },
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/8157dbe6ada9d4709bf01fd502492a682cc5002acde9e0d1df1b4f08923080e4.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-deploy-role-886436935193-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-cfn-exec-role-886436935193-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-886436935193-us-east-1/3402cdbc3c7054183c5e93afbccaefbf239cffe2c27e45524d3ada581b618fd7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "OD-prod-API.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-lookup-role-886436935193-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -883,7 +883,7 @@
     },
     "OD-prod-Frontend": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/us-east-1",
+      "environment": "aws://886436935193/us-east-1",
       "properties": {
         "templateFile": "OD-prod-Frontend.template.json",
         "terminationProtection": false,
@@ -893,16 +893,16 @@
           "Project": "OpenDataMotivation"
         },
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/96277899fe0741f253878a6cb717a2e9513f1b4f6ccd0699c0025480bc392a63.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-deploy-role-886436935193-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-cfn-exec-role-886436935193-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-886436935193-us-east-1/0ada81878c06a32dcc873734b30f431a3685ab276ac62cdc4605875cf0ef8eb0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "OD-prod-Frontend.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-lookup-role-886436935193-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -913,6 +913,39 @@
       ],
       "metadata": {
         "/OD-prod-Frontend": [
+          {
+            "type": "aws:cdk:error",
+            "data": "Need to perform AWS calls for account 886436935193, but no credentials have been configured",
+            "trace": [
+              "Annotations.addMessage (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/aws-cdk-lib/core/lib/annotations.js:1:1978)",
+              "Annotations.addError (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/aws-cdk-lib/core/lib/annotations.js:1:1440)",
+              "Function.getValue (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/aws-cdk-lib/core/lib/context-provider.js:2:1771)",
+              "Function.fromLookup (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/aws-cdk-lib/aws-route53/lib/hosted-zone.js:1:3587)",
+              "new FrontendStack (/Users/jaimevillane/proyectos/treases/open-data-scraping/infrastructure/src/stacks/frontend-stack.ts:38:43)",
+              "Object.<anonymous> (/Users/jaimevillane/proyectos/treases/open-data-scraping/infrastructure/src/main.ts:58:23)",
+              "Module._compile (node:internal/modules/cjs/loader:1730:14)",
+              "Module.m._compile (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/ts-node/src/index.ts:1618:23)",
+              "node:internal/modules/cjs/loader:1895:10",
+              "Object.require.extensions.<computed> [as .ts] (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/ts-node/src/index.ts:1621:12)",
+              "Module.load (node:internal/modules/cjs/loader:1465:32)",
+              "Function._load (node:internal/modules/cjs/loader:1282:12)",
+              "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+              "wrapModuleLoad (node:internal/modules/cjs/loader:235:24)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+              "phase4 (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/ts-node/src/bin.ts:649:14)",
+              "bootstrap (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/ts-node/src/bin.ts:95:10)",
+              "main (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/ts-node/src/bin.ts:55:10)",
+              "Object.<anonymous> (/Users/jaimevillane/proyectos/treases/open-data-scraping/node_modules/ts-node/src/bin.ts:800:3)",
+              "Module._compile (node:internal/modules/cjs/loader:1730:14)",
+              "Object.<anonymous> (node:internal/modules/cjs/loader:1895:10)",
+              "Module.load (node:internal/modules/cjs/loader:1465:32)",
+              "Function._load (node:internal/modules/cjs/loader:1282:12)",
+              "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+              "wrapModuleLoad (node:internal/modules/cjs/loader:235:24)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+              "node:internal/main/run_main_module:36:49"
+            ]
+          },
           {
             "type": "aws:cdk:stack-tags",
             "data": [
@@ -929,6 +962,12 @@
                 "Value": "OpenDataMotivation"
               }
             ]
+          }
+        ],
+        "/OD-prod-Frontend/Certificate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate4E7ABB08"
           }
         ],
         "/OD-prod-Frontend/WebsiteBucket/Resource": [
@@ -953,6 +992,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Distribution830FAC52"
+          }
+        ],
+        "/OD-prod-Frontend/AliasRecord0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AliasRecord08334CA55"
+          }
+        ],
+        "/OD-prod-Frontend/AWSCloudFrontPartitionHostedZoneIdMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCloudFrontPartitionHostedZoneIdMap"
+          }
+        ],
+        "/OD-prod-Frontend/AliasRecord1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AliasRecord17127EE53"
           }
         ],
         "/OD-prod-Frontend/WebsiteDeployment/AwsCliLayer/Resource": [
@@ -999,6 +1056,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "WebsiteUrl"
+          }
+        ],
+        "/OD-prod-Frontend/WebsiteDomains": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteDomains"
           }
         ],
         "/OD-prod-Frontend/WebsiteBucketName": [
@@ -1476,5 +1539,21 @@
       }
     }
   },
+  "missing": [
+    {
+      "key": "hosted-zone:account=886436935193:domainName=open-data.cl:region=us-east-1",
+      "provider": "hosted-zone",
+      "props": {
+        "dummyValue": {
+          "Id": "DUMMY",
+          "Name": "open-data.cl"
+        },
+        "account": "886436935193",
+        "region": "us-east-1",
+        "domainName": "open-data.cl",
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-lookup-role-886436935193-us-east-1"
+      }
+    }
+  ],
   "minimumCliVersion": "2.1020.2"
 }

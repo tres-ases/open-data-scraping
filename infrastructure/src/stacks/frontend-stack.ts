@@ -4,6 +4,9 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as targets from 'aws-cdk-lib/aws-route53-targets';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { Construct } from 'constructs';
 
 export interface FrontendStackProps extends cdk.StackProps {
@@ -24,6 +27,25 @@ export class FrontendStack extends cdk.Stack {
     // Construct API Gateway URL from the ID
     const apiGatewayUrl = `https://${apiGatewayId}.execute-api.${this.region}.amazonaws.com/${environment}`;
     const apiGatewayDomain = `${apiGatewayId}.execute-api.${this.region}.amazonaws.com`;
+
+    // Domain configuration
+    const domainName = 'open-data.cl';
+    const subdomains = environment === 'prod'
+      ? ['open-data.cl', 'www.open-data.cl']
+      : [`${environment}.open-data.cl`];
+
+    // Import existing hosted zone
+    // For development, we can use a placeholder. In production, this will do the actual lookup.
+    const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
+      domainName: domainName,
+    });
+
+    // Create SSL certificate for the domains
+    const certificate = new acm.Certificate(this, 'Certificate', {
+      domainName: subdomains[0],
+      subjectAlternativeNames: subdomains.slice(1),
+      validation: acm.CertificateValidation.fromDns(hostedZone),
+    });
 
     // S3 Bucket for website hosting
     this.websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
@@ -51,6 +73,8 @@ export class FrontendStack extends cdk.Stack {
     // CloudFront Distribution
     this.distribution = new cloudfront.Distribution(this, 'Distribution', {
       comment: `OD ${environment} website distribution`,
+      domainNames: subdomains,
+      certificate: certificate,
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessIdentity(this.websiteBucket, {
           originAccessIdentity,
@@ -95,7 +119,17 @@ export class FrontendStack extends cdk.Stack {
       httpVersion: cloudfront.HttpVersion.HTTP2_AND_3,
     });
 
-    this.websiteUrl = `https://${this.distribution.distributionDomainName}`;
+    // Set website URL to the custom domain
+    this.websiteUrl = `https://${subdomains[0]}`;
+
+    // Create DNS records for all subdomains
+    subdomains.forEach((subdomain, index) => {
+      new route53.ARecord(this, `AliasRecord${index}`, {
+        zone: hostedZone,
+        recordName: subdomain === domainName ? undefined : subdomain.replace(`.${domainName}`, ''),
+        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(this.distribution)),
+      });
+    });
 
     // Placeholder deployment (will be replaced by actual build)
     new s3deploy.BucketDeployment(this, 'WebsiteDeployment', {
@@ -172,8 +206,14 @@ export class FrontendStack extends cdk.Stack {
     // Outputs
     new cdk.CfnOutput(this, 'WebsiteUrl', {
       value: this.websiteUrl,
-      description: 'Website URL',
+      description: 'Primary website URL',
       exportName: `OD-${environment}-WebsiteUrl`,
+    });
+
+    new cdk.CfnOutput(this, 'WebsiteDomains', {
+      value: subdomains.join(', '),
+      description: 'All configured website domains',
+      exportName: `OD-${environment}-WebsiteDomains`,
     });
 
     new cdk.CfnOutput(this, 'WebsiteBucketName', {

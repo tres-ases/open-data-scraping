@@ -175,18 +175,7 @@
           "ssm:GetParametersByPath"
          ],
          "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-east-1:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/od/prod/*"
-           ]
-          ]
-         }
+         "Resource": "arn:aws:ssm:us-east-1:886436935193:parameter/od/prod/*"
         },
         {
          "Action": "bedrock:InvokeModel",

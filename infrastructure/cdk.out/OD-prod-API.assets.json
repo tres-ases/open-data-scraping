@@ -1,18 +1,18 @@
 {
   "version": "45.0.0",
   "files": {
-    "8157dbe6ada9d4709bf01fd502492a682cc5002acde9e0d1df1b4f08923080e4": {
+    "3402cdbc3c7054183c5e93afbccaefbf239cffe2c27e45524d3ada581b618fd7": {
       "displayName": "OD-prod-API Template",
       "source": {
         "path": "OD-prod-API.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-9c6ff054": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "8157dbe6ada9d4709bf01fd502492a682cc5002acde9e0d1df1b4f08923080e4.json",
+        "886436935193-us-east-1-2b7a0380": {
+          "bucketName": "cdk-hnb659fds-assets-886436935193-us-east-1",
+          "objectKey": "3402cdbc3c7054183c5e93afbccaefbf239cffe2c27e45524d3ada581b618fd7.json",
           "region": "us-east-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::886436935193:role/cdk-hnb659fds-file-publishing-role-886436935193-us-east-1"
         }
       }
     }
