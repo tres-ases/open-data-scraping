@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/7b9ac7ed0d8a0e611aa89510193f247c290c06673318181a81e9e50fbe4bbafd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/479ffe844aaadf7b8500872ab63a060f19e324614b9bc13be1169c36495e0f71.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -437,7 +437,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/5dba1aee82d759a1dd29c31baffb0c941ded6c997062e3e2b944916bb9ee90ef.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/c200b32dc490d55e3c4fd350e3f65f8cf8c4748221b6452e5519466ee07a6c9b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -485,10 +485,10 @@
             "data": "LambdaExecutionRoleDefaultPolicy6D69732F"
           }
         ],
-        "/OD-prod-Processing/SsmParameterValue:--aws--service--powertools--typescript--layer-arn:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/OD-prod-Processing/SsmParameterValue:--aws--service--powertools--typescript--generic--all--latest:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsservicepowertoolstypescriptgenericalllatestC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/OD-prod-Processing/DataExtractorFunction/Resource": [
@@ -600,7 +600,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/1319b64f064c2d6da758bb159765b9d6f7780a878872a1049ddfe0d60d7ec08f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/738a22642f4bfd02f53b3e80aee1aaf2022eeb6709e112333e5b055883dfefbd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -648,10 +648,10 @@
             "data": "ApiLambdaRoleDefaultPolicy84E47AF4"
           }
         ],
-        "/OD-prod-API/SsmParameterValue:--aws--service--powertools--typescript--layer-arn:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/OD-prod-API/SsmParameterValue:--aws--service--powertools--typescript--generic--all--latest:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsservicepowertoolstypescriptgenericalllatestC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/OD-prod-API/LegislatorsHandler/Resource": [

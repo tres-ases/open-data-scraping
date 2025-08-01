@@ -5,7 +5,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Base URL for Senate website",
-    "Name": "/odm/prod/senado/base-url",
+    "Name": "/od/prod/senado/base-url",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -22,7 +22,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Base URL for Chamber of Deputies website",
-    "Name": "/odm/prod/camara/base-url",
+    "Name": "/od/prod/camara/base-url",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -39,7 +39,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Base URL for SERVEL website",
-    "Name": "/odm/prod/servel/base-url",
+    "Name": "/od/prod/servel/base-url",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -56,7 +56,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Batch size for data extraction",
-    "Name": "/odm/prod/extraction/batch-size",
+    "Name": "/od/prod/extraction/batch-size",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -73,7 +73,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Number of retry attempts for failed extractions",
-    "Name": "/odm/prod/extraction/retry-attempts",
+    "Name": "/od/prod/extraction/retry-attempts",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -90,7 +90,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Timeout for extraction requests in milliseconds",
-    "Name": "/odm/prod/extraction/timeout",
+    "Name": "/od/prod/extraction/timeout",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -107,7 +107,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Thresholds for problematic behavior detection",
-    "Name": "/odm/prod/analytics/thresholds",
+    "Name": "/od/prod/analytics/thresholds",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -124,7 +124,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Bedrock model ID for AI analysis",
-    "Name": "/odm/prod/ai/bedrock-model-id",
+    "Name": "/od/prod/ai/bedrock-model-id",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -141,7 +141,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "AI prompts for different analysis types",
-    "Name": "/odm/prod/ai/analysis-prompts",
+    "Name": "/od/prod/ai/analysis-prompts",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -158,7 +158,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "API rate limits by user type",
-    "Name": "/odm/prod/api/rate-limits",
+    "Name": "/od/prod/api/rate-limits",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -175,7 +175,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Notification system settings",
-    "Name": "/odm/prod/notifications/settings",
+    "Name": "/od/prod/notifications/settings",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -192,7 +192,7 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Description": "Data retention policies in days",
-    "Name": "/odm/prod/data/retention-policies",
+    "Name": "/od/prod/data/retention-policies",
     "Tags": {
      "Environment": "prod",
      "ManagedBy": "CDK",
@@ -785,7 +785,7 @@
     "BucketName": {
      "Ref": "DataBucketE3889A50"
     },
-    "Timestamp": 1754056103431
+    "Timestamp": 1754057065683
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",

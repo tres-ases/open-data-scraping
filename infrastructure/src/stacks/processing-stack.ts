@@ -94,7 +94,7 @@ export class ProcessingStack extends cdk.Stack {
                 'bedrock:InvokeModel',
               ],
               resources: [
-                `arn:aws:bedrock:${this.region}::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0`,
+                `arn:aws:bedrock:${this.region}::foundation-model/*`,
               ],
             }),
           ],
@@ -106,7 +106,7 @@ export class ProcessingStack extends cdk.Stack {
     // Powertools layer - lookup ARN via AWS SSM Parameter Store
     const powertoolsLayerArn = ssm.StringParameter.valueForStringParameter(
       this,
-      '/aws/service/powertools/typescript/layer-arn'
+      '/aws/service/powertools/typescript/generic/all/latest'
     );
 
     const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(

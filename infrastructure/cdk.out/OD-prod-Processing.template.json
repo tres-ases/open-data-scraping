@@ -191,7 +191,7 @@
         {
          "Action": "bedrock:InvokeModel",
          "Effect": "Allow",
-         "Resource": "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         "Resource": "arn:aws:bedrock:us-east-1::foundation-model/*"
         }
        ],
        "Version": "2012-10-17"
@@ -283,7 +283,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsservicepowertoolstypescriptgenericalllatestC96584B6F00A464EAD1953AFF4B05118Parameter"
      }
     ],
     "LoggingConfig": {
@@ -362,7 +362,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsservicepowertoolstypescriptgenericalllatestC96584B6F00A464EAD1953AFF4B05118Parameter"
      }
     ],
     "LoggingConfig": {
@@ -705,9 +705,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsservicepowertoolstypescriptgenericalllatestC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/powertools/typescript/layer-arn"
+   "Default": "/aws/service/powertools/typescript/generic/all/latest"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

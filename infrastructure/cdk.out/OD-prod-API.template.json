@@ -272,7 +272,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsservicepowertoolstypescriptgenericalllatestC96584B6F00A464EAD1953AFF4B05118Parameter"
      }
     ],
     "LoggingConfig": {
@@ -351,7 +351,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsservicepowertoolstypescriptgenericalllatestC96584B6F00A464EAD1953AFF4B05118Parameter"
      }
     ],
     "LoggingConfig": {
@@ -1343,9 +1343,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsservicepowertoolstypescriptlayerarnC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsservicepowertoolstypescriptgenericalllatestC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/powertools/typescript/layer-arn"
+   "Default": "/aws/service/powertools/typescript/generic/all/latest"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

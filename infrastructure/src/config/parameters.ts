@@ -14,45 +14,45 @@ export class ParametersConstruct extends Construct {
 
     // Data source endpoints
     new ssm.StringParameter(this, 'SenadoBaseUrl', {
-      parameterName: `/odm/${environment}/senado/base-url`,
+      parameterName: `/od/${environment}/senado/base-url`,
       stringValue: 'https://www.senado.cl',
       description: 'Base URL for Senate website',
     });
 
     new ssm.StringParameter(this, 'CamaraBaseUrl', {
-      parameterName: `/odm/${environment}/camara/base-url`,
+      parameterName: `/od/${environment}/camara/base-url`,
       stringValue: 'https://www.camara.cl',
       description: 'Base URL for Chamber of Deputies website',
     });
 
     new ssm.StringParameter(this, 'ServelBaseUrl', {
-      parameterName: `/odm/${environment}/servel/base-url`,
+      parameterName: `/od/${environment}/servel/base-url`,
       stringValue: 'https://www.servel.cl',
       description: 'Base URL for SERVEL website',
     });
 
     // Extraction configuration
     new ssm.StringParameter(this, 'ExtractionBatchSize', {
-      parameterName: `/odm/${environment}/extraction/batch-size`,
+      parameterName: `/od/${environment}/extraction/batch-size`,
       stringValue: '100',
       description: 'Batch size for data extraction',
     });
 
     new ssm.StringParameter(this, 'ExtractionRetryAttempts', {
-      parameterName: `/odm/${environment}/extraction/retry-attempts`,
+      parameterName: `/od/${environment}/extraction/retry-attempts`,
       stringValue: '3',
       description: 'Number of retry attempts for failed extractions',
     });
 
     new ssm.StringParameter(this, 'ExtractionTimeout', {
-      parameterName: `/odm/${environment}/extraction/timeout`,
+      parameterName: `/od/${environment}/extraction/timeout`,
       stringValue: '30000',
       description: 'Timeout for extraction requests in milliseconds',
     });
 
     // Analytics configuration
     new ssm.StringParameter(this, 'AnalyticsThresholds', {
-      parameterName: `/odm/${environment}/analytics/thresholds`,
+      parameterName: `/od/${environment}/analytics/thresholds`,
       stringValue: JSON.stringify({
         excessiveAbsence: 0.2, // 20% absence rate
         passiveAttendance: 0.3, // 30% non-voting attendance
@@ -64,13 +64,13 @@ export class ParametersConstruct extends Construct {
 
     // AI configuration
     new ssm.StringParameter(this, 'BedrockModelId', {
-      parameterName: `/odm/${environment}/ai/bedrock-model-id`,
+      parameterName: `/od/${environment}/ai/bedrock-model-id`,
       stringValue: 'anthropic.claude-3-5-sonnet-20241022-v2:0',
       description: 'Bedrock model ID for AI analysis',
     });
 
     new ssm.StringParameter(this, 'AIAnalysisPrompts', {
-      parameterName: `/odm/${environment}/ai/analysis-prompts`,
+      parameterName: `/od/${environment}/ai/analysis-prompts`,
       stringValue: JSON.stringify({
         behaviorAnalyst: `Eres un analista especializado en transparencia legislativa chilena.
 Analiza los datos proporcionados para identificar comportamientos problemáticos:
@@ -103,7 +103,7 @@ Proporciona insights predictivos con nivel de confianza.`,
 
     // API configuration
     new ssm.StringParameter(this, 'ApiRateLimits', {
-      parameterName: `/odm/${environment}/api/rate-limits`,
+      parameterName: `/od/${environment}/api/rate-limits`,
       stringValue: JSON.stringify({
         free: { requests: 1000, period: 'day' },
         premium: { requests: 10000, period: 'day' },
@@ -114,7 +114,7 @@ Proporciona insights predictivos con nivel de confianza.`,
 
     // Notification configuration
     new ssm.StringParameter(this, 'NotificationSettings', {
-      parameterName: `/odm/${environment}/notifications/settings`,
+      parameterName: `/od/${environment}/notifications/settings`,
       stringValue: JSON.stringify({
         emailFrom: 'noreply@opendata.cl',
         webhookTimeout: 5000,
@@ -125,7 +125,7 @@ Proporciona insights predictivos con nivel de confianza.`,
 
     // Data retention policies
     new ssm.StringParameter(this, 'DataRetentionPolicies', {
-      parameterName: `/odm/${environment}/data/retention-policies`,
+      parameterName: `/od/${environment}/data/retention-policies`,
       stringValue: JSON.stringify({
         rawData: { days: 365 },
         processedData: { days: 1095 }, // 3 years

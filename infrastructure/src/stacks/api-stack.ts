@@ -88,7 +88,7 @@ export class ApiStack extends cdk.Stack {
     // Powertools layer - lookup ARN via AWS SSM Parameter Store
     const powertoolsLayerArn = ssm.StringParameter.valueForStringParameter(
       this,
-      '/aws/service/powertools/typescript/layer-arn'
+      '/aws/service/powertools/typescript/generic/all/latest'
     );
 
     const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
