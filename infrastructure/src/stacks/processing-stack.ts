@@ -84,7 +84,7 @@ export class ProcessingStack extends cdk.Stack {
                 'ssm:GetParametersByPath',
               ],
               resources: [
-                `arn:aws:ssm:${this.region}:${this.account}:parameter/odm/${environment}/*`,
+                `arn:aws:ssm:${this.region}:${this.account}:parameter/od/${environment}/*`,
               ],
             }),
             new iam.PolicyStatement({
@@ -102,15 +102,17 @@ export class ProcessingStack extends cdk.Stack {
     });
 
     // Common Lambda layer for shared dependencies
-    const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
-      this,
-      'PowertoolsLayer',
-      `arn:aws:lambda:${this.region}:017000801446:layer:AWSLambdaPowertoolsTypeScriptV2:25`
-    );
+    // Remove the layer for now to avoid permission issues
+    // We'll bundle the dependencies directly in the function
+    // const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
+    //   this,
+    //   'PowertoolsLayer',
+    //   `arn:aws:lambda:${this.region}:094274105915:layer:AWSLambdaPowertoolsTypeScriptV2:12`
+    // );
 
     // Data Extractor Lambda (placeholder)
     const dataExtractorFunction = new lambda.Function(this, 'DataExtractorFunction', {
-      functionName: `odm-${environment}-data-extractor`,
+      functionName: `od-${environment}-data-extractor`,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
@@ -122,11 +124,11 @@ export class ProcessingStack extends cdk.Stack {
       timeout: cdk.Duration.minutes(15),
       memorySize: 1024,
       role: lambdaExecutionRole,
-      layers: [powertoolsLayer],
+      // layers: [powertoolsLayer], // Removed to avoid permission issues
       loggingFormat: lambda.LoggingFormat.JSON,
       environment: {
         POWERTOOLS_SERVICE_NAME: 'data-extractor',
-        POWERTOOLS_METRICS_NAMESPACE: 'ODM',
+        POWERTOOLS_METRICS_NAMESPACE: 'OD',
         LOG_LEVEL: 'INFO',
         DATA_BUCKET_NAME: dataBucket.bucketName,
         LEGISLATORS_TABLE_NAME: legislatorsTable.tableName,
@@ -141,7 +143,7 @@ export class ProcessingStack extends cdk.Stack {
 
     // Data Processor Lambda (placeholder)
     const dataProcessorFunction = new lambda.Function(this, 'DataProcessorFunction', {
-      functionName: `odm-${environment}-data-processor`,
+      functionName: `od-${environment}-data-processor`,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
@@ -153,11 +155,11 @@ export class ProcessingStack extends cdk.Stack {
       timeout: cdk.Duration.minutes(15),
       memorySize: 2048,
       role: lambdaExecutionRole,
-      layers: [powertoolsLayer],
+      // layers: [powertoolsLayer], // Removed to avoid permission issues
       loggingFormat: lambda.LoggingFormat.JSON,
       environment: {
         POWERTOOLS_SERVICE_NAME: 'data-processor',
-        POWERTOOLS_METRICS_NAMESPACE: 'ODM',
+        POWERTOOLS_METRICS_NAMESPACE: 'OD',
         LOG_LEVEL: 'INFO',
         DATA_BUCKET_NAME: dataBucket.bucketName,
         LEGISLATORS_TABLE_NAME: legislatorsTable.tableName,
@@ -186,7 +188,7 @@ export class ProcessingStack extends cdk.Stack {
       .next(processingTask);
 
     this.extractionStateMachine = new stepfunctions.StateMachine(this, 'ExtractionStateMachine', {
-      stateMachineName: `ODM-${environment}-DataExtraction`,
+      stateMachineName: `OD-${environment}-DataExtraction`,
       definitionBody: stepfunctions.DefinitionBody.fromChainable(definition),
       timeout: cdk.Duration.hours(2),
       tracingEnabled: true,
@@ -194,7 +196,7 @@ export class ProcessingStack extends cdk.Stack {
 
     // EventBridge rule for scheduled extraction
     const dailyExtractionRule = new events.Rule(this, 'DailyExtractionRule', {
-      ruleName: `ODM-${environment}-DailyExtraction`,
+      ruleName: `OD-${environment}-DailyExtraction`,
       description: 'Trigger daily data extraction',
       schedule: events.Schedule.cron({
         minute: '0',
@@ -214,7 +216,7 @@ export class ProcessingStack extends cdk.Stack {
 
     // Weekly extraction for SERVEL data
     const weeklyExtractionRule = new events.Rule(this, 'WeeklyExtractionRule', {
-      ruleName: `ODM-${environment}-WeeklyExtraction`,
+      ruleName: `OD-${environment}-WeeklyExtraction`,
       description: 'Trigger weekly SERVEL data extraction',
       schedule: events.Schedule.cron({
         minute: '0',
@@ -234,13 +236,13 @@ export class ProcessingStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ExtractionStateMachineArn', {
       value: this.extractionStateMachine.stateMachineArn,
       description: 'Step Functions State Machine for data extraction',
-      exportName: `ODM-${environment}-ExtractionStateMachineArn`,
+      exportName: `OD-${environment}-ExtractionStateMachineArn`,
     });
 
     new cdk.CfnOutput(this, 'DataExtractorFunctionArn', {
       value: dataExtractorFunction.functionArn,
       description: 'Lambda function for data extraction',
-      exportName: `ODM-${environment}-DataExtractorFunctionArn`,
+      exportName: `OD-${environment}-DataExtractorFunctionArn`,
     });
   }
 }
