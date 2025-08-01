@@ -183,14 +183,21 @@ jobs:
           PROJECT_NAME=$(echo "${{ matrix.app }}" | sed 's/@open-data\///')
           echo "Project directory: $PROJECT_NAME"
 
-          if [ -d "$PROJECT_NAME/dist" ]; then
-            echo "Build directory exists: $PROJECT_NAME/dist"
+          # Check for build output in the project directory
+          if [ -d "${PROJECT_NAME}/dist" ]; then
+            echo "Build directory exists: ${PROJECT_NAME}/dist"
             echo "Contents:"
-            ls -la $PROJECT_NAME/dist
+            ls -la ${PROJECT_NAME}/dist
+          elif [ -d "dist/apps/${PROJECT_NAME}" ]; then
+            echo "Build directory exists: dist/apps/${PROJECT_NAME}"
+            echo "Contents:"
+            ls -la dist/apps/${PROJECT_NAME}
           else
-            echo "ERROR: Build directory not found: $PROJECT_NAME/dist"
+            echo "ERROR: Build directory not found"
             echo "Available directories:"
             ls -la
+            echo "Checking dist folder:"
+            ls -la dist/ || echo "No dist folder found"
             exit 1
           fi
 
@@ -198,7 +205,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.app }}-build
-          path: ${{ matrix.app | replace('@open-data/', '') }}/dist
+          path: |
+            api/dist
+            web/dist
+            dist/apps/api
+            dist/apps/web
           retention-days: 1
 
   deploy-infrastructure:
@@ -269,7 +280,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.app }}-build
-          path: ${{ matrix.app | replace('@open-data/', '') }}/dist
+          path: ./
         continue-on-error: false
 
       - name: Configure AWS credentials
