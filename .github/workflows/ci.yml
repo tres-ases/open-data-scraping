@@ -41,8 +41,8 @@ jobs:
             BASE_SHA="HEAD~1"
           fi
 
-          # Get affected apps and format as JSON array
-          AFFECTED_APPS=$(npx nx show projects --affected --base=$BASE_SHA --type=app | jq -R -s -c 'split("\n")[:-1]')
+          # Get affected apps (excluding e2e projects) and format as JSON array
+          AFFECTED_APPS=$(npx nx show projects --affected --base=$BASE_SHA --type=app | grep -v '\-e2e$' | jq -R -s -c 'split("\n")[:-1]')
           echo "apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
 
           # Get affected libs and format as JSON array
@@ -92,7 +92,13 @@ jobs:
         run: npx nx test ${{ matrix.project }}
 
       - name: Build ${{ matrix.project }}
-        run: npx nx build ${{ matrix.project }}
+        run: |
+          # Only build if the project has a build target
+          if npx nx show project ${{ matrix.project }} --json | jq -e '.targets.build' > /dev/null 2>&1; then
+            npx nx build ${{ matrix.project }}
+          else
+            echo "Skipping build for ${{ matrix.project }} - no build target configured"
+          fi
 
   build-apps:
     needs: [setup, test-and-lint]
