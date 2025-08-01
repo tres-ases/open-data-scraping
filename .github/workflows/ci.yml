@@ -172,11 +172,23 @@ jobs:
       - name: Build ${{ matrix.app }}
         run: npx nx build ${{ matrix.app }}
 
+      - name: Verify build output
+        run: |
+          echo "Checking build output for ${{ matrix.app }}..."
+          if [ -d "${{ matrix.app }}/dist" ]; then
+            echo "Build directory exists: ${{ matrix.app }}/dist"
+            echo "Contents:"
+            ls -la ${{ matrix.app }}/dist
+          else
+            echo "ERROR: Build directory not found: ${{ matrix.app }}/dist"
+            exit 1
+          fi
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.app }}-build
-          path: dist/${{ matrix.app }}
+          path: ${{ matrix.app }}/dist
           retention-days: 1
 
   deploy-infrastructure:
@@ -247,7 +259,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.app }}-build
-          path: dist/${{ matrix.app }}
+          path: ${{ matrix.app }}/dist
         continue-on-error: false
 
       - name: Configure AWS credentials
