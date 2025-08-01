@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "3beafd19f98712ff9c939751c6cadd885dc9a68b2009d64d02f929ebd56cc29d": {
+      "displayName": "OD-prod-API Template",
+      "source": {
+        "path": "OD-prod-API.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-86e8c8c0": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "3beafd19f98712ff9c939751c6cadd885dc9a68b2009d64d02f929ebd56cc29d.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

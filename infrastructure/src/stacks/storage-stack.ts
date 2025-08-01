@@ -30,7 +30,7 @@ export class StorageStack extends cdk.Stack {
 
     // S3 Bucket for raw and processed data with enhanced configuration
     this.dataBucket = new s3.Bucket(this, 'DataBucket', {
-      bucketName: `open-data-bucket-${environment}`,
+      bucketName: `open-data-cl-bucket-${environment}`,
       versioned: true,
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -256,7 +256,7 @@ export class StorageStack extends cdk.Stack {
 
     // DynamoDB Table for Legislators with enhanced configuration
     this.legislatorsTable = new dynamodb.Table(this, 'LegislatorsTable', {
-      tableName: `ODM-${environment}-Legislators`,
+      tableName: `OD-${environment}-Legislators`,
       partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'SK', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -305,7 +305,7 @@ export class StorageStack extends cdk.Stack {
 
     // DynamoDB Table for Sessions with enhanced configuration
     this.sessionsTable = new dynamodb.Table(this, 'SessionsTable', {
-      tableName: `ODM-${environment}-Sessions`,
+      tableName: `OD-${environment}-Sessions`,
       partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'SK', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -354,7 +354,7 @@ export class StorageStack extends cdk.Stack {
 
     // DynamoDB Table for Analytics with enhanced configuration
     this.analyticsTable = new dynamodb.Table(this, 'AnalyticsTable', {
-      tableName: `ODM-${environment}-Analytics`,
+      tableName: `OD-${environment}-Analytics`,
       partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'SK', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -402,7 +402,7 @@ export class StorageStack extends cdk.Stack {
 
     // DynamoDB Table for Votations (Voting records)
     this.votationsTable = new dynamodb.Table(this, 'VotationsTable', {
-      tableName: `ODM-${environment}-Votations`,
+      tableName: `OD-${environment}-Votations`,
       partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'SK', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -443,7 +443,7 @@ export class StorageStack extends cdk.Stack {
 
     // DynamoDB Table for Projects (Legislative projects)
     this.projectsTable = new dynamodb.Table(this, 'ProjectsTable', {
-      tableName: `ODM-${environment}-Projects`,
+      tableName: `OD-${environment}-Projects`,
       partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'SK', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -484,7 +484,7 @@ export class StorageStack extends cdk.Stack {
 
     // DynamoDB Table for Expenses (Parliamentary expenses)
     this.expensesTable = new dynamodb.Table(this, 'ExpensesTable', {
-      tableName: `ODM-${environment}-Expenses`,
+      tableName: `OD-${environment}-Expenses`,
       partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'SK', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -536,43 +536,43 @@ export class StorageStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'DataBucketName', {
       value: this.dataBucket.bucketName,
       description: 'S3 bucket for raw and processed data',
-      exportName: `ODM-${environment}-DataBucketName`,
+      exportName: `OD-${environment}-DataBucketName`,
     });
 
     new cdk.CfnOutput(this, 'LegislatorsTableName', {
       value: this.legislatorsTable.tableName,
       description: 'DynamoDB table for legislators data',
-      exportName: `ODM-${environment}-LegislatorsTableName`,
+      exportName: `OD-${environment}-LegislatorsTableName`,
     });
 
     new cdk.CfnOutput(this, 'SessionsTableName', {
       value: this.sessionsTable.tableName,
       description: 'DynamoDB table for sessions data',
-      exportName: `ODM-${environment}-SessionsTableName`,
+      exportName: `OD-${environment}-SessionsTableName`,
     });
 
     new cdk.CfnOutput(this, 'AnalyticsTableName', {
       value: this.analyticsTable.tableName,
       description: 'DynamoDB table for analytics data',
-      exportName: `ODM-${environment}-AnalyticsTableName`,
+      exportName: `OD-${environment}-AnalyticsTableName`,
     });
 
     new cdk.CfnOutput(this, 'VotationsTableName', {
       value: this.votationsTable.tableName,
       description: 'DynamoDB table for voting records',
-      exportName: `ODM-${environment}-VotationsTableName`,
+      exportName: `OD-${environment}-VotationsTableName`,
     });
 
     new cdk.CfnOutput(this, 'ProjectsTableName', {
       value: this.projectsTable.tableName,
       description: 'DynamoDB table for legislative projects',
-      exportName: `ODM-${environment}-ProjectsTableName`,
+      exportName: `OD-${environment}-ProjectsTableName`,
     });
 
     new cdk.CfnOutput(this, 'ExpensesTableName', {
       value: this.expensesTable.tableName,
       description: 'DynamoDB table for parliamentary expenses',
-      exportName: `ODM-${environment}-ExpensesTableName`,
+      exportName: `OD-${environment}-ExpensesTableName`,
     });
   }
 }
