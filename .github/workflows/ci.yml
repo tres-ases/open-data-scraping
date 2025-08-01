@@ -29,8 +29,22 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
+      - name: Verify package-lock.json
+        run: |
+          echo "Checking package-lock.json..."
+          if [ ! -f package-lock.json ]; then
+            echo "ERROR: package-lock.json not found!"
+            exit 1
+          fi
+          echo "package-lock.json exists ($(wc -c < package-lock.json) bytes)"
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Starting npm ci..."
+          npm ci --no-audit --no-fund --timeout=300000
+          echo "npm ci completed successfully"
 
       - name: Get affected projects
         id: affected
@@ -77,7 +91,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Installing dependencies..."
+          npm ci --no-audit --no-fund --timeout=300000
+          echo "Dependencies installed successfully"
 
       - name: Restore Nx cache
         uses: actions/cache@v4
@@ -121,7 +138,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Installing dependencies..."
+          npm ci --no-audit --no-fund --timeout=300000
+          echo "Dependencies installed successfully"
 
       - name: Restore Nx cache
         uses: actions/cache@v4
@@ -158,7 +178,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Installing dependencies..."
+          npm ci --no-audit --no-fund --timeout=300000
+          echo "Dependencies installed successfully"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -198,7 +221,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Installing dependencies..."
+          npm ci --no-audit --no-fund --timeout=300000
+          echo "Dependencies installed successfully"
 
       - name: Download build artifacts
         if: contains(needs.setup.outputs.affected-apps, matrix.app)
