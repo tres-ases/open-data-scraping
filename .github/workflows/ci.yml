@@ -61,13 +61,13 @@ jobs:
           echo "All affected projects:"
           npx nx show projects --affected --base=$BASE_SHA || echo "No affected projects found"
 
-          # Get affected apps (excluding e2e projects) and format as JSON array
-          AFFECTED_APPS=$(npx nx show projects --affected --base=$BASE_SHA --type=app | grep -v '\-e2e$' | jq -R -s -c 'split("\n")[:-1]')
+          # Get affected apps (excluding e2e projects and infrastructure) and format as JSON array
+          AFFECTED_APPS=$(npx nx show projects --affected --base=$BASE_SHA --type=app | grep -v '\-e2e$' | grep -v 'infrastructure$' | jq -R -s -c 'split("\n")[:-1]')
 
           # If no apps are affected but we're on master, include core apps
           if [ "$AFFECTED_APPS" = "[]" ] && [ "${{ github.ref }}" = "refs/heads/master" ]; then
             echo "No apps affected, but on master branch - including core apps"
-            AFFECTED_APPS='["api", "web"]'
+            AFFECTED_APPS='["@open-data/api", "@open-data/web"]'
           fi
 
           echo "Affected apps: $AFFECTED_APPS"
@@ -170,17 +170,27 @@ jobs:
             nx-${{ runner.os }}-
 
       - name: Build ${{ matrix.app }}
-        run: npx nx build ${{ matrix.app }}
+        run: |
+          echo "Building ${{ matrix.app }}..."
+          # Set environment variable to skip lockfile generation (workaround for Nx bug)
+          export NX_SKIP_LOCKFILE_GENERATION=true
+          npx nx build ${{ matrix.app }}
 
       - name: Verify build output
         run: |
           echo "Checking build output for ${{ matrix.app }}..."
-          if [ -d "${{ matrix.app }}/dist" ]; then
-            echo "Build directory exists: ${{ matrix.app }}/dist"
+          # Extract project name without namespace
+          PROJECT_NAME=$(echo "${{ matrix.app }}" | sed 's/@open-data\///')
+          echo "Project directory: $PROJECT_NAME"
+
+          if [ -d "$PROJECT_NAME/dist" ]; then
+            echo "Build directory exists: $PROJECT_NAME/dist"
             echo "Contents:"
-            ls -la ${{ matrix.app }}/dist
+            ls -la $PROJECT_NAME/dist
           else
-            echo "ERROR: Build directory not found: ${{ matrix.app }}/dist"
+            echo "ERROR: Build directory not found: $PROJECT_NAME/dist"
+            echo "Available directories:"
+            ls -la
             exit 1
           fi
 
@@ -188,7 +198,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.app }}-build
-          path: ${{ matrix.app }}/dist
+          path: ${{ matrix.app | replace('@open-data/', '') }}/dist
           retention-days: 1
 
   deploy-infrastructure:
@@ -259,7 +269,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.app }}-build
-          path: ${{ matrix.app }}/dist
+          path: ${{ matrix.app | replace('@open-data/', '') }}/dist
         continue-on-error: false
 
       - name: Configure AWS credentials
