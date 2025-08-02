@@ -201,10 +201,18 @@ jobs:
             exit 1
           fi
 
+      - name: Set artifact name
+        id: artifact-name
+        run: |
+          # Extract clean project name without namespace and special characters
+          CLEAN_NAME=$(echo "${{ matrix.app }}" | sed 's/@open-data\///g' | sed 's/[^a-zA-Z0-9-]/-/g')
+          echo "name=${CLEAN_NAME}-build" >> $GITHUB_OUTPUT
+          echo "Clean artifact name: ${CLEAN_NAME}-build"
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.app }}-build
+          name: ${{ steps.artifact-name.outputs.name }}
           path: |
             api/dist
             web/dist
@@ -276,10 +284,18 @@ jobs:
           npm ci --no-audit --no-fund --timeout=300000
           echo "Dependencies installed successfully"
 
+      - name: Set artifact name
+        id: artifact-name
+        run: |
+          # Extract clean project name without namespace and special characters
+          CLEAN_NAME=$(echo "${{ matrix.app }}" | sed 's/@open-data\///g' | sed 's/[^a-zA-Z0-9-]/-/g')
+          echo "name=${CLEAN_NAME}-build" >> $GITHUB_OUTPUT
+          echo "Clean artifact name: ${CLEAN_NAME}-build"
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.app }}-build
+          name: ${{ steps.artifact-name.outputs.name }}
           path: ./
         continue-on-error: false
 
